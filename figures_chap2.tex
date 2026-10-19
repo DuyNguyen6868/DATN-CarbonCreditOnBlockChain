@@ -1,0 +1,62 @@
+% ============================================================
+% HÌNH VẼ CHƯƠNG 2 (TikZ) — gọi bằng macro trong Chap2.tex
+%   \HinhChuoiKhoi  : cấu trúc liên kết các khối          (fig:chuoikhoi)
+%   \HinhLuongDApp  : luồng tương tác của dApp             (fig:luongdapp)
+% ============================================================
+
+% ---------- Cấu trúc liên kết các khối ----------
+\newcommand{\HinhChuoiKhoi}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    truong/.style={draw, minimum width=3.3cm, minimum height=0.55cm,
+                   font=\footnotesize, fill=white, inner sep=1pt},
+    tieude/.style={truong, fill=gray!20, font=\footnotesize\bfseries}]
+  \foreach \i/\x/\ten in {0/0/N-1, 1/4.6/N, 2/9.2/N+1} {
+    \node[tieude] (h\i) at (\x,0) {Khối \ten};
+    \node[truong, below=0pt of h\i] (p\i) {Mã băm khối trước};
+    \node[truong, below=0pt of p\i] (t\i) {Dấu thời gian};
+    \node[truong, below=0pt of t\i] (m\i) {Gốc Merkle};
+    \node[truong, below=0pt of m\i, minimum height=1cm, align=center] (g\i)
+        {Danh sách\\giao dịch};
+    \node[draw, thick, rounded corners=2pt, inner sep=3pt, fit=(h\i)(g\i)] (b\i) {};
+  }
+  \draw[->, thick] (p1.west) -- (b0.east |- p1.west);
+  \draw[->, thick] (p2.west) -- (b1.east |- p2.west);
+  \node[font=\large] at (-2.35,-1.4) {$\cdots$};
+  \node[font=\large] at (11.55,-1.4) {$\cdots$};
+\end{tikzpicture}
+\caption{Cấu trúc liên kết giữa các khối trong chuỗi khối}
+\label{fig:chuoikhoi}
+\end{figure}}
+
+% ---------- Luồng tương tác của ứng dụng phi tập trung ----------
+\newcommand{\HinhLuongDApp}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    hop/.style={draw, rounded corners=3pt, align=center, font=\footnotesize,
+                text width=2.1cm, minimum height=1.1cm, fill=white},
+    nhan/.style={font=\scriptsize, align=center}]
+  \node[hop]                         (u)   at (0,0)     {Người dùng};
+  \node[hop]                         (fe)  at (3.7,0)   {Giao diện web\\(Next.js,\\ethers.js)};
+  \node[hop]                         (mm)  at (7.4,0)   {Ví\\MetaMask\\(giữ khóa riêng)};
+  \node[hop, text width=2.6cm, minimum height=1.6cm, fill=gray!12]
+                                     (net) at (11.3,0)  {Mạng Ethereum\\(Sepolia)\\nút RPC, EVM,\\hợp đồng thông minh};
+  \node[hop]                         (be)  at (3.7,-3)  {Backend\\(Node.js, Express)};
+  \node[hop]                         (db)  at (0,-3)    {CSDL off-chain\\(PostgreSQL)};
+
+  \draw[->] (u) -- node[nhan, above] {thao tác} (fe);
+  \draw[->] (fe) -- node[nhan, above] {yêu cầu ký\\(EIP-1193)} (mm);
+  \draw[->] (mm) -- node[nhan, above] {giao dịch\\đã ký} (net);
+  \draw[->, dashed] (fe.north) to[bend left=22]
+      node[nhan, above] {đọc trạng thái on-chain (call)} (net.north);
+  \draw[->] (net.south) |- node[nhan, pos=0.75, below] {sự kiện (Minted, Transfer, Retired\ldots)} (be.east);
+  \draw[<->] (fe) -- node[nhan, right] {API REST} (be);
+  \draw[<->] (be) -- node[nhan, above] {đọc/ghi} (db);
+\end{tikzpicture}
+\caption{Luồng tương tác giữa giao diện, ví MetaMask, mạng Ethereum và backend}
+\label{fig:luongdapp}
+\end{figure}}

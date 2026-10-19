@@ -1,0 +1,432 @@
+\documentclass[a4paper,oneside]{report}
+\usepackage[fontsize=13pt]{scrextend}      % Cỡ chữ 13pt (Normal của mẫu)
+\usepackage[utf8]{vietnam}
+\usepackage{mathptmx}                      % Times (tương đương Times New Roman)
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage[titles]{tocloft}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}                     % Bảng dài nhiều trang (danh mục ký hiệu, ma trận truy vết)
+\usepackage{booktabs}                      % Kẻ bảng \toprule, \midrule, \bottomrule
+\usepackage{multirow}
+\usepackage{float}                         % Cho phép đặt hình/bảng cố định [H]
+\usepackage{enumitem}                      % Chỉnh khoảng cách danh sách gạch đầu dòng
+\usepackage{pdfpages}                      % Chèn bản scan Nhận xét GVHD, Phiếu báo cáo tiến độ
+\usepackage{listings}                      % Mã nguồn ở Phụ lục A
+\usepackage{makeidx}
+\usepackage{tikz}
+\usepackage{adjustbox}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,backgrounds,calc}
+\makeindex
+
+% ================= LỀ TRANG =================
+% Theo mẫu ĐATN: A4, trên 2cm, dưới 2cm, trái 3.5cm, phải 2.5cm
+\geometry{
+    a4paper,
+    top=2cm,
+    bottom=2cm,
+    left=3.5cm,
+    right=2.5cm,
+    footskip=0.9cm
+}
+
+% ================= ĐOẠN VĂN =================
+% Mẫu Word: Times 13pt, giãn dòng "Multiple 1.1", cách trước 3pt, căn đều hai bên,
+% không thụt đầu dòng. Dòng cơ sở của LaTeX đã rộng hơn Word (~1.2 lần cỡ chữ),
+% nên \setstretch{1.05} cho khoảng cách dòng tương đương "Multiple 1.1" của Word.
+\setstretch{1.05}
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{2em}   % tránh chữ tràn lề
+
+% Danh sách gạch đầu dòng: thụt 1.27cm như "List Paragraph" của mẫu, không giãn dòng thừa
+\setlist{leftmargin=1.27cm, topsep=0pt, itemsep=0pt, parsep=3pt}
+
+% Bảng: giãn hàng cho dễ đọc
+\renewcommand{\arraystretch}{1.2}
+
+% ================= SỐ TRANG =================
+% Số trang ở chân trang, căn phải
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{%
+    \fancyhf{}%
+    \fancyfoot[R]{\thepage}%
+    \renewcommand{\headrulewidth}{0pt}%
+}
+
+% ================= TIÊU ĐỀ CÁC CẤP =================
+% Tối đa 3 cấp đánh số: 1.1 / 1.1.1 / 1.1.1.1 (cấp 1.1.1.1 in nghiêng).
+% Cần thêm cấp nữa thì dùng a), b), c) hoặc gạch đầu dòng.
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% Chương: "CHƯƠNG 1. TÊN CHƯƠNG" – in hoa, đậm, căn giữa, 13pt
+\titleformat{\chapter}[block]
+    {\centering\normalsize\bfseries}
+    {CHƯƠNG \thechapter.}{0.5em}{\MakeUppercase}
+\titleformat{name=\chapter,numberless}[block]
+    {\centering\normalsize\bfseries}
+    {}{0pt}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{6pt}{12pt}
+
+% Cấp 1 (1.1) – đậm
+\titleformat{\section}[hang]
+    {\normalsize\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{6pt}{0pt}
+
+% Cấp 2 (1.1.1) – đậm
+\titleformat{\subsection}[hang]
+    {\normalsize\bfseries}{\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{6pt}{0pt}
+
+% Cấp 3 (1.1.1.1.) – nghiêng
+\titleformat{\subsubsection}[hang]
+    {\normalsize\itshape}{\thesubsubsection.}{1em}{}
+\titlespacing*{\subsubsection}{0pt}{2pt}{0pt}
+
+% ================= MỤC LỤC & DANH MỤC =================
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchappresnum}{CHƯƠNG }
+\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftchapnumwidth}{2.7cm}
+\setlength{\cftbeforechapskip}{6pt}
+
+\setlength{\cftsecindent}{0pt}
+\setlength{\cftsecnumwidth}{1cm}
+\setlength{\cftbeforesecskip}{4pt}
+
+\setlength{\cftsubsecindent}{1cm}
+\setlength{\cftsubsecnumwidth}{1.3cm}
+\setlength{\cftbeforesubsecskip}{4pt}
+
+% Danh mục hình vẽ: "Hình 2.1 Tên hình"
+\renewcommand{\cftfigpresnum}{Hình }
+\setlength{\cftfigindent}{0pt}
+\setlength{\cftfignumwidth}{2cm}
+\setlength{\cftbeforefigskip}{4pt}
+
+% Danh mục bảng biểu: "Bảng 1.1 Tên bảng"
+\renewcommand{\cfttabpresnum}{Bảng }
+\setlength{\cfttabindent}{0pt}
+\setlength{\cfttabnumwidth}{2cm}
+\setlength{\cftbeforetabskip}{4pt}
+
+% ================= CHÚ THÍCH HÌNH / BẢNG =================
+% Theo style "Caption" của mẫu: nghiêng, 12pt, màu xám 404040, căn giữa, giãn dòng đơn.
+% Hình: chú thích dưới; bảng: chú thích trên.
+% Mẫu khuyến nghị hình/bảng rộng không quá 75% bề rộng phần chữ (width=0.75\linewidth).
+\DeclareCaptionFont{capsize}{\fontsize{12}{14}\selectfont}
+\DeclareCaptionFont{capcolor}{\color[HTML]{404040}}
+\captionsetup{
+    font={capsize,it,capcolor,singlespacing},
+    labelfont={capsize,it,capcolor},
+    labelsep=space,
+    justification=centering,
+    singlelinecheck=false,
+    skip=6pt
+}
+\captionsetup[figure]{position=bottom}
+\captionsetup[table]{position=top}
+
+% ================= PHƯƠNG TRÌNH: "PT 1.1" =================
+\numberwithin{equation}{chapter}
+\makeatletter
+\renewcommand{\tagform@}[1]{\maketag@@@{\ignorespaces PT #1\unskip\@@italiccorr}}
+\makeatother
+
+% ================= MÃ NGUỒN (PHỤ LỤC A) =================
+% Định nghĩa ngôn ngữ Solidity cho listings
+\lstdefinelanguage{Solidity}{
+    morekeywords={pragma,solidity,contract,interface,library,is,function,modifier,event,emit,
+        struct,enum,mapping,public,private,internal,external,view,pure,payable,returns,return,
+        memory,storage,calldata,constructor,override,virtual,require,revert,if,else,for,while,
+        new,delete,import,using,address,bool,string,bytes,bytes32,uint,uint8,uint256,int,int256},
+    sensitive=true,
+    morecomment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    morestring=[b]",
+}
+\lstset{
+    basicstyle=\ttfamily\footnotesize\singlespacing,
+    keywordstyle=\bfseries,
+    commentstyle=\itshape\color{gray},
+    numbers=left,
+    numberstyle=\tiny,
+    frame=single,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    tabsize=4
+}
+\renewcommand{\lstlistingname}{Đoạn mã}
+
+% ================= TÊN CÁC MỤC TIẾNG VIỆT =================
+\AtBeginDocument{%
+    \renewcommand{\contentsname}{Mục lục}%
+    \renewcommand{\listfigurename}{Danh mục hình vẽ}%
+    \renewcommand{\listtablename}{Danh mục bảng biểu}%
+    \renewcommand{\bibname}{Tài liệu tham khảo}%
+    \renewcommand{\figurename}{Hình}%
+    \renewcommand{\tablename}{Bảng}%
+    \renewcommand{\appendixname}{Phụ lục}%
+    \renewcommand{\indexname}{Chỉ mục}%
+    \renewcommand{\figureautorefname}{Hình}%
+    \renewcommand{\tableautorefname}{Bảng}%
+    \renewcommand{\equationautorefname}{PT}%
+    \renewcommand{\chapterautorefname}{Chương}%
+    \renewcommand{\sectionautorefname}{mục}%
+    \renewcommand{\subsectionautorefname}{mục}%
+    \renewcommand{\appendixautorefname}{Phụ lục}%
+}
+
+% Khối chữ ký: "Hà Nội, ngày … tháng … năm …"
+\newcommand{\khoichuky}[1]{%
+    \par\vspace{12pt}
+    \hfill
+    \begin{minipage}{7cm}
+        \centering\singlespacing
+        \textit{Hà Nội, ngày …. tháng …. năm ….}\\
+        \textbf{#1}\\
+        \textit{Ký và ghi rõ họ tên}
+    \end{minipage}\par
+}
+
+% Chèn trang scan (PDF) nếu đã có file, nếu chưa có thì in trang tiêu đề giữ chỗ
+% #1: tên file PDF, #2: tiêu đề trang, #3: ghi chú giữ chỗ
+\newcommand{\chentrangscan}[3]{%
+    \IfFileExists{#1}{%
+        \includepdf[pages=-]{#1}%
+    }{%
+        \chapter*{#2}%
+        \textit{#3}%
+        \clearpage
+    }%
+}
+
+% Thông tin dùng chung
+% Đánh dấu chỗ còn phải tự viết: in chữ đỏ trong ngoặc vuông.
+% Trước khi nộp, tìm "\canviet" để chắc chắn không còn chỗ nào.
+\newcommand{\canviet}[1]{\textcolor{red}{[\textit{#1}]}}
+
+\newcommand{\tendetai}{Xây dựng hệ thống quản lý tín chỉ cacbon trên blockchain}
+\newcommand{\thoigiannop}{1/2027}   % Tháng/năm nộp quyển, in ở cuối trang bìa
+
+\usepackage[unicode,hidelinks,bookmarksnumbered]{hyperref}
+% Cho phép ngắt dòng URL dài trong danh mục tài liệu tham khảo tại dấu gạch nối
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\-}
+
+\begin{document}
+
+% ================= 1. BÌA TRƯỚC =================
+\newgeometry{top=2cm,bottom=2cm,left=2.5cm,right=2cm}
+\begin{titlepage}
+    \setstretch{1}
+    \setlength{\parskip}{0pt}
+    \centering
+
+    {\fontsize{14}{17}\selectfont\bfseries
+        ĐẠI HỌC BÁCH KHOA HÀ NỘI\\
+        KHOA TOÁN – TIN\par}
+
+    \vspace{6.2cm}
+
+    {\fontsize{18}{22}\selectfont\bfseries ĐỒ ÁN TỐT NGHIỆP\par}
+
+    \vspace{22pt}
+
+    % Tên đề tài phải khớp đúng với tên đã đăng ký trong phiếu giao nhiệm vụ
+    {\fontsize{14}{17}\selectfont\bfseries \tendetai\par}
+
+    \vspace{18pt}
+
+    {\fontsize{14}{20}\selectfont
+        \textbf{NGUYỄN CẢNH DUY}\\
+        Email: Duy.NC227174@sis.hust.edu.vn\\
+        Mã sinh viên: 20227174\\
+        \textbf{Chuyên ngành Hệ thống thông tin quản lý}\par}
+
+    \vspace{2.2cm}
+
+    {\fontsize{13}{15.6}\selectfont
+    \noindent\hspace*{0.6cm}%
+    \makebox[5.3cm][l]{\textbf{Giảng viên hướng dẫn:}}%
+    \makebox[5.8cm][l]{PGS.TS Lê Chí Ngọc}%
+    \raisebox{-4pt}[0pt][0pt]{%
+        \parbox[t]{3.5cm}{%
+            \rule{3.5cm}{0.5pt}\\[-3pt]
+            \hspace*{0.1cm}{\fontsize{10}{12}\selectfont Chữ ký của GVHD}}}%
+    \par}
+
+    \vfill
+
+    {\fontsize{13}{15.6}\selectfont\bfseries HÀ NỘI, \thoigiannop\par}
+\end{titlepage}
+\restoregeometry
+
+\pagenumbering{roman}
+
+% ================= 2. NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN =================
+% Bắt buộc theo Hướng dẫn thực hiện ĐA/TT của Khoa (02/04/2025): phải có chữ ký của GVHD.
+% Khi có bản scan, đặt file NhanXetGVHD.pdf cùng thư mục, trang sẽ tự được chèn vào.
+\chentrangscan{NhanXetGVHD.pdf}{Nhận xét của giảng viên hướng dẫn}
+    {Chèn bản scan nhận xét có chữ ký của giảng viên hướng dẫn (file NhanXetGVHD.pdf).}
+
+% ================= 3. PHIẾU BÁO CÁO TIẾN ĐỘ ĐỒ ÁN =================
+% Phiếu in từ hệ thống số hóa của Khoa (fami.hust.edu.vn/sohoa), đóng vào quyển.
+\chentrangscan{PhieuTienDo.pdf}{Phiếu báo cáo tiến độ đồ án}
+    {Chèn phiếu báo cáo tiến độ in từ hệ thống số hóa (file PhieuTienDo.pdf).}
+
+% ================= 4. LỜI CẢM ƠN + TÓM TẮT (CÙNG 1 TRANG, SINH VIÊN KÝ) =================
+\clearpage
+\begin{center}\vspace*{18pt}\textbf{Lời cảm ơn}\end{center}
+% Tùy chọn, ngắn gọn, tránh từ sáo rỗng, khoảng 100–150 từ.
+[Lời cảm ơn]
+
+\begin{center}\vspace{12pt}\textbf{Tóm tắt nội dung đồ án}\end{center}
+% Tối đa 300 chữ, cần nêu: vấn đề cần thực hiện; phương pháp thực hiện; công cụ sử dụng
+% (phần mềm, phần cứng…); kết quả có phù hợp với vấn đề đặt ra không; tính thực tế;
+% định hướng phát triển (nếu có); kiến thức và kỹ năng đã đạt được.
+[Tóm tắt nội dung đồ án]
+
+\khoichuky{Sinh viên thực hiện}
+
+% ================= 5–7. MỤC LỤC & CÁC DANH MỤC =================
+\tableofcontents
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH VẼ}
+\listoffigures
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG BIỂU}
+\listoftables
+
+% Danh mục ký hiệu: bắt buộc theo hướng dẫn của Khoa. Liệt kê các chữ viết tắt theo thứ tự
+% chữ cái, mỗi chữ viết tắt chỉ giải thích một lần, dùng thống nhất trong toàn bài.
+\chapter*{Danh mục ký hiệu}
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC KÝ HIỆU}
+\begin{longtable}{@{}p{2.4cm}p{5.4cm}p{6.3cm}@{}}
+\toprule
+\textbf{Ký hiệu} & \textbf{Tiếng Anh} & \textbf{Ý nghĩa} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+AEF    & Agreed Electronic Format                  & Định dạng điện tử thỏa thuận \\
+AFOLU  & Agriculture, Forestry and Other Land Use  & Nông nghiệp, lâm nghiệp và sử dụng đất khác \\
+API    & Application Programming Interface         & Giao diện lập trình ứng dụng \\
+CBAM   & Carbon Border Adjustment Mechanism        & Cơ chế điều chỉnh biên giới carbon \\
+CDM    & Clean Development Mechanism               & Cơ chế phát triển sạch \\
+CDOP   & Carbon Data Open Protocol                 & Giao thức mở dữ liệu carbon \\
+CSDL   & Database                                  & Cơ sở dữ liệu \\
+dApp   & Decentralized Application                 & Ứng dụng phi tập trung \\
+DeFi   & Decentralized Finance                     & Tài chính phi tập trung \\
+ERC    & Ethereum Request for Comments             & Chuẩn kỹ thuật của Ethereum \\
+EVM    & Ethereum Virtual Machine                  & Máy ảo Ethereum \\
+GHG    & Greenhouse Gas                            & Khí nhà kính \\
+IoT    & Internet of Things                        & Internet vạn vật \\
+IPFS   & InterPlanetary File System                & Hệ thống lưu trữ tệp phi tập trung \\
+ITMO   & Internationally Transferred Mitigation Outcome & Kết quả giảm nhẹ được chuyển giao quốc tế \\
+MRV    & Measurement, Reporting and Verification   & Đo đạc, báo cáo, thẩm định \\
+NDC    & Nationally Determined Contribution        & Đóng góp do quốc gia tự quyết định \\
+NFT    & Non-Fungible Token                        & Token không thể thay thế \\
+OMGE   & Overall Mitigation in Global Emissions    & Giảm nhẹ tổng thể phát thải toàn cầu \\
+PACM   & Paris Agreement Crediting Mechanism       & Cơ chế tín chỉ theo Điều 6.4 Thỏa thuận Paris \\
+PDD    & Project Design Document                   & Tài liệu thiết kế dự án \\
+PoS    & Proof of Stake                            & Bằng chứng cổ phần \\
+PoW    & Proof of Work                             & Bằng chứng công việc \\
+tCO\textsubscript{2}e & Tonne of CO\textsubscript{2} equivalent & Tấn CO\textsubscript{2} tương đương \\
+VCS    & Verified Carbon Standard                  & Tiêu chuẩn carbon được xác minh của Verra \\
+VCU    & Verified Carbon Unit                      & Đơn vị carbon được xác minh \\
+VVB    & Validation and Verification Body          & Bên thẩm định độc lập \\
+\end{longtable}
+
+% ================= NỘI DUNG CHÍNH =================
+% Theo hướng dẫn của Khoa: chương mở đầu → cơ sở lý thuyết → các chương kết quả,
+% thực nghiệm → kết luận. Mỗi chương nên có đoạn mở đầu chương và đoạn tổng kết chương.
+\clearpage
+\pagenumbering{arabic}
+
+% Chương 1 (Giai đoạn 1): khảo sát + hai mục Khoa yêu cầu là Nhiệm vụ đồ án và Cấu trúc đồ án.
+\input{Chap1}
+
+% Chương 2 (Giai đoạn 2): blockchain, Ethereum, smart contract, chuẩn token, dApp, on/off-chain,
+% nghiên cứu liên quan và khoảng trống mà đồ án giải quyết.
+\input{Chap2}
+
+% Chương 3 (Giai đoạn 2 → 4): yêu cầu, ca sử dụng, kiến trúc, phân tách on/off-chain, vòng đời tín chỉ;
+% thiết kế contract, CSDL, API, biểu đồ tuần tự bổ sung ở Giai đoạn 3–4.
+\input{Chap3}
+
+% Chương 4: môi trường và công nghệ, cài đặt smart contract, backend, frontend,
+% triển khai lên testnet.
+\chapter{XÂY DỰNG HỆ THỐNG}
+Nội dung chương 4...
+
+% Chương 5: kịch bản và kết quả kiểm thử, đo chi phí gas, kịch bản chống double counting,
+% đối chiếu kết quả với yêu cầu ở chương 3.
+\chapter{KẾT QUẢ THỰC NGHIỆM}
+Nội dung chương 5...
+
+% ================= KẾT LUẬN =================
+% Theo mẫu: không đưa phương trình, biểu đồ, bảng biểu vào phần kết luận; trình bày
+% trung thực mức độ đáp ứng yêu cầu đề bài, hạn chế, kiến thức và kỹ năng đã đạt được.
+\chapter*{Kết luận}
+\phantomsection
+\addcontentsline{toc}{chapter}{KẾT LUẬN}
+
+\section*{Kết luận}
+Nội dung kết luận...
+
+\section*{Hướng phát triển của đồ án trong tương lai}
+Nội dung hướng phát triển...
+
+% ================= PHỤ LỤC (đánh theo A, B, C...) =================
+% Phụ lục không được dày hơn phần chính của đồ án. Với mã nguồn, chỉ đưa các đoạn mã
+% quan trọng và đường dẫn GitHub, địa chỉ contract trên Etherscan.
+\appendix
+\titleformat{\chapter}[block]
+    {\centering\normalsize\bfseries}
+    {PHỤ LỤC \thechapter.}{0.5em}{\MakeUppercase}
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchappresnum}{PHỤ LỤC }}
+\addtocontents{toc}{\protect\setlength{\protect\cftchapnumwidth}{3.1cm}}
+
+\chapter{MÃ NGUỒN CHƯƠNG TRÌNH}
+% Ví dụ chèn mã: \lstinputlisting[language=Solidity,caption={...}]{contracts/CarbonCredit.sol}
+
+\chapter{HƯỚNG DẪN SỬ DỤNG SẢN PHẨM THI CÔNG}
+% Nội dung phụ lục B
+
+% ================= CHỈ MỤC =================
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{CHỈ MỤC}
+\begingroup\raggedright
+\printindex
+\endgroup
+
+% ================= TÀI LIỆU THAM KHẢO (kiểu IEEE) =================
+% Chỉ liệt kê tài liệu thực sự được trích dẫn trong bài, không liệt kê tài liệu chỉ đọc.
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\bibliographystyle{IEEEtran}
+\bibliography{References}
+
+\end{document}

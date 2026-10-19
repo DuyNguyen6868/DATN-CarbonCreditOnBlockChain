@@ -1,0 +1,206 @@
+% ============================================================
+% CHƯƠNG 2 — CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ  (Giai đoạn 2 của phiếu, phần tìm hiểu công nghệ)
+% Nguyên tắc: chỉ trình bày kiến thức được dùng lại ở Chương 3–4. Mỗi mục nên kết thúc bằng
+% 1–2 câu "áp dụng trong đồ án như thế nào".
+% Hình mới của chương: figures_chap2.tex. Khóa trích dẫn gợi ý đã có sẵn trong References.bib.
+% ============================================================
+
+\chapter{CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ}
+\label{chap:cosolythuyet}
+\input{figures_chap2}
+
+% Đoạn mở đầu chương: chương trình bày nền tảng blockchain, Ethereum, hợp đồng thông minh, chuẩn token,
+% dApp và cách lưu trữ on-chain/off-chain; cuối chương tổng hợp các nghiên cứu liên quan.
+\canviet{Đoạn mở đầu chương}
+
+% ------------------------------------------------------------
+\section{Công nghệ chuỗi khối}
+\label{sec:blockchain}
+
+\subsection{Khái niệm và cấu trúc dữ liệu}
+\label{subsec:cautrucblock}
+% Ý cần có: khối, tiêu đề khối, mã băm khối trước, gốc Merkle, danh sách giao dịch;
+% vì sao sửa một khối cũ làm gãy cả chuỗi (tính bất biến); sổ cái phân tán, nút.
+% Trích: \cite{nakamoto2008bitcoin} \cite{zheng2017overview}. Thuật ngữ: xem Thuat_ngu.md mục 3.
+% Nhớ nhắc \autoref{fig:chuoikhoi} trong đoạn văn trước khi hình xuất hiện.
+\canviet{Khái niệm và cấu trúc dữ liệu chuỗi khối}
+
+\HinhChuoiKhoi
+
+\subsection{Cơ chế đồng thuận}
+\label{subsec:dongthuan}
+% Ý cần có: bằng chứng công việc (PoW) và bằng chứng cổ phần (PoS); Ethereum chuyển sang PoS
+% (sự kiện The Merge, 15/9/2022). Có thể nhắc DAG (\cite{liu2024blockchain}) như một hướng khác.
+% Trích: \cite{zheng2017overview} \cite{ethereum2024pos}.
+\canviet{Cơ chế đồng thuận}
+
+\subsection{Phân loại chuỗi khối}
+\label{subsec:phanloai}
+% Ý cần có: chuỗi khối công khai và chuỗi khối cấp phép; so sánh Ethereum với Hyperledger Fabric
+% (nên làm bảng: mô hình truy cập, đồng thuận, ngôn ngữ hợp đồng, chuẩn token, chi phí, công cụ ví).
+% Kết luận lý do chọn Ethereum: phiếu giao nhiệm vụ, chuẩn ERC, MetaMask, testnet công khai.
+\canviet{Phân loại chuỗi khối và lý do chọn Ethereum}
+
+% ------------------------------------------------------------
+\section{Nền tảng Ethereum}
+\label{sec:ethereum}
+
+\subsection{Tài khoản và giao dịch}
+\label{subsec:taikhoan}
+% Ý cần có: tài khoản ngoài (EOA) và tài khoản hợp đồng; khóa riêng, địa chỉ ví; giao dịch được ký,
+% nonce. Trích: \cite{buterin2014ethereum} \cite{wood2014yellow}.
+\canviet{Tài khoản và giao dịch trên Ethereum}
+
+\subsection{Máy ảo Ethereum và phí gas}
+\label{subsec:evm}
+% Ý cần có: EVM thực thi bytecode; gas, gas limit; phí cơ sở và phí ưu tiên theo EIP-1559.
+% Đây là cơ sở cho phần đo chi phí gas ở Chương 5. Trích: \cite{wood2014yellow} \cite{eip1559}.
+\canviet{Máy ảo Ethereum và phí gas}
+
+\subsection{Mạng thử nghiệm Sepolia}
+\label{subsec:sepolia}
+% Ý cần có: mainnet và testnet; Sepolia, faucet; Etherscan để tra cứu giao dịch và hợp đồng.
+\canviet{Mạng thử nghiệm Sepolia}
+
+% ------------------------------------------------------------
+\section{Hợp đồng thông minh}
+\label{sec:smartcontract}
+
+\subsection{Khái niệm}
+\label{subsec:khainiemsc}
+% Ý cần có: định nghĩa (Szabo); đặc điểm: tự thực thi, đã triển khai thì không sửa được mã;
+% sự kiện (event) và nhật ký (log). Trích: \cite{szabo1997formalizing} \cite{buterin2014ethereum}.
+\canviet{Khái niệm hợp đồng thông minh}
+
+\subsection{Ngôn ngữ Solidity và thư viện OpenZeppelin}
+\label{subsec:solidity}
+% Ý cần có: cấu trúc một contract (biến trạng thái, hàm, modifier, event); kế thừa;
+% OpenZeppelin: ERC721, ERC20, AccessControl (vai trò như VERIFIER_ROLE); Hardhat để biên dịch, kiểm thử.
+% Trích: \cite{solidity2024docs} \cite{openzeppelin2024contracts}.
+\canviet{Solidity và OpenZeppelin}
+
+\subsection{Các lỗ hổng bảo mật thường gặp}
+\label{subsec:baomat}
+% Ý cần có: reentrancy, kiểm soát truy cập sai, tràn số (Solidity >= 0.8 đã tự kiểm tra), dùng tx.origin.
+% Mỗi lỗ hổng: 1–2 câu giải thích và cách phòng trong đồ án. Công cụ quét: Slither.
+% Trích: \cite{atzei2017survey}.
+\canviet{Lỗ hổng bảo mật hợp đồng thông minh}
+
+% ------------------------------------------------------------
+\section{Các chuẩn token trên Ethereum}
+\label{sec:token-standards}
+
+\subsection{Chuẩn ERC-20}
+\label{subsec:erc20}
+% Ý cần có: token có thể thay thế; các hàm totalSupply, balanceOf, transfer, approve, transferFrom,
+% allowance và sự kiện Transfer, Approval. Trích: \cite{eip20}.
+\canviet{Chuẩn ERC-20}
+
+\subsection{Chuẩn ERC-721}
+\label{subsec:erc721}
+% Ý cần có: token không thể thay thế (NFT); ownerOf, safeTransferFrom, tokenURI (metadata);
+% sự kiện Transfer. Trích: \cite{eip721}.
+\canviet{Chuẩn ERC-721}
+
+\subsection{Lựa chọn chuẩn token cho tín chỉ carbon}
+\label{subsec:chontoken}
+% Ý cần có: vì sao mỗi lô tín chỉ là một NFT ERC-721 (giữ metadata riêng: dự án, vintage, số sê-ri),
+% vì sao pool dùng ERC-20 (thay thế được, thanh khoản); ERC-1155 là phương án thay thế.
+% Liên hệ mô hình TCO2/BCT của Toucan ở mục \ref{sec:token}. Nên có bảng so sánh ERC-20/721/1155.
+\canviet{Lựa chọn chuẩn token}
+
+% ------------------------------------------------------------
+\section{Ứng dụng phi tập trung và Web3}
+\label{sec:dapp}
+
+\subsection{Kiến trúc ứng dụng phi tập trung}
+\label{subsec:kientrucdapp}
+% Ý cần có: các thành phần của dApp và luồng một giao dịch đi từ giao diện tới hợp đồng
+% (giải thích theo \autoref{fig:luongdapp}); phần nào chạy on-chain, phần nào off-chain.
+\canviet{Kiến trúc dApp}
+
+\HinhLuongDApp
+
+\subsection{Ví MetaMask}
+\label{subsec:metamask}
+% Ý cần có: ví giữ khóa riêng, khóa không rời ví; giao diện gọi ví qua chuẩn EIP-1193 (window.ethereum);
+% người dùng xác nhận và ký giao dịch. Trích: \cite{eip1193}.
+\canviet{Ví MetaMask}
+
+\subsection{Thư viện ethers.js và framework Next.js}
+\label{subsec:ethers}
+% Ý cần có: Provider, Signer, Contract, ABI; đọc (call) và ghi (gửi giao dịch); Next.js cho giao diện.
+% Trích: \cite{ethers2024docs}.
+\canviet{ethers.js và Next.js}
+
+% ------------------------------------------------------------
+\section{Lưu trữ dữ liệu on-chain và off-chain}
+\label{sec:onoffchain-lythuyet}
+% Ý cần có: tiêu chí quyết định dữ liệu nào để on-chain (chi phí, tính công khai, kích thước, tần suất
+% thay đổi) theo \cite{xu2017taxonomy}; neo mã băm (lưu keccak256 của hồ sơ trên chuỗi); IPFS định danh
+% tệp theo nội dung \cite{benet2014ipfs}; đồng bộ dữ liệu bằng cách lắng nghe sự kiện.
+% CAD Trust (mục \ref{subsec:cadtrust}) dùng cùng nguyên lý. Thiết kế cụ thể để ở Chương 3.
+\canviet{Lưu trữ on-chain và off-chain}
+
+% ------------------------------------------------------------
+\section{Các nghiên cứu và hệ thống liên quan}
+\label{sec:lienquan}
+% Hai mục dưới đây chuyển nguyên từ Chương 1 (chỉ sửa thuật ngữ).
+\canviet{Câu dẫn vào mục}
+
+\subsection{Đổi mới số hóa MRV: ứng dụng blockchain và Internet vạn vật (IoT)}
+\label{sec:dmrv}
+
+Dù các hệ thống đăng ký tập trung đang dần chuẩn hóa dữ liệu, một rào cản lớn của thị trường tín chỉ carbon vẫn nằm ở khâu đo đạc, báo cáo, thẩm định (MRV) tại thực địa. MRV truyền thống phụ thuộc nhiều vào chuyên gia tư vấn có chi phí cao, kiểm toán thủ công và các báo cáo giấy theo chu kỳ dài (thường là hàng năm), gây khó khăn về nguồn lực cho các doanh nghiệp vừa và nhỏ (SMEs)\index{SMEs}~\cite{tsai2024blockchain}. Việc kết hợp Internet vạn vật (IoT)\index{IoT (Internet vạn vật)} với công nghệ sổ cái phân tán (Blockchain/DLT)\index{Blockchain}\index{DLT|see{Blockchain}} dẫn tới hướng MRV kỹ thuật số (Digital MRV)\index{MRV!Digital MRV}, trong đó dữ liệu được thu thập tự động và được dùng làm đầu vào cho hợp đồng thông minh (Smart Contract)\index{Hop dong thong minh@Hợp đồng thông minh (Smart Contract)} khi cấp tín chỉ~\cite{vaccargiu2026blockchain}.
+
+Nghiên cứu của Vaccargiu và cộng sự (công bố tại hội thảo BoSE trong khuôn khổ IEEE SANER 2026) đề xuất một kiến trúc phần mềm hướng blockchain cho việc chứng nhận tín chỉ carbon, với ví dụ thực tế là một hệ thống quang điện (PV) công suất 100~kWp~\cite{vaccargiu2026blockchain}. Trong mô hình này, việc thu thập dữ liệu và chứng nhận được tổ chức thành 4 lớp:
+
+\begin{enumerate}
+    \item \textbf{Lớp cảm biến vật lý (Physical Sensing Layer):} Dưới cấp độ phần cứng, hệ thống triển khai 8 đồng hồ đo năng lượng thông minh 3 pha (Smart Energy Meters)\index{Dong ho do nang luong thong minh@Đồng hồ đo năng lượng thông minh}, bao phủ 24 pha điện độc lập. Các cảm biến này liên tục thu thập dữ liệu về công suất tác dụng, dòng điện, điện áp, tần số và hệ số công suất ở tần suất rất cao (1 đến 2 giây một lần)~\cite{vaccargiu2026blockchain}.
+    \item \textbf{Lớp thu thập dữ liệu (Data Collection Layer):} Đóng vai trò là cổng nối, liên tục nhận luồng dữ liệu thời gian thực từ các cảm biến IoT~\cite{vaccargiu2026blockchain}.
+    \item \textbf{Lớp tổng hợp dữ liệu tại biên (Data Aggregation Layer):} Gửi toàn bộ dữ liệu thô (tần suất giây) lên blockchain là không khả thi do chi phí lưu trữ lớn và tải mạng cao. Lớp tổng hợp tại biên (Edge-level aggregation)\index{Dien toan bien@Điện toán biên (Edge Computing)} tổng hợp dữ liệu theo từng phút (1.440 bản ghi mỗi ngày), sau đó gom thành các lô 5 phút để ghi lên chuỗi khối, giảm số lần ghi xuống 288 lần mỗi ngày mà vẫn giữ được tổng sản lượng điện~\cite{vaccargiu2026blockchain}.
+    \item \textbf{Lớp chứng nhận và chuỗi khối (Blockchain and Certification Layer):} Dữ liệu tổng hợp được ghi vào một chuỗi khối cấp phép (permissioned blockchain)\index{Blockchain!cap phep@cấp phép (permissioned)}, cụ thể là Hyperledger Fabric\index{Hyperledger Fabric}. Tại đây, các hợp đồng thông minh kiểm tra tổng sản lượng năng lượng tái tạo theo các tiêu chí đã lập trình sẵn và thực hiện việc tạo, đăng ký tín chỉ~\cite{vaccargiu2026blockchain}. Phần giới thiệu của bài báo cho rằng hợp đồng thông minh có thể thay thế các bên trung gian như môi giới, đại lý xác minh và hệ thống đăng ký; tuy nhiên, phần thảo luận của chính bài báo vẫn giữ bước thẩm định bởi bên thứ ba được công nhận và nhấn mạnh rằng blockchain là công cụ hỗ trợ, không thay thế quá trình chứng nhận~\cite{vaccargiu2026blockchain}.
+\end{enumerate}
+
+\HinhVaccargiu
+
+\autoref{fig:vaccargiu} minh họa tổng quan kiến trúc 4 lớp nêu trên.
+
+Theo nhóm tác giả, cách kết hợp này giúp hồ sơ giảm phát thải khó bị sửa đổi, minh bạch và có thể được bên thứ ba kiểm tra. Ngoài giao dịch tín chỉ, dữ liệu này còn có thể phục vụ báo cáo bền vững của doanh nghiệp theo Chỉ thị Báo cáo Bền vững Doanh nghiệp của Liên minh Châu Âu (Directive EU 2022/2464)\index{CSRD (Directive EU 2022/2464)}, góp phần hạn chế việc tuyên bố sai về môi trường (greenwashing)\index{Greenwashing}~\cite{vaccargiu2026blockchain}. Bài báo nêu nguyên tắc một tín chỉ chỉ có thể được bán hoặc được dùng cho tuyên bố nội bộ, không thể cả hai, và cho rằng sổ cái phân tán khiến việc tuyên bố cùng một lượng giảm phát thải nhiều lần trở nên khó khăn hơn; tuy nhiên, bài báo chưa mô tả cụ thể cơ chế khóa hay hủy tín chỉ trong hợp đồng thông minh~\cite{vaccargiu2026blockchain}. Đây là một khác biệt với đồ án, vốn thiết kế cụ thể bước VVB phê duyệt trước khi mint và hàm hủy tín chỉ (mục \ref{subsec:khoangtrong}).
+
+Ngoài ra, nghiên cứu của Liu và cộng sự (2024) trên tạp chí \textit{Energy} (Elsevier) đề xuất dùng chuỗi khối dạng Đồ thị Có hướng Không chu trình (Directed Acyclic Graph -- DAG)\index{DAG (Directed Acyclic Graph)} cho giao dịch chứng chỉ năng lượng tái tạo (RECs)\index{RECs} giữa nhà cung cấp và người tiêu dùng. Khác với blockchain dùng Proof-of-Work\index{Co che dong thuan@Cơ chế đồng thuận!Proof-of-Work} (tiêu thụ nhiều điện năng) hoặc Proof-of-Stake\index{Co che dong thuan@Cơ chế đồng thuận!Proof-of-Stake}, trong cấu trúc DAG các giao dịch không cần được gom vào khối tuần tự; mỗi giao dịch mới xác nhận một số giao dịch trước đó. Theo kết quả mô phỏng của nhóm tác giả, so với cơ chế Proof-of-Stake, phương án đề xuất giảm 41\% thời gian giao dịch và 65\% năng lượng tiêu thụ~\cite{liu2024blockchain}. Để bảo vệ thông tin của người tiêu dùng, hệ thống sử dụng định danh phi tập trung (DID), chữ ký số, mật khẩu dùng một lần (OTP) và các tài khoản trung gian để che giấu mẫu hình giao dịch~\cite{liu2024blockchain}. Hướng tiếp cận này phù hợp với các bên tham gia không muốn công khai thông tin giao dịch của mình trên sổ cái~\cite{liu2024blockchain}.
+
+\subsection{Token hóa (tokenization) và giao thức tài chính phi tập trung (DeFi)}
+\label{sec:token}
+
+Trong khi các giải pháp như Hyperledger Fabric hướng tới môi trường doanh nghiệp cấp phép (permissioned), các dự án Web3\index{Web3} và Tổ chức Tự trị Phi tập trung (DAO)\index{DAO} tiếp cận thị trường carbon theo hướng token hóa tài sản thực (Real World Assets -- RWA Tokenization)\index{Token hoa@Token hóa (Tokenization)}\index{RWA|see{Token hóa}}. Token hóa tạo ra các token trên chuỗi khối đại diện cho tín chỉ carbon đã được cấp trên hệ thống đăng ký truyền thống, kèm theo các thuộc tính của tín chỉ đó~\cite{toucan2025docs}.
+
+Toucan Protocol\index{Toucan Protocol} và KlimaDAO\index{KlimaDAO} là hai trong những nền tảng đầu tiên xây dựng cầu nối giữa tín chỉ carbon và tài chính phi tập trung (DeFi)\index{DeFi}, đưa các tín chỉ đã được cấp (như VCUs từ Verra) lên các chuỗi khối tương thích EVM\index{EVM} như Polygon và Celo~\cite{toucan2025docs}. Toucan Protocol dùng nhiều loại token khác nhau để vừa giữ được thông tin riêng của từng dự án, vừa tạo ra token có thể thay thế cho nhau để tăng thanh khoản~\cite{toucan2025docs}. Quy trình token hóa và hủy tín chỉ qua Toucan gồm các bước sau:
+
+\begin{enumerate}
+    \item \textbf{Cầu nối từ Verra và Batch NFT (ERC-721):}\index{Toucan Protocol!Batch NFT} Người dùng tạo một Batch NFT (ERC-721)\index{NFT} trên Polygon, sau đó hủy lô tín chỉ trên Verra Registry và ghi mã định danh của Batch NFT vào ghi chú hủy. Mỗi lô chỉ được gồm tín chỉ của cùng một dự án và cùng năm vintage. Số sê-ri của Verra được ghi vào NFT và được người xác minh của Toucan phê duyệt~\cite{toucan2025docs}.
+    \item \textbf{Tạo TCO2 (ERC-20):}\index{Toucan Protocol!TCO2} Batch NFT đã được duyệt được chia nhỏ thành token TCO2. TCO2 là token ERC-20\index{ERC-20}, mỗi đợt cấp (vintage) của một dự án có một hợp đồng TCO2 riêng giữ siêu dữ liệu của dự án; 1 TCO2 tương ứng 1 tín chỉ (1 tCO$_2$e)~\cite{toucan2025docs}. Cầu nối từ Verra hiện đã ngừng hoạt động vì Verra không còn chấp nhận việc token hóa tín chỉ theo cách này~\cite{toucan2025docs}.
+    \item \textbf{Nạp vào pool và đổi lại (Pool Tokens -- ERC-20):} Việc giao dịch trực tiếp hàng nghìn loại TCO2 khác nhau làm thanh khoản bị phân tán. Toucan dùng các hợp đồng pool: các TCO2 đáp ứng tiêu chí chấp nhận của pool (ví dụ năm vintage, loại dự án) có thể được nạp vào pool để nhận token ERC-20 có thể thay thế như Base Carbon Tonne (BCT)\index{Toucan Protocol!BCT (Base Carbon Tonne)} hoặc Nature Carbon Tonne (NCT)\index{Toucan Protocol!NCT (Nature Carbon Tonne)}, mỗi token tương ứng 1 tấn CO$_2$e và có thể giao dịch trên các sàn phi tập trung (DEX)\index{DEX}. Ngược lại, người giữ pool token có thể đổi lại (redeem) lấy TCO2 của một dự án cụ thể~\cite{toucan2025docs}.
+    \item \textbf{Hủy tín chỉ (retire):} Người giữ TCO2 gọi hàm \texttt{retire()} của hợp đồng TCO2 để hủy tín chỉ; lượng token tương ứng bị đốt (burn) và loại khỏi lưu thông. Hàm \texttt{retireAndMintCertificate()} vừa hủy tín chỉ vừa tạo NFT chứng nhận hủy (RetirementCertificate)\index{Huy tin chi@Hủy tín chỉ (retirement)!tren chuoi@trên chuỗi khối}, ghi tên bên hủy, người thụ hưởng và thông điệp hủy; các thông tin này được ghi công khai trên chuỗi khối~\cite{toucan2025docs}. Toucan cũng cung cấp hợp đồng \texttt{OffsetHelper}\index{Toucan Protocol!OffsetHelper} để gộp các bước hoán đổi, đổi lại và hủy trong một giao dịch~\cite{toucan2025docs}.
+\end{enumerate}
+% [GÓP Ý] Đã bỏ các chi tiết lấy từ bài blog Medium nhưng không đối chiếu được với tài liệu chính thức
+% của Toucan: tên hàm retireSpecificProject(), phí đổi 10% của NCT, chức năng đa chuỗi qua Hyperlane.
+
+\HinhToucan
+
+\autoref{fig:toucan} tóm tắt luồng token hóa và hủy tín chỉ theo giao thức Toucan.
+
+Tại Đài Loan, nghiên cứu của Tsai (2024) xây dựng một nền tảng giao dịch tín chỉ carbon trên Ethereum\index{Ethereum} cho các doanh nghiệp vừa và nhỏ, nhằm hỗ trợ đáp ứng Cơ chế điều chỉnh biên giới carbon (CBAM)\index{CBAM} của EU -- có giai đoạn áp dụng chính thức từ năm 2026 -- và dự luật Clean Competition Act của Hoa Kỳ~\cite{tsai2024blockchain}. Hệ thống dùng giao diện React.js\index{React.js} kết nối ví MetaMask\index{MetaMask}, còn các chức năng chính như phát hành và hủy tín chỉ được thực hiện bằng hợp đồng thông minh Solidity\index{Solidity}. Để giảm chi phí gas, hồ sơ doanh nghiệp có dung lượng lớn được lưu ngoài chuỗi (off-chain)\index{Off-chain}, chỉ mã băm và thông tin chuyển quyền sở hữu được ghi lên chuỗi (on-chain)\index{On-chain}, tạo thành một mô hình lai cho đối tượng SMEs~\cite{tsai2024blockchain}. Trong một thí nghiệm có đối chứng với hệ thống tập trung, tác giả ghi nhận nền tảng giúp giảm thời gian và chi phí giao dịch, đồng thời dùng mô hình Kano để đánh giá mức độ hài lòng của người dùng~\cite{tsai2024blockchain}.
+
+\subsection{Đánh giá và khoảng trống mà đồ án giải quyết}
+\label{subsec:khoangtrong}
+% Nên có bảng so sánh: Verra Registry, UNDP National Carbon Registry, CAD Trust, Toucan Protocol,
+% Vaccargiu và cộng sự, nền tảng cho SMEs, và hệ thống của đồ án; tiêu chí gợi ý: nền tảng
+% (tập trung / blockchain nào), quyền sở hữu ghi on-chain, cơ chế chống double counting,
+% mô hình dữ liệu theo chuẩn, mã nguồn mở. Sau bảng, nêu rõ điểm đồ án kế thừa và điểm khác.
+\canviet{Đánh giá và khoảng trống}
+
+% ------------------------------------------------------------
+\section{Kết luận chương}
+% 3–5 câu: các kiến thức chính và lựa chọn công nghệ được mang sang Chương 3.
+\canviet{Kết luận chương 2}

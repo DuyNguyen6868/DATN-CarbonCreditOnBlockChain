@@ -1,0 +1,131 @@
+% ============================================================
+% CHƯƠNG 3 — PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG  (Giai đoạn 2 của phiếu, phần thiết kế kiến trúc)
+% Các mục thiết kế chi tiết (hợp đồng thông minh, CSDL, API, biểu đồ tuần tự) thuộc Giai đoạn 3–4,
+% bổ sung vào cuối chương khi làm tới.
+% Hình mới của chương: figures_chap3.tex.
+% ============================================================
+
+\chapter{PHÂN TÍCH VÀ THIẾT KẾ HỆ THỐNG}
+\label{chap:thietke}
+\input{figures_chap3}
+
+% Đoạn mở đầu chương: từ bài toán ở mục \ref{subsec:baitoan} và công nghệ ở Chương 2,
+% chương này xác định yêu cầu, rồi thiết kế kiến trúc và luồng dữ liệu on-chain/off-chain.
+\canviet{Đoạn mở đầu chương}
+
+% ------------------------------------------------------------
+\section{Phân tích yêu cầu}
+\label{sec:yeucau}
+
+\subsection{Các tác nhân}
+\label{subsec:tacnhan}
+% Nên làm bảng: Tác nhân | Vai trò nghiệp vụ | Vai trò trong hợp đồng (role).
+% Gợi ý: Chủ dự án; VVB (VERIFIER_ROLE); Doanh nghiệp mua (người hủy tín chỉ);
+% Cơ quan quản lý (DEFAULT_ADMIN_ROLE). Người xem công khai chỉ tra cứu.
+\canviet{Các tác nhân}
+
+\subsection{Biểu đồ ca sử dụng tổng quát}
+\label{subsec:usecase}
+% Giải thích \autoref{fig:usecase}. Sau đó đặc tả 3 ca sử dụng chính bằng bảng
+% (Tên, Tác nhân, Tiền điều kiện, Luồng chính, Luồng thay thế, Hậu điều kiện):
+% Gửi yêu cầu cấp tín chỉ; Thẩm định, phê duyệt và mint; Hủy tín chỉ.
+% Mọi ca sử dụng ghi on-chain đều cần ``Kết nối ví MetaMask'' làm tiền điều kiện.
+\canviet{Mô tả biểu đồ ca sử dụng}
+
+\HinhUseCase
+
+\subsection{Yêu cầu chức năng}
+\label{subsec:ycchucnang}
+% Bảng: Mã (YC-01, YC-02, ...) | Tên yêu cầu | Tác nhân | Mô tả ngắn. Mã này sẽ dùng lại ở Chương 5
+% để đối chiếu kết quả kiểm thử.
+\canviet{Yêu cầu chức năng}
+
+\subsection{Yêu cầu phi chức năng}
+\label{subsec:ycphichucnang}
+% Gợi ý nhóm: toàn vẹn (mỗi số sê-ri chỉ mint một lần; tín chỉ đã hủy không chuyển được);
+% bảo mật (phân quyền theo role, chống reentrancy); minh bạch (tra cứu công khai);
+% chi phí gas; tương thích dữ liệu với CAD Trust V2.0; hiệu năng API.
+\canviet{Yêu cầu phi chức năng}
+
+\section{Đề xuất kiến trúc tổng thể cho hệ thống quản lý tín chỉ carbon}
+\label{sec:kientruc}
+
+Từ kết quả khảo sát ở Chương~\ref{chap:khaosat} (Điều~6.2/6.4 Thỏa thuận Paris, Nghị định 06/2022, các hệ thống đăng ký UNDP và Verra, nền tảng siêu dữ liệu CAD Trust) và các nghiên cứu liên quan ở mục \ref{sec:lienquan} (MRV số hóa, Toucan Protocol), đồ án đề xuất một kiến trúc lai (Hybrid Architecture)\index{Kien truc lai@Kiến trúc lai (Hybrid Architecture)} kết hợp phần off-chain và on-chain. Dữ liệu có dung lượng lớn hoặc thường thay đổi (hồ sơ dự án, siêu dữ liệu, tài khoản người dùng) được lưu off-chain để giảm chi phí và hỗ trợ truy vấn nhanh; các thao tác cần kiểm chứng công khai (cấp, chuyển nhượng và hủy tín chỉ) được thực hiện on-chain. Hệ thống được tổ chức theo kiến trúc phân lớp\index{Kien truc phan lop@Kiến trúc phân lớp (Layered Architecture)} gồm 4 lớp như sau.
+
+\subsection*{Lớp 1: Lớp nguồn dữ liệu và MRV (Data Source \& MRV Layer)}
+\label{subsec:lop1}
+
+Lớp này cung cấp dữ liệu đầu vào cho quá trình cấp tín chỉ: hồ sơ thiết kế dự án (PDD)\index{PDD (Project Design Document)}, báo cáo giám sát và báo cáo thẩm định.
+\begin{itemize}
+    \item Trong phạm vi đồ án, Chủ dự án nhập thông tin và tải hồ sơ lên qua giao diện web; VVB tải lên báo cáo thẩm định; số liệu giám sát là dữ liệu mô phỏng.
+    \item Việc thu thập dữ liệu tự động bằng cảm biến IoT và tổng hợp tại biên theo mô hình của Vaccargiu và cộng sự~\cite{vaccargiu2026blockchain} không được cài đặt trong đồ án và được đưa vào phần hướng phát triển. Kiến trúc để sẵn điểm tích hợp: dữ liệu tổng hợp từ thiết bị có thể được gửi vào Lớp~2 qua API REST.
+\end{itemize}
+
+\subsection*{Lớp 2: Lớp dịch vụ và lưu trữ off-chain (Off-chain Service \& Storage Layer)}
+\label{subsec:lop2}
+
+\begin{itemize}
+    \item \textbf{Backend:} Node.js và Express, cung cấp API REST\index{REST API}, xác thực người dùng và kiểm tra tính hợp lệ của hồ sơ trước khi chuyển cho VVB.
+    \item \textbf{Cơ sở dữ liệu quan hệ:} PostgreSQL\index{PostgreSQL}, thiết kế dựa trên các thực thể của mô hình CAD Trust V2.0 (Bảng~\ref{tab:cadtrust}): Project, Stakeholders, Validations/Verifications, Issuances và Units~\cite{cadtrust2025datamodel}. Đồ án dùng thống nhất tên Unit cho khối tín chỉ. Mỗi Unit tương ứng một NFT có dãy số sê-ri cố định và không được tách khi chuyển nhượng; nhu cầu giao dịch từng phần được đáp ứng qua pool ERC-20 ở Lớp~3, thay cho cách tách dãy số sê-ri của UNDP~\cite{undp2024nationalregistry}. Tài khoản đăng nhập và phân quyền của ứng dụng được lưu ở bảng riêng, tách khỏi các bảng theo mô hình CAD Trust.
+    \item \textbf{Lưu trữ tệp:} tệp PDD, báo cáo thẩm định và tệp metadata JSON được lưu trên IPFS\index{IPFS} hoặc dịch vụ lưu trữ đối tượng (như AWS S3\index{AWS S3}); cơ sở dữ liệu chỉ lưu đường dẫn và mã băm của tệp.
+    \item \textbf{Đồng bộ sự kiện:} một tiến trình lắng nghe sự kiện (event listener) đọc các sự kiện \texttt{Minted}, \texttt{Transfer}, \texttt{Retired} từ hợp đồng để cập nhật cơ sở dữ liệu. Quyền sở hữu và trạng thái hủy lấy dữ liệu on-chain làm gốc; cơ sở dữ liệu off-chain là bản sao phục vụ truy vấn, tương tự vai trò của PostgreSQL trong hệ thống của UNDP~\cite{undp2024nationalregistry}.
+\end{itemize}
+
+\subsection*{Lớp 3: Lớp hợp đồng thông minh (On-chain Smart Contract Layer)}
+\label{subsec:lop3}
+
+Các hợp đồng được viết bằng Solidity, sử dụng thư viện OpenZeppelin và triển khai trên mạng thử nghiệm Ethereum Sepolia theo phiếu giao nhiệm vụ. Việc so sánh với chuỗi khối cấp phép như Hyperledger Fabric được trình bày ở mục \ref{subsec:phanloai}.
+\begin{itemize}
+    \item \textbf{Module Minting (Phát hành):} VVB (vai trò \texttt{VERIFIER\_ROLE}) thẩm định hồ sơ ở ngoài chuỗi; khi phê duyệt, VVB gọi hàm mint từ ví của mình. Hợp đồng kiểm tra quyền của bên gọi và kiểm tra dãy số sê-ri chưa từng được cấp, sau đó tạo một NFT ERC-721\index{ERC-721} cho lô tín chỉ, lưu số lượng tCO$_2$e, dãy số sê-ri, mã băm hồ sơ và URI metadata. Hợp đồng không tự đánh giá nội dung hồ sơ; độ chính xác của số liệu dựa vào kết quả thẩm định của VVB. Cách tách giữa NFT đại diện cho lô và token có thể thay thế tham khảo mô hình Batch NFT và TCO2 của Toucan~\cite{toucan2025docs}.
+    \item \textbf{Module Pool (Giao dịch):} Chủ sở hữu có thể nạp NFT vào hợp đồng pool; NFT bị khóa trong pool và pool đúc lượng token ERC-20\index{ERC-20} tương ứng (1 token = 1 tCO$_2$e) để giao dịch từng phần. Thao tác đổi lại (redeem) đốt lượng token tương ứng để rút một lô ra khỏi pool~\cite{toucan2025docs}.
+    \item \textbf{Module Retirement (Hủy tín chỉ):} Khi người dùng chọn ``Bù trừ phát thải'', hàm \texttt{retire()} đốt (burn) token và phát sự kiện \texttt{Retired} ghi số lượng, dãy số sê-ri và người thụ hưởng. Vì token không còn tồn tại, tín chỉ đã hủy không thể bị chuyển nhượng hoặc hủy lại trong hệ thống. Cơ chế này không ngăn được việc cùng một lượng giảm phát thải được đăng ký ở một hệ thống khác (phát hành kép giữa các hệ thống); vấn đề đó cần đến liên thông dữ liệu như CAD Trust. Cách đốt token (hàm \texttt{\_burn} của OpenZeppelin hay chuyển tới địa chỉ đốt) và cách ghi nhận phần tín chỉ hủy từ pool được chọn ở mục thiết kế hợp đồng thông minh.
+\end{itemize}
+
+\subsection*{Lớp 4: Lớp giao diện ứng dụng và API (Presentation \& API Layer)}
+\label{subsec:lop4}
+
+\begin{itemize}
+    \item \textbf{Giao diện người dùng (Frontend):} Xây dựng bằng Next.js và ethers.js, kết nối ví MetaMask để người dùng ký các giao dịch mint, nạp pool, chuyển nhượng và hủy tín chỉ; khóa riêng không rời khỏi ví. Cách kết hợp giao diện web với MetaMask tương tự nền tảng của Tsai~\cite{tsai2024blockchain}.
+    \item \textbf{Dashboard và tra cứu:} Hiển thị tín chỉ đang nắm giữ, đã hủy và lịch sử giao dịch. Với doanh nghiệp, dashboard so sánh lượng tín chỉ đã hủy với lượng phát thải hoặc hạn ngạch đã khai báo (dữ liệu mô phỏng). Người xem công khai có thể tra cứu tín chỉ theo số sê-ri, kèm liên kết tới giao dịch trên Etherscan.
+    \item \textbf{API liên thông:} API REST xuất dữ liệu dự án và tín chỉ theo cấu trúc trường của CAD Trust V2.0 (Project, Issuances, Units) để có thể trao đổi với hệ thống bên ngoài~\cite{cadtrust2025datamodel}. Việc xuất báo cáo theo Định dạng Điện tử Thỏa thuận (AEF) của Điều~6.2 như hệ thống của UNDP~\cite{undp2024nationalregistry} là hướng mở rộng, không thuộc phạm vi cài đặt.
+\end{itemize}
+
+\HinhKienTruc
+
+\autoref{fig:kientruc} trình bày kiến trúc tổng thể hệ thống đề xuất.
+
+Kiến trúc trên kết hợp một cơ sở dữ liệu off-chain có cấu trúc dựa trên mô hình CAD Trust V2.0 với các hợp đồng thông minh ERC-721/ERC-20 cho ba thao tác cấp, giao dịch và hủy tín chỉ. Phần on-chain giúp quyền sở hữu và trạng thái hủy có thể được kiểm chứng công khai; phần off-chain giữ chi phí lưu trữ thấp và hỗ trợ truy vấn. Hệ thống được xây dựng ở mức nguyên mẫu trên mạng thử nghiệm và chưa kết nối với hệ thống đăng ký chính thức nào.
+
+% ------------------------------------------------------------
+\section{Phân tách dữ liệu on-chain và off-chain}
+\label{sec:onoffchain}
+% Giải thích \autoref{fig:onoffchain}. Nên kèm bảng: Dữ liệu | Nơi lưu | Lý do (chi phí, công khai,
+% kích thước, cần bất biến hay không). Dựa trên tiêu chí ở mục \ref{sec:onoffchain-lythuyet}.
+% Nêu cơ chế giữ hai phía nhất quán: mã băm hồ sơ lưu trong NFT; backend lắng nghe sự kiện để cập nhật CSDL.
+\canviet{Phân tách dữ liệu on-chain và off-chain}
+
+\HinhOnOffChain
+
+% ------------------------------------------------------------
+\section{Vòng đời tín chỉ carbon trong hệ thống}
+\label{sec:vongdoi}
+% Giải thích \autoref{fig:trangthai}: mỗi chuyển trạng thái ứng với hàm nào của hợp đồng / API nào.
+% Chỉ ra ba điểm chặn double counting: (1) mint kiểm tra số sê-ri chưa tồn tại (phát hành kép);
+% (2) NFT nạp vào pool bị khóa, không bán riêng được (bán kép); (3) retire burn token và ghi người
+% thụ hưởng (tuyên bố kép).
+\canviet{Vòng đời tín chỉ}
+
+\HinhTrangThai
+
+% ------------------------------------------------------------
+% CÁC MỤC BỔ SUNG Ở GIAI ĐOẠN 3–4:
+%   - Thiết kế hợp đồng thông minh: biểu đồ lớp các contract, hàm, event, modifier, role.
+%   - Thiết kế CSDL off-chain: ERD theo CAD Trust V2.0 (Project, Stakeholders, Validations/Verifications, Issuances, Units)
+%     và bảng tài khoản ứng dụng.
+%   - Thiết kế API: bảng endpoint.
+%   - Biểu đồ tuần tự: cấp tín chỉ (mint), giao dịch qua pool, hủy tín chỉ (retire).
+% ------------------------------------------------------------
+
+\section{Kết luận chương}
+% 3–5 câu: yêu cầu đã xác định, kiến trúc đã chọn, những gì Chương 4 sẽ cài đặt.
+\canviet{Kết luận chương 3}

@@ -1,0 +1,216 @@
+% ============================================================
+% CHƯƠNG 1 — GIỚI THIỆU VÀ KHẢO SÁT BÀI TOÁN  (Giai đoạn 1 của phiếu)
+% Trích dẫn: \cite{...} từ References.bib
+% Chỉ mục: \index{khoá sắp xếp@Tên hiển thị}
+% Ghi chú: % [GÓP Ý] = gợi ý sửa, % [KIỂM TRA] = số liệu cần đối chiếu nguồn,
+%          \canviet{...} = chỗ còn phải tự viết (in màu đỏ, xóa hết trước khi nộp).
+% Các mục "Đổi mới số hóa MRV" và "Token hóa" đã chuyển sang Chương 2 (nghiên cứu liên quan),
+% mục "Đề xuất kiến trúc tổng thể" đã chuyển sang Chương 3.
+% ============================================================
+
+\chapter{GIỚI THIỆU VÀ KHẢO SÁT BÀI TOÁN}
+\label{chap:khaosat}
+\input{figures_chap1}  % Tất cả hình TikZ – xem file figures_chap1.tex
+
+% Đoạn mở đầu chương (3–5 câu): chương này khảo sát những gì (thị trường, tiêu chuẩn MRV,
+% hệ thống đăng ký, pháp lý Việt Nam) và dẫn tới nhiệm vụ của đồ án ở cuối chương.
+\canviet{Đoạn mở đầu chương}
+
+% ------------------------------------------------------------
+\section{Động lực thị trường và khung pháp lý khí hậu toàn cầu}
+\label{sec:dongluc}
+
+Biến đổi khí hậu là một trong những thách thức lớn hiện nay; vì vậy, việc chuyển sang các nguồn năng lượng tái tạo và giảm phát thải khí nhà kính (GHG)\index{GHG|see{Khí nhà kính}}\index{Khi nha kinh@Khí nhà kính} ngày càng trở thành một yêu cầu pháp lý và kinh tế, không chỉ là một mối quan tâm về môi trường~\cite{liu2024blockchain} \cite{columbia2025article6}. Thị trường carbon\index{Thi truong carbon@Thị trường carbon} toàn cầu, gồm thị trường tuân thủ\index{Thi truong carbon@Thị trường carbon!tuan thu@tuân thủ} và thị trường tự nguyện\index{Thi truong carbon@Thị trường carbon!tu nguyen@tự nguyện}, là cơ chế tài chính dùng để định giá lượng phát thải carbon. Hai thị trường này có quy mô rất khác nhau. Năm 2023, các thị trường hạn ngạch phát thải (thị trường tuân thủ) đạt giá trị kỷ lục khoảng 881 tỷ EUR (khoảng 949 tỷ USD) với khoảng 12,5 tỷ tấn hạn ngạch được giao dịch, trong đó hệ thống EU ETS chiếm khoảng 87\% giá trị~\cite{lseg2024yir}. Trong cùng năm, thị trường tín chỉ tự nguyện chỉ đạt khoảng 723 triệu USD với khoảng 111 triệu tấn CO$_2$e được giao dịch~\cite{foresttrends2024sovcm}. Một tín chỉ carbon\index{Tin chi carbon@Tín chỉ carbon} được tiêu chuẩn hóa đại diện cho một tấn carbon dioxide tương đương (tCO$_2$e)\index{tCO2e@tCO$_2$e} đã được tránh, giảm hoặc loại bỏ khỏi khí quyển thông qua các hoạt động được thẩm định độc lập~\cite{verra2024vcs} \cite{columbia2025article6}.
+
+Dù đã đạt quy mô lớn, thị trường tín chỉ carbon vẫn còn các hạn chế về tính minh bạch, khả năng tiếp cận và đặc biệt là rủi ro tính toán kép (double counting)\index{Tinh toan kep@Tính toán kép (double counting)}~\cite{schneider2019double}. Theo Schneider và cộng sự, tính toán kép có ba dạng chính~\cite{schneider2019double}: phát hành kép (double issuance -- nhiều tín chỉ được cấp cho cùng một lượng giảm phát thải, ví dụ một dự án đăng ký ở hai chương trình khác nhau)\index{Tinh toan kep@Tính toán kép (double counting)!phat hanh kep@phát hành kép}, sử dụng kép (double use -- cùng một tín chỉ được bán hoặc sử dụng hai lần)\index{Tinh toan kep@Tính toán kép (double counting)!su dung kep@sử dụng kép} và tuyên bố kép (double claiming -- cả quốc gia sở tại và bên mua đều tính cùng một lượng giảm phát thải vào mục tiêu của mình)\index{Tinh toan kep@Tính toán kép (double counting)!tuyen bo kep@tuyên bố kép}. Để xử lý các vấn đề này ở cấp quốc gia, Thỏa thuận Paris (Paris Agreement)\index{Thoa thuan Paris@Thỏa thuận Paris} đưa ra Điều~6\index{Thoa thuan Paris@Thỏa thuận Paris!Dieu 6@Điều 6}, quy định khung hạch toán và các cơ chế hợp tác về thị trường carbon giữa các quốc gia. Do đó, cần nắm được cấu trúc của Điều~6 trước khi thiết kế một hệ thống phần mềm quản lý tín chỉ carbon.
+
+Điều~6 gồm hai cơ chế chính với cách vận hành và yêu cầu dữ liệu khác nhau. Khía cạnh đầu tiên, Điều~6.2\index{Thoa thuan Paris@Thỏa thuận Paris!Dieu 6.2@Điều 6.2}, thiết lập một khuôn khổ phi tập trung cho các thỏa thuận hợp tác song phương hoặc đa phương trực tiếp giữa các quốc gia~\cite{columbia2025article6}. Thông qua Điều~6.2, các quốc gia có thể giao dịch các Kết quả giảm nhẹ được chuyển giao quốc tế (Internationally Transferred Mitigation Outcomes -- ITMOs)\index{ITMOs} để đạt được Đóng góp do quốc gia tự quyết định (NDCs)\index{NDCs}~\cite{columbia2025article6}. Đặc điểm kỹ thuật quan trọng của Điều~6.2 là yêu cầu thực hiện ``Điều chỉnh tương ứng'' (Corresponding Adjustments)\index{Dieu chinh tuong ung@Điều chỉnh tương ứng (Corresponding Adjustments)}. Về mặt hạch toán, khi một quốc gia chuyển giao ITMOs, quốc gia đó phải cộng lượng phát thải tương đương vào sổ hạch toán khí nhà kính quốc gia của mình, còn quốc gia nhận được trừ đi lượng tương ứng; nhờ đó cùng một kết quả giảm phát thải không được cả hai bên tính vào NDC (tránh tuyên bố kép)~\cite{columbia2025article6} \cite{schneider2019double}. Giao dịch chuyển giao ITMO đầu tiên theo Điều~6.2 được hoàn tất giữa Thái Lan và Thụy Sĩ: 1.916 ITMO từ Chương trình Xe buýt điện Bangkok được ghi có vào hệ thống đăng ký của Thụy Sĩ ngày 15/12/2023 và được công bố vào tháng 1 năm 2024, bên mua là Quỹ KliK của Thụy Sĩ~\cite{spglobal2024itmo} \cite{columbia2025article6}. Các ITMO có điều chỉnh tương ứng thường có chi phí cao hơn tín chỉ tự nguyện. Quỹ KliK dự kiến chi phí trung bình khoảng 35~CHF/tấn CO$_2$ trong giai đoạn 2022--2024 và 27~CHF/tấn trong giai đoạn 2025--2030~\cite{argus2024itmo}, trong khi giá trung bình của tín chỉ trên thị trường tự nguyện năm 2023 là khoảng 6,53~USD/tấn~\cite{foresttrends2024sovcm}. Một phần chênh lệch này thường được giải thích là ``phần bù tính toàn vẹn'' (integrity premium)\index{Phan bu tinh toan ven@Phần bù tính toàn vẹn (integrity premium)}, tuy nhiên hai mức giá không so sánh trực tiếp được vì khác nhau về loại dự án, điều kiện hợp đồng và chi phí của bên mua.
+
+Cơ chế thứ hai, Điều~6.4\index{Thoa thuan Paris@Thỏa thuận Paris!Dieu 6.4@Điều 6.4}, là Cơ chế cấp tín chỉ của Thỏa thuận Paris (PACM)\index{PACM}, kế thừa Cơ chế Phát triển Sạch (CDM)\index{CDM} của Nghị định thư Kyoto\index{Nghi dinh thu Kyoto@Nghị định thư Kyoto}~\cite{columbia2025article6} \cite{unfccc2022cma3}. Khác với cách tiếp cận phi tập trung của Điều~6.2, Điều~6.4 là một cơ chế tập trung do Liên Hợp Quốc quản lý thông qua một Cơ quan Giám sát (Supervisory Body) gồm 12 thành viên~\cite{columbia2025article6}. Ngày 26/02/2026, Cơ quan Giám sát phê duyệt đợt cấp tín chỉ đầu tiên của PACM cho một chương trình bếp đun cải tiến tại Myanmar, vốn được chuyển tiếp từ CDM và phối hợp với các bên tham gia được Hàn Quốc ủy quyền~\cite{unfccc2026pacm}. Hai yêu cầu cấp được duyệt có tổng cộng 648.783 tín chỉ cho giai đoạn giám sát từ tháng 1/2021 đến tháng 5/2022. Lượng này thấp hơn khoảng 40\% so với ước tính theo báo cáo giám sát của CDM, chủ yếu do tỷ lệ sinh khối không tái tạo (fNRB) được điều chỉnh từ 0,615 xuống giá trị mặc định 0,36 của Myanmar~\cite{unfccc2026pacm} \cite{fastmarkets2026pacm}. Ngoài ra, hệ thống dữ liệu cho Điều~6.4 phải xử lý các khoản trích bắt buộc tại thời điểm cấp tín chỉ (không phải ở mỗi giao dịch): 5\% lượng A6.4ER được chuyển vào Quỹ Thích ứng (Adaptation Fund)\index{Quy Thich ung@Quỹ Thích ứng (Adaptation Fund)} để hỗ trợ các quốc gia đang phát triển, và tối thiểu 2\% bị hủy để góp phần giảm nhẹ tổng thể lượng phát thải toàn cầu (Overall Mitigation in Global Emissions -- OMGE)\index{OMGE}~\cite{unfccc2022cma3}. Bảng~\ref{tab:dieu6} tổng hợp sự khác biệt giữa hai cơ chế.
+
+\begin{table}[htbp]
+    \centering
+    \caption{So sánh yêu cầu hệ thống giữa Điều 6.2 và Điều 6.4 của Thỏa thuận Paris}
+    \label{tab:dieu6}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabularx}{\textwidth}{|p{3.2cm}|X|X|}
+        \hline
+        \textbf{Yêu cầu / Tiêu chí} & \textbf{Điều 6.2 (Thỏa thuận song phương)} & \textbf{Điều 6.4 (Cơ chế tập trung của Liên Hợp Quốc)} \\
+        \hline
+        Bản chất thị trường & Phi tập trung, đàm phán trực tiếp giữa chính phủ các quốc gia~\cite{columbia2025article6}. & Tập trung, được giám sát bởi Cơ quan Giám sát của Liên Hợp Quốc~\cite{columbia2025article6}. \\
+        \hline
+        Đơn vị giao dịch & Kết quả giảm nhẹ phát thải quốc tế (ITMOs)~\cite{columbia2025article6}. & Đơn vị Giảm phát thải Điều 6.4 (A6.4ERs)\index{A6.4ERs}~\cite{columbia2025article6}. \\
+        \hline
+        Điều chỉnh tương ứng & Bắt buộc đối với ITMO được ủy quyền và chuyển giao quốc tế~\cite{columbia2025article6} \cite{unfccc2022cma3}. & Chỉ áp dụng cho A6.4ER được quốc gia sở tại ủy quyền dùng cho NDC hoặc mục đích quốc tế khác~\cite{unfccc2022cma3}. \\
+        \hline
+        Khoản trích bắt buộc & Khuyến khích đóng góp (không bắt buộc)~\cite{unfccc2022cma3}. & Bắt buộc tại thời điểm cấp: 5\% cho Quỹ Thích ứng, tối thiểu 2\% hủy cho OMGE~\cite{unfccc2022cma3}. \\
+        \hline
+        Đối tượng tham gia & Chủ yếu là cấp Chính phủ quốc gia~\cite{columbia2025article6}. & Các nhà phát triển dự án toàn cầu, chính phủ và khu vực tư nhân~\cite{columbia2025article6}. \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\HinhDieuSau
+
+\autoref{fig:dieu6} minh họa luồng hoạt động của hai cơ chế trên.
+
+Sự khác biệt giữa hai cơ chế này đặt ra các yêu cầu khác nhau đối với hệ thống đăng ký và phần mềm quản lý tín chỉ. Hệ thống cần xử lý được các kịch bản hạch toán khác nhau, quản lý trạng thái của ``Thư ủy quyền'' (Letter of Authorization)\index{Thu uy quyen@Thư ủy quyền (Letter of Authorization)} từ quốc gia sở tại và ghi nhận đúng các khoản trích theo tỷ lệ phần trăm trong vòng đời của một tín chỉ.
+
+% ------------------------------------------------------------
+\section{Tiêu chuẩn hạch toán và quy trình đo đạc, báo cáo, thẩm định (MRV)}
+\label{sec:mrv}
+
+Để tín chỉ carbon được công nhận và giao dịch trên toàn cầu, toàn bộ vòng đời của chúng từ giai đoạn khởi tạo dự án, giám sát dữ liệu đến cấp phát phải tuân thủ các khung tiêu chuẩn độc lập. Để thiết kế một phần mềm MRV (đo đạc, báo cáo, thẩm định)\index{MRV}, cần nắm được cấu trúc dữ liệu được quy định bởi các tổ chức thiết lập tiêu chuẩn (Standard Setters) như Tổ chức Tiêu chuẩn hóa Quốc tế (ISO) và Verra\index{Verra}.
+
+Bộ tiêu chuẩn ISO~14064\index{ISO 14064} được sử dụng rộng rãi để định lượng, báo cáo và thẩm định phát thải khí nhà kính~\cite{iso14064-1} \cite{iso14064-2} \cite{iso14064-3}. Bộ tiêu chuẩn gồm ba phần (Bảng~\ref{tab:iso14064}), tương ứng với các nhóm chức năng mà một phần mềm quản lý phát thải cần hỗ trợ.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Cấu trúc ba phần của tiêu chuẩn ISO 14064}
+    \label{tab:iso14064}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabularx}{\textwidth}{|p{2.3cm}|X|X|}
+        \hline
+        \textbf{Phần tiêu chuẩn} & \textbf{Phạm vi và chức năng cốt lõi} & \textbf{Phương pháp tiếp cận đo lường} \\
+        \hline
+        ISO 14064-1\index{ISO 14064!Phan 1@Phần 1 (cấp tổ chức)} & Áp dụng ở cấp độ tổ chức. Quản lý hệ thống kiểm kê GHG tổng thể~\cite{iso14064-1}. & Tính toán và phân loại phát thải theo phạm vi (Scope 1, Scope 2, Scope 3)\index{Scope 1, 2, 3} bằng cách nhân dữ liệu hoạt động với hệ số phát thải (Emission Factors)\index{He so phat thai@Hệ số phát thải (Emission Factor)}~\cite{iso14064-1}. \\
+        \hline
+        ISO 14064-2\index{ISO 14064!Phan 2@Phần 2 (cấp dự án)} & Áp dụng ở cấp độ dự án (ví dụ: dự án năng lượng tái tạo, trồng rừng)~\cite{iso14064-2}. & Lượng hóa lượng GHG được giảm hoặc loại bỏ bằng cách so sánh lượng phát thải thực tế với đường phát thải cơ sở (baseline)~\cite{iso14064-2}. \\
+        \hline
+        ISO 14064-3\index{ISO 14064!Phan 3@Phần 3 (validation, verification)} & Khung validation và verification~\cite{iso14064-3}. & Thiết lập tiêu chí và quy trình cho các bên thẩm định độc lập (VVB)\index{VVB} nhằm đảm bảo dữ liệu minh bạch, toàn vẹn và không có sai sót vật chất~\cite{iso14064-3}. \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\HinhMRV
+
+Vòng đời tín chỉ carbon và sự tương ứng của từng phần tiêu chuẩn được thể hiện trong \autoref{fig:mrv}.
+
+Trong đó, ISO~14064-2 định hình trực tiếp logic thuật toán của quá trình sinh tín chỉ. Nó yêu cầu hệ thống phần mềm phải lưu trữ được các ``đường phát thải cơ sở''\index{Duong phat thai co so@Đường phát thải cơ sở (baseline)} (đại diện cho mức phát thải nếu dự án không diễn ra) và chứng minh được ``Tính bổ sung'' (Additionality)\index{Tinh bo sung@Tính bổ sung (Additionality)} -- tức là lượng giảm phát thải sẽ không xảy ra nếu không có dự án và nguồn thu từ tín chỉ carbon, vượt ra ngoài kịch bản hoạt động thông thường (Business-as-Usual)~\cite{columbia2025article6} \cite{iso14064-2}.
+
+Bên cạnh các tiêu chuẩn định lượng chung, Chương trình Tiêu chuẩn Carbon được Xác minh (Verified Carbon Standard -- VCS)\index{VCS (Verified Carbon Standard)} do Verra quản lý là chương trình cấp tín chỉ GHG được sử dụng rộng rãi nhất theo công bố của Verra. Tại thời điểm truy cập, chương trình có hơn 2.579 dự án tại hơn 132 quốc gia và đã cấp tín chỉ cho hơn 1,3 tỷ tấn GHG được giảm hoặc loại bỏ~\cite{verra2024vcs}. Dữ liệu của một dự án trên hệ thống Verra gồm nhiều thành phần và phải tuân theo các yêu cầu phương pháp luận (Methodology Requirements) riêng cho từng lĩnh vực, chẳng hạn Nông nghiệp, Lâm nghiệp và Sử dụng Đất (AFOLU)\index{AFOLU}, các chất làm suy giảm tầng ô-dôn (ODS) hoặc Lưu trữ Carbon Địa chất (GCS)~\cite{verra2024vcs}. Ngoài yêu cầu của chương trình, chất lượng tín chỉ còn được các tổ chức xếp hạng độc lập đánh giá theo các tiêu chí như tính bổ sung, tính lâu dài (permanence), độ tin cậy của định lượng, rò rỉ phát thải (leakage)\index{Ro ri phat thai@Rò rỉ phát thải (leakage)} và mức đáp ứng Nguyên tắc Carbon Cốt lõi (Core Carbon Principles) của ICVCM\index{ICVCM}. Vì vậy, hệ thống quản lý nên có trường dữ liệu lưu các kết quả xếp hạng này; mô hình dữ liệu CAD Trust V2.0 cũng có bảng Rating cho mục đích tương tự~\cite{cadtrust2025datamodel}. Đối với rủi ro đảo ngược (lượng carbon đã lưu giữ bị phát thải trở lại, ví dụ do cháy rừng), Verra duy trì tài khoản đệm gộp (pooled buffer account)\index{Tai khoan dem gop@Tài khoản đệm gộp (pooled buffer account)}: một tỷ lệ tín chỉ của dự án AFOLU, xác định bằng công cụ đánh giá rủi ro không vĩnh viễn, được giữ lại như một hình thức bảo hiểm chung cho toàn chương trình~\cite{verra2024vcs} \cite{verra2024projecthub}. Một phần mềm tích hợp với Verra cần tính đến khoản giữ lại này trong mô-đun phát hành (Issuance module) trước khi ghi Đơn vị carbon được xác minh (VCU)\index{VCU} vào tài khoản của nhà phát triển dự án.
+
+% ------------------------------------------------------------
+\section{Kiến trúc hệ thống đăng ký tập trung và nền tảng liên thông dữ liệu}
+\label{sec:sodangky}
+
+% [GÓP Ý] Đã bỏ câu ``Khảo sát hệ thống (system survey) là một yêu cầu bắt buộc để xây dựng báo cáo
+% đồ án phần mềm'': câu này nói về yêu cầu viết báo cáo, không phải nội dung khảo sát.
+Phần lớn hệ thống đăng ký\index{He thong dang ky@Hệ thống đăng ký (registry)} hiện nay hoạt động biệt lập trên cơ sở dữ liệu tập trung. Một số sáng kiến gần đây hướng tới liên thông dữ liệu giữa các hệ thống đăng ký, trong đó có sáng kiến dùng chuỗi khối, nhằm giảm tình trạng phân mảnh thông tin, giảm chi phí quản trị và hỗ trợ phát hiện tính toán kép giữa các hệ thống.
+
+\subsection*{Hệ thống đăng ký tập trung: Verra Registry và UNDP National Carbon Registry}
+\label{subsec:verra-undp}
+
+Verra Registry\index{He thong dang ky@Hệ thống đăng ký (registry)!Verra Registry} đóng vai trò là điểm neo tập trung cho các dự án và tín chỉ VCUs. Nền tảng này theo dõi toàn bộ vòng đời của tín chỉ thông qua các quy trình được kiểm soát chặt chẽ: mở tài khoản, nộp hồ sơ yêu cầu phát hành, tạo số sê-ri duy nhất, và cơ chế hủy tín chỉ (retirement/cancellation)\index{Huy tin chi@Hủy tín chỉ (retirement)}~\cite{verra2024vcs}. Gần đây, Verra đưa vào sử dụng Verra Project Hub\index{Verra Project Hub}, nền tảng trực tuyến để nộp và xét duyệt hồ sơ dự án: công cụ theo dõi dự án (Project Tracker) ra mắt tháng 8/2023 và công cụ nộp hồ sơ số (Digital Project Submission Tool) ra mắt tháng 8/2024~\cite{verra2024projecthub}. Project Hub có các phương pháp luận được số hóa (ví dụ VM0038, VM0042) để tính lượng giảm và loại bỏ phát thải (ERR) từ dữ liệu nhập vào biểu mẫu, cùng các công cụ đánh giá rủi ro không vĩnh viễn (Non-Permanence Risk Tool) dạng số cho dự án AFOLU và GCS~\cite{verra2024projecthub}. Tuy vậy, tại thời điểm khảo sát, Verra chưa công bố tài liệu API công khai cho Verra Registry; dữ liệu công khai chủ yếu được tra cứu qua giao diện web của hệ thống đăng ký~\cite{verraregistry}. \autoref{fig:verra} minh họa danh sách dự án VCS công khai trên Verra Registry.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{image/verra_registry.png}
+    \caption[Danh sách dự án thuộc chương trình VCS trên Verra Registry]%
+    {Danh sách dự án thuộc chương trình VCS trên Verra Registry~\cite{verraregistry}.}
+    \label{fig:verra}
+\end{figure}
+
+Ở cấp độ quốc gia, Chương trình Phát triển của Liên Hợp Quốc (UNDP) đã cung cấp một khuôn mẫu kiến trúc đáng tham khảo thông qua National Carbon Credit Registry\index{He thong dang ky@Hệ thống đăng ký (registry)!UNDP National Carbon Registry} (phiên bản 2.0). Được phát triển dưới dạng Hàng hóa Công Kỹ thuật số (DPG)\index{DPG (Digital Public Good)} mã nguồn mở, hệ thống này hỗ trợ các quốc gia đang phát triển xây dựng hệ thống đăng ký quốc gia phục vụ Điều~6 Thỏa thuận Paris~\cite{undp2024nationalregistry}. Về mặt kỹ thuật, dữ liệu gốc của hệ thống được ghi trong hai sổ cái: Sổ cái Dự án (Project ledger) và Sổ cái Khối Tín chỉ (Credit Blocks Ledger); cơ sở dữ liệu quan hệ PostgreSQL\index{PostgreSQL} đóng vai trò cơ sở dữ liệu thứ cấp, phục vụ vận hành và truy vấn phân tích~\cite{undp2024nationalregistry}. Hệ thống được triển khai trên nền tảng đám mây AWS theo kiến trúc không máy chủ (serverless)\index{Serverless}, với các hàm AWS Lambda\index{AWS Lambda}: \texttt{national-api} xử lý các yêu cầu HTTP từ người dùng, còn \texttt{replicator} được kích hoạt bởi luồng dữ liệu Kinesis để sao chép các bản ghi từ sổ cái sang PostgreSQL~\cite{undp2024nationalregistry}.
+
+Một điểm đáng chú ý trong thiết kế của UNDP là cách quản lý khối tín chỉ có số sê-ri liên tục (Credit Blocks)\index{Khoi tin chi@Khối tín chỉ (Credit Block)}. Khi chỉ một phần của khối tín chỉ được chuyển nhượng hoặc hủy (partial block transfer)\index{Khoi tin chi@Khối tín chỉ (Credit Block)!chuyen nhuong mot phan@chuyển nhượng một phần}, hệ thống tách dãy số sê-ri: chủ sở hữu hiện tại giữ lại phần đầu của dãy, người nhận nhận phần sau, nhờ đó vẫn truy vết được từng tín chỉ theo số sê-ri~\cite{undp2024nationalregistry}. Hệ thống cũng có chức năng tạo báo cáo theo Định dạng điện tử thỏa thuận (Agreed Electronic Format -- AEF)\index{AEF (Agreed Electronic Format)} phục vụ yêu cầu báo cáo của Điều~6.2 và hỗ trợ trao đổi dữ liệu qua tệp (ví dụ CSV)~\cite{undp2024nationalregistry}.
+
+\subsection*{Nền tảng siêu dữ liệu phân tán: Kiến trúc CAD Trust và CDOP}
+\label{subsec:cadtrust}
+
+Các hệ thống đăng ký riêng lẻ chưa liên thông với nhau, gây khó khăn cho việc đối chiếu dữ liệu tín chỉ ở quy mô toàn cầu. Để giải quyết vấn đề này, Climate Action Data Trust (CAD Trust)\index{CAD Trust} được thành lập bởi Ngân hàng Thế giới, Chính phủ Singapore và IETA, phát triển từ nền tảng Climate Warehouse của Ngân hàng Thế giới~\cite{cadtrust2025datamodel}. CAD Trust không cấp tín chỉ và không thay thế các hệ thống đăng ký hiện có; thay vào đó, nó hoạt động như một lớp siêu dữ liệu (metadata layer)\index{Lop sieu du lieu@Lớp siêu dữ liệu (metadata layer)} phi tập trung, liên kết, tổng hợp và chuẩn hóa dữ liệu từ nhiều hệ thống đăng ký (bao gồm Verra, Gold Standard\index{Gold Standard}, Global Carbon Council, v.v.)~\cite{cadtrust2025datamodel}. Hệ sinh thái dữ liệu của CAD Trust được minh họa trong \autoref{fig:cadtrust}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{image/cadtrust_ecosystem.png}
+    \caption[Hệ sinh thái dữ liệu của CAD Trust]%
+    {Hệ sinh thái dữ liệu của CAD Trust: nguồn dữ liệu, lớp siêu dữ liệu và các ứng dụng khai thác~\cite{cadtrust2022deepdive}.}
+    \label{fig:cadtrust}
+\end{figure}
+
+
+CAD Trust được vận hành cùng Chia Network, dựa trên chuỗi khối công khai Chia và thành phần Chia Data Layer\index{Chia Data Layer}. Thay vì tập trung dữ liệu vào một máy chủ duy nhất, mỗi hệ thống đăng ký tham gia chạy một nút Chia trên hạ tầng của mình và tự quản lý dữ liệu của mình. Mỗi lần cập nhật dữ liệu, mã băm mật mã\index{Ham bam mat ma@Hàm băm mật mã} của bản cập nhật được ghi lên chuỗi khối Chia; các tệp dữ liệu được sao chép lên lưu trữ đám mây, và một cơ sở dữ liệu MySQL được dùng để phục vụ truy vấn, phân tích~\cite{cadtrust2025datamodel}. Các bên tham gia có thể tải xuống, đồng bộ và đối chiếu dữ liệu nhận được với mã băm trên chuỗi khối để phát hiện dữ liệu bị thay đổi, mà không phải dựa vào một máy chủ trung gian duy nhất~\cite{cadtrust2025datamodel}.
+
+Thành phần trung tâm của CAD Trust là Mô hình dữ liệu phiên bản 2.0 (Data Model Version 2.0)\index{CAD Trust!Mo hinh du lieu 2.0@Mô hình dữ liệu 2.0}, được công bố ngày 23/10/2025~\cite{cadtrust2025datamodel}. Phiên bản 1 có 9 bảng; phiên bản 2.0 giữ các bảng chung (Project, Location, Rating, Co-benefits, Estimations, Issuances, Labels, Units) và bổ sung các bảng Stakeholders, Methodologies, Programs, Validations, Verifications, Unit Labels, Project Methodologies cùng 5 bảng AEF phục vụ báo cáo theo Điều~6.2. Các hệ thống đăng ký thành viên dự kiến chuyển sang phiên bản mới trong quý I--II/2026~\cite{cadtrust2025datamodel}. Bảng~\ref{tab:cadtrust} tóm tắt các thực thể liên quan trực tiếp đến đồ án.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Các thực thể dữ liệu chính trong mô hình CAD Trust V2.0}
+    \label{tab:cadtrust}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabularx}{\textwidth}{|p{3.2cm}|X|}
+        \hline
+        \textbf{Thực thể dữ liệu (Bảng)} & \textbf{Thuộc tính khóa và thông tin mô tả} \\
+        \hline
+        Project (Dự án) & Thông tin định danh dự án (mã dự án trên hệ thống đăng ký gốc), chương trình, lĩnh vực, trạng thái; liên kết với các bảng Location (vị trí địa lý)\index{GIS} và Rating (xếp hạng)~\cite{cadtrust2025datamodel}. \\
+        \hline
+        Stakeholders (Các bên liên quan) & Bảng mới của V2.0, lưu các tổ chức tham gia dự án và vai trò của họ~\cite{cadtrust2025datamodel}. \\
+        \hline
+        Validations, Verifications & Bảng mới của V2.0, lưu thông tin các đợt validation và verification của dự án~\cite{cadtrust2025datamodel}. \\
+        \hline
+        Issuances (Đợt cấp) & Mỗi bản ghi là một đợt cấp tín chỉ của dự án, liên kết với Project~\cite{cadtrust2025datamodel}. \\
+        \hline
+        Units (Đơn vị tín chỉ) & Khối tín chỉ với dãy số sê-ri, năm thực hiện giảm phát thải (Vintage Year)\index{Vintage Year}, trạng thái (Issued, Held, Retired); với tín chỉ đã hủy, lưu thêm ngày hủy và người thụ hưởng (beneficiary)~\cite{cadtrust2025datamodel}. \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+Mô hình dữ liệu này được thiết kế để bổ sung cho Giao thức Mở Dữ liệu Carbon (Carbon Data Open Protocol -- CDOP)\index{CDOP (Carbon Data Open Protocol)}. CDOP là một lược đồ dữ liệu mã nguồn mở do liên minh CDOP phát triển nhằm giảm tình trạng phân mảnh định dạng dữ liệu (fragmentation) và giảm chi phí hành chính. Liên minh ra mắt tháng 3/2025, do Global Carbon Market Utility, Sylvera, RMI và S\&P Global Commodity Insights đồng chủ trì, với 37 tổ chức cam kết tham gia, trong đó có Verra, Isometric và South Pole; phiên bản 1.0 được công bố ngày 23/9/2025~\cite{cdop2025press}. CDOP V1.0 tập trung vào dữ liệu trước khi cấp tín chỉ (pre-issuance) như thông tin vị trí dự án, phương pháp luận và hồ sơ công bố, còn CAD Trust tập trung vào dữ liệu sau khi cấp (post-issuance); kết hợp lại, hai mô hình bao phủ phần lớn vòng đời dữ liệu của một tín chỉ~\cite{cadtrust2025datamodel} \cite{cdop2025press}.
+
+% ------------------------------------------------------------
+\section{Khung pháp lý thị trường carbon tại Việt Nam và ứng dụng thực tiễn}
+\label{sec:vietnam}
+
+Một hệ thống quản lý tín chỉ carbon được phát triển tại Việt Nam, dù ở dạng đồ án hay sản phẩm thương mại, cần tương thích với khung pháp lý quốc gia. Văn bản pháp lý chính hiện nay là Nghị định 06/2022/NĐ-CP\index{Nghi dinh 06/2022/ND-CP@Nghị định 06/2022/NĐ-CP} quy định giảm nhẹ phát thải khí nhà kính và bảo vệ tầng ô-dôn, được sửa đổi, bổ sung bởi Nghị định 119/2025/NĐ-CP và Nghị định 83/2026/NĐ-CP~\cite{vietnam2022nghidinh06}. Từ tháng 3/2025, Bộ Tài nguyên và Môi trường được hợp nhất vào Bộ Nông nghiệp và Môi trường, nên các nhiệm vụ của Bộ trong Nghị định do Bộ Nông nghiệp và Môi trường thực hiện.
+
+Nghị định đặt ra lộ trình phát triển thị trường carbon trong nước, bao gồm cơ chế trao đổi, bù trừ tín chỉ carbon giữa thị trường nội địa và quốc tế~\cite{vietnam2022nghidinh06}. Các cơ sở thuộc danh mục phải kiểm kê khí nhà kính được yêu cầu kiểm kê phát thải, và Bộ Nông nghiệp và Môi trường phân bổ hạn ngạch phát thải khí nhà kính\index{Han ngach phat thai@Hạn ngạch phát thải} cho các cơ sở phát thải lớn. Một hệ thống phần mềm quản lý tại Việt Nam do đó không chỉ đơn thuần theo dõi các giao dịch tự nguyện, mà còn phải cung cấp tính năng hạch toán hạn ngạch (cap-and-trade)\index{Cap-and-trade}. Thiết kế của hệ thống cần phân biệt rõ tín chỉ tự nguyện (chẳng hạn VCUs từ Verra hoặc Gold Standard) với hạn ngạch và tín chỉ thuộc thị trường trong nước do cơ quan nhà nước quản lý, đồng thời hỗ trợ lập các báo cáo định kỳ~\cite{vietnam2022nghidinh06}.
+
+% ------------------------------------------------------------
+\section{Nhiệm vụ đồ án}
+\label{sec:nhiemvu}
+% Khoa yêu cầu mục này nêu: tính cấp thiết, lý do chọn đề tài, ý nghĩa khoa học và thực tiễn,
+% mục tiêu, đối tượng, phạm vi giới hạn. Bám sát phiếu giao nhiệm vụ (mục A1, B1–B3).
+
+\subsection{Phát biểu bài toán}
+\label{subsec:baitoan}
+% Từ khảo sát ở các mục \ref{sec:dongluc}–\ref{sec:vietnam}, rút ra 3–4 vấn đề cụ thể mà hệ thống
+% phải giải quyết, mỗi vấn đề trỏ về đúng mục đã khảo sát. Gợi ý:
+%  - double counting (bán kép, phát hành kép, tuyên bố kép);
+%  - khó kiểm chứng nguồn gốc và lịch sử sở hữu của một tín chỉ;
+%  - dữ liệu phân mảnh giữa các hệ thống đăng ký, chưa theo mô hình chung (CAD Trust);
+%  - việc hủy tín chỉ (retire) khó kiểm chứng công khai.
+\canviet{Phát biểu bài toán}
+
+\subsection{Mục tiêu của đồ án}
+\label{subsec:muctieu}
+% Lấy từ phiếu (B1–B3), viết thành các mục tiêu kiểm tra được để Chương 5 đối chiếu lại:
+%  - hợp đồng thông minh: Minting (ERC-721), Trading (pool ERC-20), Retirement (burn, chống double counting);
+%  - CSDL off-chain theo CAD Trust V2.0; API RESTful; giao diện Next.js + MetaMask; dashboard.
+\canviet{Mục tiêu}
+
+\subsection{Đối tượng và phạm vi}
+\label{subsec:phamvi}
+% Đối tượng: quy trình cấp, giao dịch, hủy tín chỉ carbon; hợp đồng thông minh trên Ethereum.
+% Phạm vi: nói rõ những gì KHÔNG làm, ví dụ: chỉ triển khai trên testnet Sepolia; không xây dựng lớp
+% cảm biến IoT/dMRV; không kết nối hệ thống đăng ký thật (Verra, hệ thống đăng ký quốc gia);
+% dữ liệu dự án là dữ liệu mô phỏng.
+\canviet{Đối tượng và phạm vi}
+
+\subsection{Phương pháp thực hiện}
+\label{subsec:phuongphap}
+% Khảo sát tài liệu và hệ thống hiện có -> phân tích, thiết kế (UML) -> cài đặt -> kiểm thử trên testnet.
+% Nêu công cụ chính: Solidity, Hardhat, OpenZeppelin, Node.js/Express, PostgreSQL, Next.js, ethers.js.
+\canviet{Phương pháp thực hiện}
+
+\subsection{Ý nghĩa khoa học và thực tiễn}
+\label{subsec:ynghia}
+\canviet{Ý nghĩa khoa học và thực tiễn}
+
+% ------------------------------------------------------------
+\section{Cấu trúc đồ án}
+\label{sec:cautruc}
+% Mỗi chương 2–3 câu: chương nói về gì, kết quả chính. Nên viết sau cùng, khi các chương đã xong.
+\canviet{Cấu trúc đồ án}

@@ -1,0 +1,132 @@
+% ============================================================
+% HÌNH VẼ CHƯƠNG 3 (TikZ) — gọi bằng macro trong Chap3.tex
+%   \HinhUseCase     : biểu đồ ca sử dụng tổng quát        (fig:usecase)
+%   \HinhOnOffChain  : phân tách dữ liệu on/off-chain       (fig:onoffchain)
+%   \HinhTrangThai   : biểu đồ trạng thái của lô tín chỉ    (fig:trangthai)
+% Đây là bản đề xuất theo phiếu giao nhiệm vụ: sửa lại cho khớp thiết kế thực tế của bạn.
+% ============================================================
+
+% Hình người (tác nhân UML)
+\tikzset{
+  tacnhan/.pic={
+    \draw[thick] (0,0.62) circle (0.15);
+    \draw[thick] (0,0.47) -- (0,0.05);
+    \draw[thick] (-0.25,0.33) -- (0.25,0.33);
+    \draw[thick] (0,0.05) -- (-0.18,-0.28);
+    \draw[thick] (0,0.05) -- (0.18,-0.28);
+  }
+}
+
+% ---------- Biểu đồ ca sử dụng tổng quát ----------
+\newcommand{\HinhUseCase}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+  % Khung hệ thống
+  \draw[thick] (3.0,-4.3) rectangle (9.8,4.6);
+  \node[font=\footnotesize\bfseries] at (6.4,4.25) {Hệ thống quản lý tín chỉ carbon};
+  % Ca sử dụng: tên nút / tung độ / nội dung
+  \foreach \ten/\y/\noidung in {
+      uc1/3.5/{Thẩm định, phê duyệt và mint tín chỉ},
+      uc2/2.6/{Đăng ký dự án},
+      uc3/1.7/{Gửi yêu cầu cấp tín chỉ},
+      uc4/0.8/{Nạp tín chỉ vào pool, đổi token},
+      uc5/-0.1/{Mua bán, chuyển nhượng tín chỉ},
+      uc6/-1.0/{Hủy tín chỉ để bù trừ (retire)},
+      uc7/-1.9/{Tra cứu tín chỉ, chứng nhận hủy},
+      uc8/-2.8/{Theo dõi dashboard hạn ngạch},
+      uc9/-3.7/{Quản lý tài khoản, phân quyền}} {
+    \draw (6.4,\y) ellipse (3.2cm and 0.38cm);
+    \node at (6.4,\y) {\noidung};
+    \coordinate (\ten-w) at (3.2,\y);
+    \coordinate (\ten-e) at (9.6,\y);
+  }
+  % Tác nhân bên trái (tên ở dưới)
+  \pic at (1.2,3.1) {tacnhan};   \node[align=center] at (1.2,2.55) {VVB};
+  \pic at (1.2,0.8) {tacnhan};   \node[align=center] at (1.2,0.25) {Chủ dự án};
+  % Tác nhân bên phải (tên ở bên phải để không đè lên đường nối)
+  \pic at (11.2,0.5) {tacnhan};  \node[align=left, anchor=west] at (11.5,0.55) {Doanh nghiệp\\mua};
+  \pic at (11.2,-3.0) {tacnhan}; \node[align=left, anchor=west] at (11.5,-2.95) {Cơ quan\\quản lý};
+  % Liên kết
+  \draw (1.5,3.4) -- (uc1-w);
+  \foreach \u in {uc2,uc3,uc4,uc5} \draw (1.5,1.1) -- (\u-w);
+  \foreach \u in {uc4,uc5,uc6,uc7} \draw (10.9,0.8) -- (\u-e);
+  \foreach \u in {uc7,uc8,uc9} \draw (10.9,-2.7) -- (\u-e);
+\end{tikzpicture}
+\caption{Biểu đồ ca sử dụng tổng quát của hệ thống}
+\label{fig:usecase}
+\end{figure}}
+
+% ---------- Phân tách dữ liệu on-chain / off-chain ----------
+\newcommand{\HinhOnOffChain}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    o/.style={draw, rounded corners=2pt, align=left, font=\footnotesize,
+              text width=4.7cm, inner sep=4pt, fill=white},
+    nhan/.style={font=\scriptsize, align=center, text width=2.6cm}]
+  % Off-chain
+  \node[o] (files) at (2.6,1.6) {\textbf{Kho tệp}\\
+      IPFS hoặc lưu trữ đối tượng:\\
+      PDD, báo cáo thẩm định,\\ tệp metadata JSON};
+  \node[o, below=5mm of files] (db) {\textbf{CSDL quan hệ}\\
+      PostgreSQL, theo mô hình\\ CAD Trust V2.0:\\
+      Project, Stakeholders,\\ Verifications, Issuances, Units;\\
+      tài khoản ứng dụng (bảng riêng);\\
+      lịch sử giao dịch đồng bộ từ sự kiện};
+  \node[draw, thick, dashed, rounded corners=4pt, inner sep=6pt, fit=(files)(db),
+        label={[font=\footnotesize\bfseries]above:Off-chain (backend)}] (off) {};
+  % On-chain
+  \node[o, fill=gray!10] (nft) at (11.0,1.6) {\textbf{Hợp đồng NFT tín chỉ (ERC-721)}\\
+      tokenId, chủ sở hữu, số sê-ri,\\ mã băm hồ sơ, URI metadata};
+  \node[o, fill=gray!10, below=4mm of nft] (pool) {\textbf{Hợp đồng pool (ERC-20)}\\
+      số dư token,\\ NFT đang khóa trong pool};
+  \node[o, fill=gray!10, below=4mm of pool] (ret) {\textbf{Module Retirement}\\
+      sự kiện Retired, người thụ hưởng};
+  \node[draw, thick, rounded corners=4pt, inner sep=6pt, fit=(nft)(pool)(ret),
+        label={[font=\footnotesize\bfseries]above:On-chain (Ethereum Sepolia)}] (on) {};
+  % Luồng dữ liệu
+  \draw[->, thick] (files.east) -- node[nhan, above] {mã băm hồ sơ (keccak256) và URI khi mint}
+      (on.west |- files.east);
+  \draw[->, thick] (on.west |- db.east) -- node[nhan, below] {sự kiện Minted, Transfer, Retired: backend đồng bộ}
+      (db.east);
+\end{tikzpicture}
+\caption{Phân tách dữ liệu giữa phần on-chain và off-chain của hệ thống}
+\label{fig:onoffchain}
+\end{figure}}
+
+% ---------- Biểu đồ trạng thái của một lô tín chỉ ----------
+\newcommand{\HinhTrangThai}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    tt/.style={draw, rounded corners=6pt, align=center, font=\footnotesize,
+               minimum height=0.9cm, inner xsep=5pt, fill=white},
+    nhan/.style={font=\scriptsize, align=center}]
+  \node[circle, fill=black, inner sep=3pt] (bd) at (0,0) {};
+  \node[tt] (nhap)   at (1.4,0)   {Nháp};
+  \node[tt] (cho)    at (4.5,0)   {Chờ thẩm định};
+  \node[tt] (tuchoi) at (4.5,-2.3) {Bị từ chối};
+  \node[tt] (dacap)  at (9.0,0)   {Đã cấp\\(NFT ERC-721)};
+  \node[tt] (pool)   at (9.0,-2.6) {Trong pool\\(ERC-20)};
+  \node[tt] (dahuy)  at (12.6,0)   {Đã hủy\\(retired)};
+  \node[circle, draw, inner sep=4pt] (kt) at (14.1,0) {};
+  \node[circle, fill=black, inner sep=2pt] at (kt) {};
+
+  \draw[->] (bd) -- (nhap);
+  \draw[->] (nhap) -- node[nhan, above] {gửi\\hồ sơ} (cho);
+  \draw[->] (cho) -- node[nhan, above] {VVB duyệt,\\mint NFT} (dacap);
+  \draw[->] (cho) -- node[nhan, right] {VVB từ chối} (tuchoi);
+  \draw[->] (tuchoi.west) -| node[nhan, pos=0.3, below] {bổ sung hồ sơ} (nhap.south);
+  \draw[->] (dacap) -- node[nhan, above] {retire\\(burn)} (dahuy);
+  \draw[->] (dahuy) -- (kt);
+  \draw[->] ([xshift=-5mm]dacap.south) -- node[nhan, left] {nạp vào pool} ([xshift=-5mm]pool.north);
+  \draw[->] ([xshift=5mm]pool.north) -- node[nhan, right] {đổi lại\\(redeem)} ([xshift=5mm]dacap.south);
+  \draw[->] ([xshift=-4mm]dacap.north) .. controls +(-0.3,0.9) and +(0.3,0.9) ..
+      node[nhan, above] {chuyển nhượng} ([xshift=4mm]dacap.north);
+\end{tikzpicture}
+\caption{Biểu đồ trạng thái của một lô tín chỉ carbon trong hệ thống}
+\label{fig:trangthai}
+\end{figure}}

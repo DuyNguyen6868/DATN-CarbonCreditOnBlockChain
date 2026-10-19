@@ -1,0 +1,232 @@
+% ============================================================
+% FIGURES_CHAP1.TEX — Hình tự vẽ (TikZ) cho Chương 1
+% Mỗi hình là một lệnh, gọi đúng chỗ trong Chap1.tex:
+%   \HinhDieuSau  \HinhMRV  \HinhVaccargiu  \HinhToucan  \HinhKienTruc
+% Các hình được vẽ vừa bề rộng vùng chữ (15 cm), không cần thu nhỏ.
+% Preamble main.tex cần:
+%   \usepackage{tikz}
+%   \usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc}
+% ============================================================
+
+\tikzset{
+    hop/.style      = {draw, rounded corners=3pt, align=center,
+                       inner sep=3pt, font=\small},
+    muiten/.style   = {-{Stealth[length=6pt]}, thick},
+    ghichu/.style   = {font=\footnotesize\itshape, text=black!65, align=center},
+}
+
+% ------------------------------------------------------------
+% HÌNH: Điều 6.2 và Điều 6.4 — đặt sau Bảng so sánh Điều 6
+% ------------------------------------------------------------
+\newcommand{\HinhDieuSau}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+    % Tiêu đề hai cột và đường phân cách
+    \node[font=\bfseries] at (3.4, 0) {Điều 6.2 (song phương)};
+    \node[font=\bfseries] at (11.0, 0) {Điều 6.4 (tập trung – PACM)};
+    \draw[thick, black!30] (7.3, 0.3) -- (7.3, -7.0);
+
+    % ---- Điều 6.2 ----
+    \node[hop, fill=blue!10, minimum width=3.0cm, minimum height=1.1cm]
+        (A) at (1.7, -1.3) {\textbf{Quốc gia A}\\(bán ITMOs)};
+    \node[hop, fill=blue!10, minimum width=3.0cm, minimum height=1.1cm]
+        (B) at (1.7, -4.1) {\textbf{Quốc gia B}\\(mua ITMOs)};
+    \node[draw, diamond, aspect=1.8, fill=yellow!25, font=\small,
+          inner sep=1pt] (I) at (5.3, -2.8) {ITMOs};
+    \draw[muiten] (A.east) -| node[ghichu, pos=0.25, above] {bán} (I.north);
+    \draw[muiten] (I.south) |- node[ghichu, pos=0.75, above] {chuyển giao} (B.east);
+    \node[hop, fill=red!8, text width=6.2cm, font=\footnotesize]
+        (CA) at (3.4, -6.4)
+        {\textbf{Điều chỉnh tương ứng:}\\
+         Quốc gia A cộng thêm phát thải vào sổ quốc gia;\\
+         Quốc gia B được trừ lượng phát thải tương ứng};
+    \draw[muiten, dashed, red!60] (B.south) -- (B.south |- CA.north);
+
+    % ---- Điều 6.4 ----
+    \node[hop, fill=green!12, minimum width=3.2cm, minimum height=0.9cm]
+        (P) at (10.2, -1.2) {Nhà phát triển dự án};
+    \node[hop, fill=orange!15, minimum width=3.2cm, minimum height=0.9cm]
+        (S) at (10.2, -2.7) {Cơ quan Giám sát};
+    \node[draw, diamond, aspect=1.8, fill=yellow!25, font=\small,
+          inner sep=1pt] (E) at (10.2, -4.3) {A6.4ERs};
+    \node[hop, fill=green!12, minimum width=3.2cm, minimum height=0.9cm]
+        (U) at (10.2, -5.9) {Người mua / bù trừ};
+    \draw[muiten] (P) -- node[ghichu, right] {đăng ký} (S);
+    \draw[muiten] (S) -- node[ghichu, left] {cấp} (E);
+    \draw[muiten] (E) -- node[ghichu, right] {giao dịch} (U);
+    % Khoản trích 5%/2% áp dụng tại thời điểm cấp (quyết định 3/CMA.3), không phải mỗi giao dịch
+    \node[hop, fill=red!8, text width=2.3cm, font=\footnotesize]
+        (F) at (13.7, -3.5) {Trích khi cấp:\\5\% Quỹ Thích ứng\\$\geq$2\% hủy (OMGE)};
+    \coordinate (SE) at ($(S.south)!0.5!(E.north)$);
+    \draw[muiten, red!60] (SE) -- (SE -| F.west);
+\end{tikzpicture}
+\caption[Cơ chế hoạt động của Điều 6.2 và Điều 6.4 Thỏa thuận Paris]%
+{Cơ chế hoạt động của Điều 6.2 và Điều 6.4 Thỏa thuận Paris~\cite{columbia2025article6} \cite{unfccc2022cma3}.}
+\label{fig:dieu6}
+\end{figure}}
+
+% ------------------------------------------------------------
+% HÌNH: Vòng đời tín chỉ và ISO 14064 — đặt sau Bảng ISO 14064
+% ------------------------------------------------------------
+\newcommand{\HinhMRV}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    buoc/.style = {draw, rounded corners=4pt, align=center,
+                   text width=3.4cm, minimum height=1.5cm, font=\small},
+]
+    % Hàng 1: trái -> phải
+    \node[buoc, fill=blue!12]   (s1) at (2.0, 0)
+        {\textbf{1. Thiết kế dự án}\\{\footnotesize\itshape PDD – ISO 14064-2}};
+    \node[buoc, fill=teal!15]   (s2) at (7.4, 0)
+        {\textbf{2. Thẩm định}\\{\footnotesize\itshape VVB – ISO 14064-3}};
+    \node[buoc, fill=green!15]  (s3) at (12.8, 0)
+        {\textbf{3. Giám sát}\\{\footnotesize\itshape dữ liệu hoạt động}};
+    % Hàng 2: phải -> trái
+    \node[buoc, fill=yellow!22] (s4) at (12.8, -2.6)
+        {\textbf{4. Xác minh}\\{\footnotesize\itshape VVB – ISO 14064-3}};
+    \node[buoc, fill=orange!20] (s5) at (7.4, -2.6)
+        {\textbf{5. Phát hành}\\{\footnotesize\itshape trừ tài khoản đệm}};
+    \node[buoc, fill=red!12]    (s6) at (2.0, -2.6)
+        {\textbf{6. Giao dịch \& hủy}\\{\footnotesize\itshape hủy vĩnh viễn (retire)}};
+
+    \draw[muiten] (s1) -- (s2);
+    \draw[muiten] (s2) -- (s3);
+    \draw[muiten] (s3) -- (s4);
+    \draw[muiten] (s4) -- (s5);
+    \draw[muiten] (s5) -- (s6);
+\end{tikzpicture}
+\caption[Vòng đời tín chỉ carbon và các phần tương ứng của tiêu chuẩn ISO 14064]%
+{Vòng đời tín chỉ carbon và các phần tương ứng của tiêu chuẩn ISO 14064~\cite{iso14064-2} \cite{iso14064-3}.}
+\label{fig:mrv}
+\end{figure}}
+
+% ------------------------------------------------------------
+% HÌNH: Kiến trúc 4 lớp của Vaccargiu — đặt sau danh sách 4 lớp (Chương 2, mục \ref{sec:dmrv})
+% ------------------------------------------------------------
+\newcommand{\HinhVaccargiu}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    lop/.style = {draw, rounded corners=5pt, align=center,
+                  text width=9.0cm, minimum height=1.3cm, font=\small},
+]
+    \node[lop, fill=orange!15] (l4) at (4.8, 5.4)
+        {\textbf{Lớp 4: Chuỗi khối và chứng nhận}\\
+         {\footnotesize Hyperledger Fabric, hợp đồng thông minh tạo và đăng ký tín chỉ}};
+    \node[lop, fill=yellow!18] (l3) at (4.8, 3.6)
+        {\textbf{Lớp 3: Tổng hợp dữ liệu tại biên}\\
+         {\footnotesize tổng hợp theo phút, gom thành lô 5 phút để ghi lên chuỗi}};
+    \node[lop, fill=blue!10]   (l2) at (4.8, 1.8)
+        {\textbf{Lớp 2: Thu thập dữ liệu}\\
+         {\footnotesize cổng nối nhận luồng dữ liệu thời gian thực}};
+    \node[lop, fill=green!13]  (l1) at (4.8, 0)
+        {\textbf{Lớp 1: Cảm biến vật lý}\\
+         {\footnotesize 8 đồng hồ đo thông minh 3 pha (24 pha điện)}};
+
+    \draw[muiten] (l1) -- (l2);
+    \draw[muiten] (l2) -- (l3);
+    \draw[muiten] (l3) -- (l4);
+
+    % Chú thích bên phải: tần suất / dạng dữ liệu
+    \node[ghichu, anchor=west, text width=4.3cm] at (10.2, 5.4) {288 lần ghi / ngày};
+    \node[ghichu, anchor=west, text width=4.3cm] at (10.2, 3.6) {1.440 bản ghi / ngày};
+    \node[ghichu, anchor=west, text width=4.3cm] at (10.2, 1.8) {luồng dữ liệu liên tục};
+    \node[ghichu, anchor=west, text width=4.3cm] at (10.2, 0)   {1–2 giây / lần đo};
+\end{tikzpicture}
+\caption[Kiến trúc 4 lớp của hệ thống chứng nhận tín chỉ carbon dựa trên IoT và blockchain]%
+{Kiến trúc 4 lớp của hệ thống chứng nhận tín chỉ carbon dựa trên IoT và blockchain~\cite{vaccargiu2026blockchain}.}
+\label{fig:vaccargiu}
+\end{figure}}
+
+% ------------------------------------------------------------
+% HÌNH: Luồng token Toucan — đặt sau danh sách các bước Toucan (Chương 2, mục \ref{sec:token})
+% Theo tài liệu Toucan: Batch NFT là ERC-721, TCO2 là ERC-20 (mỗi dự án–vintage một hợp đồng),
+% retire() đốt TCO2; cầu nối Verra đã ngừng hoạt động.
+% ------------------------------------------------------------
+\newcommand{\HinhToucan}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    tok/.style = {draw, rounded corners=4pt, align=center,
+                  text width=2.2cm, minimum height=1.3cm, font=\small},
+]
+    \node[tok, fill=blue!12]   (v) at (1.2, 0)    {\textbf{Verra}\\VCUs};
+    \node[tok, fill=teal!15]   (b) at (4.9, 0)    {\textbf{Batch NFT}\\ERC-721};
+    \node[tok, fill=teal!25]   (t) at (8.6, 0)    {\textbf{TCO2}\\ERC-20};
+    \node[tok, fill=green!15]  (p) at (12.6, 0)   {\textbf{BCT / NCT}\\ERC-20};
+    \node[tok, fill=red!12]    (r) at (8.6, -2.8) {\textbf{Hủy}\\burn TCO2};
+    \node[tok, fill=yellow!20, text width=2.6cm] (c) at (12.6, -2.8) {\textbf{Chứng nhận}\\hủy (NFT)};
+
+    \draw[muiten] (v) -- node[above, font=\scriptsize] {cầu nối}  (b);
+    \draw[muiten] (b) -- node[above, font=\scriptsize] {chia nhỏ} (t);
+    \draw[muiten] ([yshift=3mm]t.east) -- node[above, font=\scriptsize\ttfamily] {deposit} ([yshift=3mm]p.west);
+    \draw[muiten] ([yshift=-3mm]p.west) -- node[below, font=\scriptsize\ttfamily] {redeem} ([yshift=-3mm]t.east);
+    \draw[muiten] (t) -- node[left, font=\scriptsize\ttfamily] {retire()} (r);
+    \draw[muiten] (r) -- (c);
+
+    \node[ghichu, text width=2.8cm] at (1.2, -1.5) {VCU được hủy trên\\Verra, ghi mã lô};
+    \node[ghichu, text width=2.8cm] at (4.9, -1.5) {Toucan duyệt\\số sê-ri};
+    \node[ghichu, text width=3.0cm] at (12.6, -1.5) {1 token = 1 tCO$_2$e};
+\end{tikzpicture}
+\caption[Luồng token hóa và hủy tín chỉ carbon qua Toucan Protocol]%
+{Luồng token hóa và hủy tín chỉ carbon qua Toucan Protocol (cầu nối Verra hiện đã ngừng hoạt động)~\cite{toucan2025docs}.}
+\label{fig:toucan}
+\end{figure}}
+
+% ------------------------------------------------------------
+% HÌNH: Kiến trúc tổng thể đề xuất — đặt cuối mục \ref{sec:kientruc} (Chương 3)
+% Đây là thiết kế của đồ án nên không trích nguồn. Ô nét đứt = ngoài phạm vi cài đặt.
+% ------------------------------------------------------------
+\newcommand{\HinhKienTruc}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    tp/.style = {draw, rounded corners=3pt, align=center, fill=white,
+                 text width=3.0cm, minimum height=1.0cm, font=\footnotesize},
+    lp/.style = {draw, very thick, rounded corners=6pt,
+                 minimum width=14.6cm, minimum height=2.1cm},
+    tl/.style = {font=\small\bfseries, anchor=north west, xshift=6pt, yshift=-3pt},
+]
+    % Lớp 4
+    \node[lp, fill=purple!10] (L4) at (7.3, 0) {};
+    \node[tl] at (L4.north west) {Lớp 4 — Giao diện ứng dụng \& API};
+    \node[tp] at (1.9, -0.3) {Next.js, ethers.js\\giao diện web};
+    \node[tp] at (5.5, -0.3) {MetaMask\\ký giao dịch};
+    \node[tp] at (9.1, -0.3) {API REST\\(CAD Trust V2.0)};
+    \node[tp] at (12.7,-0.3) {Dashboard\\tra cứu, thống kê};
+
+    % Lớp 3
+    \node[lp, fill=orange!12] (L3) at (7.3, -2.7) {};
+    \node[tl] at (L3.north west) {Lớp 3 — Hợp đồng thông minh (on-chain, Ethereum Sepolia)};
+    \node[tp] at (1.9, -3.0) {AccessControl\\VERIFIER\_ROLE};
+    \node[tp] at (5.5, -3.0) {Minting\\NFT ERC-721};
+    \node[tp] at (9.1, -3.0) {Pool\\token ERC-20};
+    \node[tp] at (12.7,-3.0) {Retirement\\burn + sự kiện};
+
+    % Lớp 2
+    \node[lp, fill=blue!10] (L2) at (7.3, -5.4) {};
+    \node[tl] at (L2.north west) {Lớp 2 — Dịch vụ \& lưu trữ off-chain};
+    \node[tp] at (1.9, -5.7) {Backend\\Node.js, Express};
+    \node[tp] at (5.5, -5.7) {PostgreSQL\\(CAD Trust V2.0)};
+    \node[tp] at (9.1, -5.7) {IPFS / S3\\PDD, metadata};
+    \node[tp] at (12.7,-5.7) {Event listener\\đồng bộ sự kiện};
+
+    % Lớp 1
+    \node[lp, fill=green!12] (L1) at (7.3, -8.1) {};
+    \node[tl] at (L1.north west) {Lớp 1 — Nguồn dữ liệu \& MRV};
+    \node[tp] at (1.9, -8.4) {Chủ dự án\\hồ sơ, PDD};
+    \node[tp] at (5.5, -8.4) {VVB\\báo cáo thẩm định};
+    \node[tp] at (9.1, -8.4) {Dữ liệu giám sát\\(mô phỏng)};
+    \node[tp, dashed] at (12.7,-8.4) {IoT, dMRV\\(hướng phát triển)};
+
+    % Liên kết giữa các lớp
+    \foreach \tren/\duoi in {L4/L3, L3/L2, L2/L1}
+        \draw[{Stealth[length=6pt]}-{Stealth[length=6pt]}, very thick, black!45]
+            (\duoi.north) -- (\tren.south);
+\end{tikzpicture}
+\caption[Kiến trúc tổng thể 4 lớp của hệ thống quản lý tín chỉ carbon đề xuất]%
+{Kiến trúc tổng thể 4 lớp của hệ thống quản lý tín chỉ carbon đề xuất (mô hình hỗn hợp on-chain/off-chain).}
+\label{fig:kientruc}
+\end{figure}}
