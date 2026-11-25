@@ -1,0 +1,78 @@
+% ============================================================
+% CHƯƠNG 4 — CÁC GIẢI PHÁP VÀ ĐÓNG GÓP NỔI BẬT  (mẫu SoICT chương 5)
+% Tạo lại ngày 07/11/2026 theo mẫu Do_An_Latex_SoiCT. Chương 4 cũ "XÂY DỰNG HỆ THỐNG" đã gộp vào Chương 3
+% (bản cũ: backup/2026-11-07_truoc-mau-soict/Chap4.tex).
+%
+% Hướng dẫn của mẫu SoICT:
+%   - tối thiểu 5 trang; nếu dưới 5 trang thì gộp vào chương Kết luận, không tách chương riêng;
+%   - đây là cơ sở quan trọng để hội đồng đánh giá: trình bày những đóng góp tâm đắc nhất (vấn đề khó đã giải
+%     quyết, giải thuật, giải pháp tổng quát, mô hình/kiến trúc);
+%   - mỗi đóng góp là một mục độc lập gồm ba phần: (i) dẫn dắt, giới thiệu vấn đề, (ii) giải pháp,
+%     (iii) kết quả đạt được;
+%   - không lặp lại nội dung đã trình bày chi tiết ở chương trước; chương trước chỉ tóm lược và tham chiếu
+%     tới mục tương ứng ở chương này.
+% Văn phong: xem ghi chú đầu Chap1.tex (hạn chế xưng "em"; mục con dùng \subsection*, không \ref tới mục con).
+% ============================================================
+
+\chapter{CÁC GIẢI PHÁP VÀ ĐÓNG GÓP NỔI BẬT}
+\label{chap:giaiphap}
+
+% Tổng quan (Normal, không tiêu đề): giới thiệu các đóng góp và vì sao chọn chúng; mỗi đóng góp gắn với
+% vấn đề VĐ-x và nhu cầu NC-xx ở Chương 1.
+% [VIẾT SAU] \canviet{Đoạn tổng quan chương}
+
+% [VIẾT SAU] Các mục dưới đây chưa viết nội dung — bỏ dấu % để khôi phục.
+% % ------------------------------------------------------------
+% \section{Cơ chế chống tính toán kép trong phạm vi hệ thống}
+% \label{sec:gp-tinhtoankep}
+% \label{sec:kq-tinhtoankep}
+% \subsection*{Vấn đề}
+% % Ba dạng tính toán kép theo Schneider \cite{schneider2019double} (mục \ref{sec:datvande}); VĐ-1, VĐ-2;
+% % ở hệ thống trong nước, ràng buộc do phần mềm và quy trình của đơn vị vận hành bảo đảm.
+% \subsection*{Giải pháp}
+% % Ba điểm chặn: (1) mintBatch kiểm tra seriesKey = keccak256(projectId, vintage) và
+% % serialFrom >= nextAvailableSerial[key] (phát hành kép trong hệ thống), documentUsed[documentHash]
+% % (dùng lại hồ sơ, VĐ-3); (2) NFT nạp pool bị khóa, không bán riêng được (sử dụng kép); (3) retire đốt token,
+% % ghi người thụ hưởng, không hủy lại được (tuyên bố kép ở mức tổ chức).
+% \subsection*{Kết quả}
+% % \BangTinhToanKep, log `npx hardhat run scripts/demo.js` (các dòng [CHẶN]). Nêu rõ giới hạn: không chặn
+% % được phát hành kép GIỮA các hệ thống đăng ký; double claiming cấp quốc gia cần điều chỉnh tương ứng.
+% % [VIẾT SAU] \canviet{Cơ chế chống tính toán kép}
+% %
+% % \BangTinhToanKep
+%
+% % ------------------------------------------------------------
+% \section{Kết hợp NFT theo lô với pool ERC-20 mà vẫn truy vết được số sê-ri khi hủy}
+% \label{sec:gp-pool}
+% \subsection*{Vấn đề}
+% % Giao dịch từng phần cần token có thể thay thế (NC-05), nhưng pool kiểu BCT của Toucan làm mất thông tin
+% % riêng của dự án (Bảng \ref{tab:ks-uunhuoc}); UNDP tách khối sê-ri ở sổ cái tập trung.
+% \subsection*{Giải pháp}
+% % Pool decimals = 0; hủy từ pool chỉ định tokenId, pool đốt token rồi gọi retireFor trên hợp đồng NFT
+% % (RETIREMENT_AGENT_ROLE); NFT luôn hủy từ đầu dãy sê-ri còn lại nên chứng nhận ghi đúng dãy sê-ri và
+% % người hủy thực. Bất biến: totalSupply = tổng remainingOf các lô trong pool.
+% \subsection*{Kết quả}
+% % Ca kiểm thử liên quan ở Bảng \ref{tab:testhopdong}; so sánh với Toucan và UNDP.
+% % [VIẾT SAU] \canviet{NFT theo lô và pool}
+%
+% % ------------------------------------------------------------
+% \section{Ánh xạ dữ liệu off-chain theo CAD Trust V2.0 và đồng bộ từ sự kiện on-chain}
+% \label{sec:gp-cadtrust}
+% % (i) Dữ liệu phân mảnh, mỗi hệ thống một định dạng (vấn đề (iii) ở mục \ref{sec:muctieu}, NC-10);
+% % (ii) bảng ánh xạ Project/Issuances/Units với dữ liệu on-chain; indexer idempotent theo (tx_hash, log_index),
+% % dựng lại CSDL từ khối triển khai; (iii) kết quả kiểm thử e2e-indexer, API xuất dữ liệu.
+% % [VIẾT SAU] \canviet{Ánh xạ CAD Trust và đồng bộ sự kiện}
+%
+% % ------------------------------------------------------------
+% \section{Phân quyền nhiều bên phát hành và tách bước phê duyệt với phát hành}
+% \label{sec:gp-phanquyen}
+% % (i) Nghị định 396/2026/NĐ-CP chuyển thẩm quyền cấp tín chỉ cho cấp tỉnh (VĐ-5, NC-09); nguyên tắc tách
+% % người tạo và người duyệt; (ii) AccessControl nhiều tài khoản phát hành, VVB chỉ phê duyệt, cơ quan quản lý
+% % phát hành, ghi tài khoản đã phát hành từng lô, Pausable; (iii) kết quả kiểm thử phân quyền.
+% % LƯU Ý: đồ án thống nhất cơ quan quản lý phát hành; mã nguồn hiện để mintBatch dưới VERIFIER_ROLE —
+% % cần thêm ISSUER_ROLE vào mã và chạy lại kiểm thử trước khi viết mục này.
+% % [VIẾT SAU] \canviet{Phân quyền nhiều bên phát hành}
+
+% ------------------------------------------------------------
+% Kết chương (Normal, không tiêu đề).
+% [VIẾT SAU] \canviet{Kết chương 4}

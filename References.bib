@@ -1,263 +1,464 @@
-@article{liu2024blockchain,
-  title={Blockchain-enabled renewable energy certificate trading: A secure and privacy-preserving approach},
-  author={Liu, Wei-Jen and Chiu, Wei-Yu and Hua, Weiqi},
-  journal={Energy},
-  volume={290},
-  pages={130110},
-  year={2024},
-  publisher={Elsevier},
-  doi={10.1016/j.energy.2023.130110}
+% ============================================================
+% TÀI LIỆU THAM KHẢO — kiểu IEEE, style IEEEtran-hust.bst (IEEEtran có thêm trường urldate)
+% Chuẩn hóa ngày 07/11/2026 theo quy định của trường (tóm tắt trong Note_Refer.md):
+%   - Chỉ dùng 5 loại: article, book, inproceedings, phdthesis/mastersthesis (luận văn, đồ án),
+%     misc (tài liệu trên Internet: author, title, urldate, url).
+%   - Không dùng tài liệu không kiểm chứng được, Wikipedia, báo chí hay trang web thông thường.
+%     Tài liệu Internet chỉ lấy từ cơ quan, tổ chức ban hành hoặc vận hành (văn bản pháp luật,
+%     tiêu chuẩn, tài liệu kỹ thuật, trang dữ liệu chính thức).
+%   - address = nơi ban hành (thành phố, quốc gia của cơ quan, tổ chức); bổ sung 07/11/2026.
+%   - urldate viết dạng YYYY-MM-DD; style in thành "Truy cập ngày dd/mm/yyyy".
+%   - Tiêu đề giữ nguyên văn; bọc {...} để giữ chữ hoa.
+%   - Trong bài: gộp nhiều nguồn trong một lệnh \cite{a,b}; viết ~\cite{...} trước dấu câu.
+% Đã bỏ: báo chí (Dân trí, Đại biểu Nhân dân, Nông nghiệp và Môi trường, Báo Chính phủ); bài bình
+%   luận, tin thị trường (Columbia, Argus, Fastmarkets, S&P, VietnamFinance, CAD Trust deep-dive);
+%   thông cáo CDOP đăng trên trang của bên thứ ba (cdop2025press); bản preprint arXiv chưa bình
+%   duyệt ở Chương 1 (tsai2024blockchain, chỉ còn giữ cho Chương 2); QĐ 263/QĐ-TTg (không trích dẫn).
+%   Gộp verraregistryhome, verra2026retirements vào verraregistry (cùng một trang).
+% ============================================================
+
+% Mục điều khiển của IEEEtran-hust.bst (gọi bằng \bstctlcite{BSTcontrol} trong main.tex):
+% in đầy đủ tên tác giả ở mọi mục, không thay tên lặp lại bằng dấu "——".
+@IEEEtranBSTCTL{BSTcontrol,
+  CTLdash_repeated_names = "no"
 }
 
-@inproceedings{vaccargiu2026blockchain,
-  title={A Blockchain-Oriented Software Engineering Architecture for Carbon Credit Certification Systems},
-  author={Vaccargiu, Matteo and Ullah, Azmat and Gallo, Pierluigi},
-  booktitle={2026 IEEE International Conference on Software Analysis, Evolution and Reengineering - Companion (SANER-C), 9th International Workshop on Blockchain Oriented Software Engineering (BoSE)},
-  address={Limassol, Cyprus},
-  year={2026},
-  organization={IEEE},
-  eprint={2601.13772},
-  archivePrefix={arXiv},
-  primaryClass={cs.SE},
-  note={arXiv:2601.13772}
-}
-
-@misc{tsai2024blockchain,
-  title        = {Blockchain-Driven Solutions for Carbon Credit Trading: A Decentralized Platform for {SMEs}},
-  author       = {Tsai, Yun-Cheng},
-  year         = {2024},
-  eprint       = {2504.16085},
-  archivePrefix= {arXiv},
-  howpublished = {\url{https://arxiv.org/abs/2504.16085}},
-  note         = {arXiv:2504.16085, nộp ngày 27/12/2024}
-}
-
-@techreport{cadtrust2025datamodel,
-  title       = {{CAD Trust} Data Model Version 2.0 Report},
-  author      = {Chandra, Erick and Kong, Evan and Tong, Elysia and Steponaviciute, Ieva and Tan, Winnie},
-  institution = {Climate Action Data Trust Secretariat},
-  year        = {2025},
-  month       = oct,
-  url         = {https://climateactiondata.org/wp-content/uploads/2025/10/CAD-Trust-Version-2.0-Technical-Report.pdf},
-  note        = {Công bố ngày 23/10/2025}
-}
-
-@misc{undp2024nationalregistry,
-  title={National Carbon Credit Registry (v2.0)},
-  author={{UNDP}},
-  year={2024},
-  publisher={GitHub},
-  howpublished={\url{https://github.com/undp/undp-national-carbon-registry}}
-}
-
-@misc{verra2024vcs,
-  title={Verified Carbon Standard (VCS) Program Details},
-  author={{Verra}},
-  year={2026},
-  howpublished={\url{https://verra.org/programs/verified-carbon-standard/}},
-  note={Truy cập ngày 20/10/2026}
-}
-
-@misc{verra2024projecthub,
-  title        = {Verra Project Hub},
-  author       = {{Verra}},
-  year         = {2026},
-  howpublished = {\url{https://verra.org/verra-project-hub/}},
-  note         = {Truy cập ngày 20/10/2026}
-}
-
-@misc{iso14064-1,
-  title        = {{ISO} 14064-1:2018 -- Greenhouse gases -- Part 1: Specification with guidance at the organization level for quantification and reporting of greenhouse gas emissions and removals},
-  author       = {{International Organization for Standardization}},
-  year         = {2018},
-  howpublished = {\url{https://www.iso.org/standard/66453.html}}
-}
-
-@misc{iso14064-2,
-  title        = {{ISO} 14064-2:2019 -- Greenhouse gases -- Part 2: Specification with guidance at the project level for quantification, monitoring and reporting of greenhouse gas emission reductions or removal enhancements},
-  author       = {{International Organization for Standardization}},
-  year         = {2019},
-  howpublished = {\url{https://www.iso.org/standard/66454.html}}
-}
-
-@misc{iso14064-3,
-  title        = {{ISO} 14064-3:2019 -- Greenhouse gases -- Part 3: Specification with guidance for the verification and validation of greenhouse gas statements},
-  author       = {{International Organization for Standardization}},
-  year         = {2019},
-  howpublished = {\url{https://www.iso.org/standard/66455.html}}
-}
-
-@misc{toucan2025docs,
-  title        = {Toucan Documentation: {TCO2}, Carbon Pools, Retirements and Verra Bridge (Deprecated)},
-  author       = {{Toucan Protocol}},
-  year         = {2026},
-  howpublished = {\url{https://docs.toucan.earth/}},
-  note         = {Các trang: developers/smart-contracts/tco2, toucan/carbon-pools/deposits-and-redemptions, resources/archives/verra-bridge-deprecated. Truy cập ngày 20/10/2026}
-}
-
-@misc{vietnam2022nghidinh06,
-  title={Nghị định 06/2022/NĐ-CP ngày 07/01/2022 quy định giảm nhẹ phát thải khí nhà kính và bảo vệ tầng ô-dôn},
-  author={{Chính phủ Việt Nam}},
-  year={2022},
-  note={Được sửa đổi, bổ sung bởi Nghị định 119/2025/NĐ-CP và Nghị định 83/2026/NĐ-CP; văn bản hợp nhất số 40/VBHN-BNNMT (2026)}
-}
-
-@misc{columbia2025article6,
-  title        = {How to Fully Operationalize Article 6 of the Paris Agreement},
-  author       = {Jain, Gautam and Deshmukh, Shubham},
-  year         = {2025},
-  month        = sep,
-  howpublished = {\url{https://www.energypolicy.columbia.edu/publications/how-to-fully-operationalize-article-6-of-the-paris-agreement/}},
-  note         = {Center on Global Energy Policy, Columbia University SIPA, bình luận ngày 11/9/2025}
-}
-
-@techreport{lseg2024yir,
-  title       = {Carbon Market Year in Review 2023},
-  author      = {{LSEG}},
-  institution = {London Stock Exchange Group},
-  year        = {2024},
-  month       = feb,
-  url         = {https://www.lseg.com/content/dam/data-analytics/en_us/documents/reports/lseg-yir-2023-summary.pdf}
-}
-
-@misc{foresttrends2024sovcm,
-  title        = {Report: The Voluntary Carbon Market Contracted in 2023, Driven by Drop-off in Transactions for {REDD+} and Renewable Energy},
-  author       = {{Forest Trends' Ecosystem Marketplace}},
-  year         = {2024},
-  month        = may,
-  howpublished = {\url{https://www.forest-trends.org/pressroom/report-the-voluntary-carbon-market-contracted-in-2023-driven-by-drop-off-in-transactions-for-redd-and-renewable-energy/}},
-  note         = {Thông cáo về báo cáo State of the Voluntary Carbon Market 2024, ngày 30/5/2024}
-}
-
+% ------------------------------------------------------------
+% 1. Bài báo khoa học (article)
+% ------------------------------------------------------------
 @article{schneider2019double,
-  title   = {Double counting and the {Paris Agreement} rulebook},
-  author  = {Schneider, Lambert and Duan, Maosheng and Stavins, Robert and Kizzier, Kelley and Broekhoff, Derik and Jotzo, Frank and Winkler, Harald and Lazarus, Michael and Howard, Andrew and Hood, Christina},
-  journal = {Science},
-  volume  = {366},
-  number  = {6462},
-  pages   = {180--183},
-  year    = {2019},
-  doi     = {10.1126/science.aay8750}
+  author    = {Schneider, Lambert and Duan, Maosheng and Stavins, Robert and Kizzier, Kelley and Broekhoff, Derik and Jotzo, Frank and Winkler, Harald and Lazarus, Michael and Howard, Andrew and Hood, Christina},
+  title     = {Double counting and the {Paris Agreement} rulebook},
+  journal   = {Science},
+  volume    = {366},
+  number    = {6462},
+  pages     = {180--183},
+  year      = {2019},
+  publisher = {American Association for the Advancement of Science},
+  doi       = {10.1126/science.aay8750}
 }
 
+@article{kim2020blockchain,
+  author    = {Kim, Seong-Kyu and Huh, Jun-Ho},
+  title     = {Blockchain of carbon trading for {UN} sustainable development goals},
+  journal   = {Sustainability},
+  volume    = {12},
+  number    = {10},
+  pages     = {4021},
+  year      = {2020},
+  publisher = {MDPI},
+  doi       = {10.3390/su12104021}
+}
+
+@article{sipthorpe2022blockchain,
+  author    = {Sipthorpe, Adam and Brink, Sabine and Van Leeuwen, Tyler and Staffell, Iain},
+  title     = {Blockchain solutions for carbon markets are nearing maturity},
+  journal   = {One Earth},
+  volume    = {5},
+  number    = {7},
+  pages     = {779--791},
+  year      = {2022},
+  publisher = {Elsevier},
+  doi       = {10.1016/j.oneear.2022.06.004}
+}
+
+@article{liu2024blockchain,
+  author    = {Liu, Wei-Jen and Chiu, Wei-Yu and Hua, Weiqi},
+  title     = {Blockchain-enabled renewable energy certificate trading: A secure and privacy-preserving approach},
+  journal   = {Energy},
+  volume    = {290},
+  pages     = {130110},
+  year      = {2024},
+  publisher = {Elsevier},
+  doi       = {10.1016/j.energy.2023.130110}
+}
+
+% ------------------------------------------------------------
+% 2. Báo cáo hội nghị khoa học (inproceedings)
+% ------------------------------------------------------------
+@inproceedings{vaccargiu2026blockchain,
+  author    = {Vaccargiu, Matteo and Ullah, Azmat and Gallo, Pierluigi},
+  title     = {A blockchain-oriented software engineering architecture for carbon credit certification systems},
+  booktitle = {Proc. 2026 IEEE Int. Conf. Software Analysis, Evolution and Reengineering -- Companion (SANER-C), 9th Int. Workshop on Blockchain Oriented Software Engineering (BoSE)},
+  address   = {Limassol, Cyprus},
+  year      = {2026}
+}
+% [KIỂM TRA] Khi kỷ yếu SANER-C 2026 được đăng trên IEEE Xplore, bổ sung pages và doi, bỏ note.
+
+% ------------------------------------------------------------
+% 3. Tài liệu trên Internet (misc: author, title, urldate, url)
+% 3a. Văn kiện quốc tế, tiêu chuẩn
+% ------------------------------------------------------------
 @misc{unfccc2022cma3,
-  title        = {Report of the Conference of the Parties serving as the meeting of the Parties to the {Paris Agreement} on its third session. Addendum. Part two: Action taken ({FCCC/PA/CMA/2021/10/Add.1})},
   author       = {{UNFCCC}},
+  address      = {Bonn, Germany},
+  title        = {Report of the {Conference of the Parties} serving as the meeting of the {Parties} to the {Paris Agreement} on its third session, {Addendum}, {Part} two: Action taken ({FCCC/PA/CMA/2021/10/Add.1})},
   year         = {2022},
-  howpublished = {\url{https://unfccc.int/sites/default/files/resource/cma2021_10a01E.pdf}},
-  note         = {Gồm quyết định 2/CMA.3 (Điều 6.2) và 3/CMA.3 (Điều 6.4)}
-}
-
-@misc{spglobal2024itmo,
-  title        = {Switzerland, Thailand conclude first {Article 6.2} deal in landmark move for carbon markets},
-  author       = {{S\&P Global Commodity Insights}},
-  year         = {2024},
-  month        = jan,
-  howpublished = {\url{https://www.spglobal.com/energy/en/news-research/latest-news/energy-transition/010824-switzerland-thailand-conclude-first-article-62-deal-in-landmark-move-for-carbon-markets}},
-  note         = {Ngày 8/1/2024}
-}
-
-@misc{argus2024itmo,
-  title        = {Switzerland expects falling costs for {ITMOs}},
-  author       = {{Argus Media}},
-  year         = {2024},
-  month        = jun,
-  howpublished = {\url{https://www.argusmedia.com/en/news-and-insights/latest-market-news/2581802-switzerland-expects-falling-costs-for-itmos}},
-  note         = {Ngày 26/6/2024}
+  urldate      = {2026-11-07},
+  url          = {https://unfccc.int/sites/default/files/resource/cma2021_10a01E.pdf}
 }
 
 @misc{unfccc2026pacm,
-  title        = {{UN} carbon market approves first-ever issuance of credits under the {Paris Agreement}},
   author       = {{UNFCCC}},
+  address      = {Bonn, Germany},
+  title        = {{UN} carbon market approves first-ever issuance of credits under the {Paris Agreement}},
   year         = {2026},
-  month        = feb,
-  howpublished = {\url{https://unfccc.int/news/un-carbon-market-approves-first-ever-issuance-of-credits-under-the-paris-agreement}},
-  note         = {Ngày 26/2/2026}
+  urldate      = {2026-10-20},
+  url          = {https://unfccc.int/news/un-carbon-market-approves-first-ever-issuance-of-credits-under-the-paris-agreement}
 }
 
-@misc{fastmarkets2026pacm,
-  title        = {First issuances approved under {PACM} from {Myanmar} cookstove project with {LoA}},
-  author       = {{Fastmarkets}},
-  year         = {2026},
-  howpublished = {\url{https://www.fastmarkets.com/insights/first-issuances-approved-under-pacm-from-myanmar-cookstove-project-with-loa}}
+@misc{iso14064-1,
+  author       = {{International Organization for Standardization}},
+  address      = {Geneva, Switzerland},
+  title        = {{ISO} 14064-1:2018 -- {Greenhouse} gases -- {Part} 1: {Specification} with guidance at the organization level for quantification and reporting of greenhouse gas emissions and removals},
+  year         = {2018},
+  urldate      = {2026-11-07},
+  url          = {https://www.iso.org/standard/66453.html}
 }
 
-@misc{cdop2025press,
-  title        = {Carbon Data Open Protocol ({CDOP}) Coalition Unveils Open-Source Data Model at Climate Week {NYC} to Facilitate and Scale Carbon Markets},
-  author       = {{S\&P Global}},
+@misc{iso14064-2,
+  author       = {{International Organization for Standardization}},
+  address      = {Geneva, Switzerland},
+  title        = {{ISO} 14064-2:2019 -- {Greenhouse} gases -- {Part} 2: {Specification} with guidance at the project level for quantification, monitoring and reporting of greenhouse gas emission reductions or removal enhancements},
+  year         = {2019},
+  urldate      = {2026-11-07},
+  url          = {https://www.iso.org/standard/66454.html}
+}
+
+@misc{iso14064-3,
+  author       = {{International Organization for Standardization}},
+  address      = {Geneva, Switzerland},
+  title        = {{ISO} 14064-3:2019 -- {Greenhouse} gases -- {Part} 3: {Specification} with guidance for the verification and validation of greenhouse gas statements},
+  year         = {2019},
+  urldate      = {2026-11-07},
+  url          = {https://www.iso.org/standard/66455.html}
+}
+% [KIỂM TRA] Các mục sau trước đây không ghi ngày truy cập, nay tạm đặt urldate 2026-11-07 nhưng
+% chưa được mở lại trong ngày này: unfccc2022cma3, ba trang ISO, lseg2024yir, cadtrust2025datamodel.
+% Mở lại từng link trước khi nộp và sửa urldate thành ngày thực sự truy cập.
+
+% ------------------------------------------------------------
+% 3b. Báo cáo, tài liệu kỹ thuật của các tổ chức
+% ------------------------------------------------------------
+@misc{lseg2024yir,
+  author       = {{London Stock Exchange Group}},
+  address      = {London, United Kingdom},
+  title        = {Carbon market year in review 2023},
+  year         = {2024},
+  urldate      = {2026-11-07},
+  url          = {https://www.lseg.com/content/dam/data-analytics/en_us/documents/reports/lseg-yir-2023-summary.pdf}
+}
+
+@misc{foresttrends2024sovcm,
+  author       = {{Ecosystem Marketplace}},
+  address      = {Washington, DC, USA},
+  title        = {2024 State of the voluntary carbon market ({SOVCM})},
+  howpublished = {Forest Trends},
+  year         = {2024},
+  urldate      = {2026-11-07},
+  url          = {https://www.ecosystemmarketplace.com/publications/2024-state-of-the-voluntary-carbon-markets-sovcm/}
+}
+
+@misc{cadtrust2025datamodel,
+  author       = {Chandra, Erick and Kong, Evan and Tong, Elysia and Steponaviciute, Ieva and Tan, Winnie},
+  address      = {Singapore},
+  title        = {{CAD Trust} data model version 2.0 report},
+  howpublished = {Climate Action Data Trust},
   year         = {2025},
-  month        = sep,
-  howpublished = {\url{https://press.spglobal.com/2025-09-23-Carbon-Data-Open-Protocol-CDOP-Coalition-Unveils-Open-Source-Data-Model-at-Climate-Week-NYC-to-Facilitate-and-Scale-Carbon-Markets}},
-  note         = {Thông cáo báo chí ngày 23/9/2025}
+  urldate      = {2026-11-07},
+  url          = {https://climateactiondata.org/wp-content/uploads/2025/10/CAD-Trust-Version-2.0-Technical-Report.pdf}
 }
-@misc{cadtrust2022deepdive,
-  title        = {Climate Action Data Trust: CAD Trust Deep Dive},
-  author       = {{The World Bank}},
+
+@misc{undp2024nationalregistry,
+  author       = {{UNDP}},
+  address      = {New York, NY, USA},
+  title        = {{UNDP National Carbon Credit Registry} (v2.0)},
+  howpublished = {GitHub},
+  year         = {2024},
+  urldate      = {2026-10-20},
+  url          = {https://github.com/undp/undp-national-carbon-registry}
+}
+
+@misc{verra2024vcs,
+  author       = {{Verra}},
+  address      = {Washington, DC, USA},
+  title        = {Verified Carbon Standard ({VCS}) program},
+  year         = {2026},
+  urldate      = {2026-10-20},
+  url          = {https://verra.org/programs/verified-carbon-standard/}
+}
+
+@misc{verra2024projecthub,
+  author       = {{Verra}},
+  address      = {Washington, DC, USA},
+  title        = {Verra Project Hub},
+  year         = {2026},
+  urldate      = {2026-10-20},
+  url          = {https://verra.org/verra-project-hub/}
+}
+
+@misc{verra2020registryv2,
+  author       = {{Verra}},
+  address      = {Washington, DC, USA},
+  title        = {Verra Registry {V2} release notes},
+  year         = {2020},
+  urldate      = {2026-11-04},
+  url          = {https://verra.org/documents/verra-registry-v2-release-notes-october-2020}
+}
+
+@misc{verra2022crypto,
+  author       = {{Verra}},
+  address      = {Washington, DC, USA},
+  title        = {Verra addresses crypto instruments and tokens},
   year         = {2022},
-  howpublished = {\url{https://ik.imagekit.io/mtozw1gojis/world-bank/Climate_Action_Data_Trust_CAD_Deep_Dive_060a37a2f9_opv3HRYzz.pdf}},
-  note         = {Truy cập ngày 28/9/2026}
+  urldate      = {2026-11-07},
+  url          = {https://verra.org/verra-addresses-crypto-instruments-and-tokens/}
 }
 
 @misc{verraregistry,
-  title        = {Verra Registry -- VCS Program Projects},
   author       = {{Verra}},
+  address      = {Washington, DC, USA},
+  title        = {Verra Registry},
   year         = {2026},
-  howpublished = {\url{https://registry.verra.org}},
-  note         = {Truy cập ngày 28/9/2026}
+  urldate      = {2026-11-04},
+  url          = {https://registry.verra.org}
+}
+
+@misc{cadtrust2026dashboard,
+  author       = {{Climate Action Data Trust}},
+  address      = {Singapore},
+  title        = {Public data dashboard},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://climateactiondata.org}
+}
+
+@misc{toucan2025docs,
+  author       = {{Toucan Protocol}},
+  title        = {Toucan documentation},
+  year         = {2026},
+  urldate      = {2026-10-20},
+  url          = {https://docs.toucan.earth/}
+}
+
+@misc{toucan2026wakefield,
+  author       = {{Toucan Protocol}},
+  title        = {Wakefield Biochar Facility 2 ({PUR-244045})},
+  howpublished = {Toucan App},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://app.toucan.earth}
+}
+
+@misc{worldbank2020erpa,
+  author       = {{The World Bank}},
+  address      = {Washington, DC, USA},
+  title        = {Vietnam signs landmark deal with {World Bank} to cut carbon emissions and reduce deforestation},
+  year         = {2020},
+  urldate      = {2026-11-07},
+  url          = {https://www.worldbank.org/en/news/press-release/2020/10/22/vietnam-signs-landmark-deal-with-world-bank-to-cut-carbon-emissions-and-reduce-deforestation}
+}
+
+% ------------------------------------------------------------
+% 3c. Văn bản pháp luật và thủ tục hành chính của Việt Nam
+%     author = cơ quan ban hành; title = "Loại văn bản số .../... ngày ... + trích yếu"
+% ------------------------------------------------------------
+@misc{vietnam2022nghidinh06,
+  author       = {{Chính phủ}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Nghị định số 06/2022/NĐ-CP ngày 07/01/2022 quy định giảm nhẹ phát thải khí nhà kính và bảo vệ tầng ô-dôn}},
+  howpublished = {Hệ thống văn bản Chính phủ},
+  year         = {2022},
+  urldate      = {2026-11-07},
+  url          = {https://vanban.chinhphu.vn/?pageid=27160&docid=205039}
+}
+
+@misc{vietnam2025nghidinh119,
+  author       = {{Chính phủ}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Nghị định số 119/2025/NĐ-CP ngày 09/6/2025 sửa đổi, bổ sung một số điều của Nghị định số 06/2022/NĐ-CP quy định giảm nhẹ phát thải khí nhà kính và bảo vệ tầng ô-dôn}},
+  howpublished = {Cổng Thông tin điện tử Chính phủ},
+  year         = {2025},
+  urldate      = {2026-11-04},
+  url          = {https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/6/119-nd.signed.pdf}
+}
+
+@misc{vietnam2026nghidinh396,
+  author       = {{Chính phủ}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Nghị định số 396/2026/NĐ-CP ngày 26/10/2026 sửa đổi, bổ sung một số điều của Nghị định số 06/2022/NĐ-CP quy định giảm nhẹ phát thải khí nhà kính và bảo vệ tầng ô-dôn}},
+  howpublished = {Cổng Thông tin điện tử Chính phủ},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/10/396_2026_nd-cp_26102026_3-signed.signed.pdf}
+}
+
+@misc{vietnam2026nghidinh29,
+  author       = {{Chính phủ}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Nghị định số 29/2026/NĐ-CP ngày 19/01/2026 về sàn giao dịch các-bon trong nước}},
+  howpublished = {Cổng Thông tin điện tử Chính phủ},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/01/29-cp.signed.pdf}
+}
+
+@misc{vietnam2025qd232,
+  author       = {{Thủ tướng Chính phủ}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Quyết định số 232/QĐ-TTg ngày 24/01/2025 phê duyệt Đề án thành lập và phát triển thị trường các-bon tại Việt Nam}},
+  howpublished = {Hệ thống văn bản Chính phủ},
+  year         = {2025},
+  urldate      = {2026-11-07},
+  url          = {https://vanban.chinhphu.vn/?pageid=27160&docid=212592}
+}
+
+@misc{vietnam2026thongtu11,
+  author       = {{Bộ Nông nghiệp và Môi trường}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Thông tư số 11/2026/TT-BNNMT ngày 13/02/2026 quy định quản lý, vận hành Hệ thống đăng ký quốc gia về hạn ngạch phát thải khí nhà kính và tín chỉ các-bon}},
+  howpublished = {Cổng Thông tin điện tử Chính phủ},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://datafiles.chinhphu.vn/cpp/files/vbpq/2026/02/11-bnnmt.pdf}
+}
+
+@misc{mae2025qd2935,
+  author       = {{Bộ Nông nghiệp và Môi trường}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Quyết định số 2935/QĐ-BNNMT ngày 30/7/2025 ban hành quy trình nội bộ thực hiện thủ tục hành chính trong lĩnh vực biến đổi khí hậu}},
+  howpublished = {Cổng Thông tin điện tử Cục Biến đổi khí hậu},
+  year         = {2025},
+  urldate      = {2026-11-04},
+  url          = {https://dcc.mae.gov.vn/noidung/Lists/VanBanDieuHanh/Attachments/40/2935-q\%C4\%91-b\%C4\%91kh-PL.pdf}
+}
+
+@misc{mae2026tthc1014129,
+  author       = {{Bộ Nông nghiệp và Môi trường}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Thủ tục hành chính mã 1.014129: Đăng ký tài khoản trên Hệ thống đăng ký quốc gia về hạn ngạch phát thải khí nhà kính và tín chỉ các-bon}},
+  howpublished = {Hệ thống thông tin giải quyết thủ tục hành chính ngành Nông nghiệp và Môi trường},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://dichvucong.mae.gov.vn}
+}
+
+@misc{mae2026tthc1014133,
+  author       = {{Bộ Nông nghiệp và Môi trường}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Thủ tục hành chính mã 1.014133: Cấp tín chỉ các-bon theo cơ chế trao đổi, bù trừ tín chỉ các-bon trong nước}},
+  howpublished = {Hệ thống thông tin giải quyết thủ tục hành chính ngành Nông nghiệp và Môi trường},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://dichvucong.mae.gov.vn}
+}
+
+% ------------------------------------------------------------
+% 3d. Thông báo và dữ liệu chính thức của Sở Giao dịch Chứng khoán Hà Nội
+% ------------------------------------------------------------
+@misc{hnx2026vn2025,
+  author       = {{Sở Giao dịch Chứng khoán Hà Nội}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Thông báo ngày giao dịch đầu tiên và ngày giao dịch cuối cùng của hạn ngạch phát thải khí nhà kính phân bổ cho giai đoạn 2025--2026}},
+  howpublished = {HNX, 26/6/2026},
+  year         = {2026},
+  urldate      = {2026-11-07},
+  url          = {https://hnx.vn/vi-vn/chi-tiet-su-kien-60022952-0-hnx.html}
+}
+
+@misc{hnx2026sanphamcacbon,
+  author       = {{Sở Giao dịch Chứng khoán Hà Nội}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Sản phẩm các-bon: biến động khối lượng giao dịch và thông tin hạn ngạch VN2025}},
+  howpublished = {HNX},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://hnx.vn}
+}
+
+@misc{hnx2026ketquagd,
+  author       = {{Sở Giao dịch Chứng khoán Hà Nội}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Kết quả giao dịch chi tiết sản phẩm các-bon}},
+  howpublished = {HNX},
+  year         = {2026},
+  urldate      = {2026-11-07},
+  url          = {https://hnx.vn/vi-vn/cacbon/ket-qua-giao-dich.html}
+}
+
+@misc{hnx2026danhmuchanngach,
+  author       = {{Sở Giao dịch Chứng khoán Hà Nội}},
+  address      = {Hà Nội, Việt Nam},
+  title        = {{Danh mục hạn ngạch}},
+  howpublished = {HNX},
+  year         = {2026},
+  urldate      = {2026-11-04},
+  url          = {https://www.hnx.vn/vi-vn/cacbon/danh-muc-han-ngach.html}
 }
 
 % ============================================================
-% Tài liệu gốc cho Chương 2 (chỉ hiện trong danh mục khi được \cite)
+% Tài liệu cho Chương 2 (chỉ hiện trong danh mục khi được \cite; Chương 2 đang tắt).
+% [KIỂM TRA] Trước khi bật lại Chương 2: thêm urldate (ngày thực sự mở link) cho mọi misc;
+% cân nhắc thay các bản preprint arXiv (tsai2024blockchain, benet2014ipfs) bằng bài đã bình duyệt.
 % ============================================================
+@misc{tsai2024blockchain,
+  author       = {Tsai, Yun-Cheng},
+  title        = {Blockchain-driven solutions for carbon credit trading: A decentralized platform for {SMEs}},
+  howpublished = {arXiv preprint arXiv:2504.16085},
+  year         = {2024},
+  url          = {https://arxiv.org/abs/2504.16085}
+}
+
 @misc{nakamoto2008bitcoin,
-  title        = {Bitcoin: A Peer-to-Peer Electronic Cash System},
   author       = {Nakamoto, Satoshi},
+  title        = {Bitcoin: A peer-to-peer electronic cash system},
   year         = {2008},
-  howpublished = {\url{https://bitcoin.org/bitcoin.pdf}}
+  url          = {https://bitcoin.org/bitcoin.pdf}
 }
 
 @inproceedings{zheng2017overview,
-  title     = {An Overview of Blockchain Technology: Architecture, Consensus, and Future Trends},
   author    = {Zheng, Zibin and Xie, Shaoan and Dai, Hongning and Chen, Xiangping and Wang, Huaimin},
-  booktitle = {2017 IEEE International Congress on Big Data (BigData Congress)},
+  title     = {An overview of blockchain technology: Architecture, consensus, and future trends},
+  booktitle = {Proc. 2017 IEEE Int. Congr. Big Data (BigData Congress)},
   pages     = {557--564},
   year      = {2017},
   doi       = {10.1109/BigDataCongress.2017.85}
 }
 
 @misc{buterin2014ethereum,
-  title        = {Ethereum: A Next-Generation Smart Contract and Decentralized Application Platform},
   author       = {Buterin, Vitalik},
+  title        = {Ethereum: A next-generation smart contract and decentralized application platform},
+  howpublished = {Ethereum White Paper},
   year         = {2014},
-  howpublished = {\url{https://ethereum.org/en/whitepaper/}}
+  url          = {https://ethereum.org/en/whitepaper/}
 }
 
 @misc{wood2014yellow,
-  title        = {Ethereum: A Secure Decentralised Generalised Transaction Ledger},
   author       = {Wood, Gavin},
+  title        = {Ethereum: A secure decentralised generalised transaction ledger},
+  howpublished = {Ethereum Yellow Paper},
   year         = {2014},
-  howpublished = {\url{https://ethereum.github.io/yellowpaper/paper.pdf}},
-  note         = {Ethereum Yellow Paper}
+  url          = {https://ethereum.github.io/yellowpaper/paper.pdf}
 }
 
 @misc{ethereum2024pos,
-  title        = {Proof-of-Stake ({PoS})},
   author       = {{Ethereum Foundation}},
+  title        = {Proof-of-stake ({PoS})},
   year         = {2024},
-  howpublished = {\url{https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/}},
-  note         = {Ghi ngày truy cập khi trích dẫn}
+  url          = {https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/}
 }
 
 @misc{eip1559,
-  title        = {{EIP-1559}: Fee Market Change for {ETH} 1.0 Chain},
   author       = {Buterin, Vitalik and Conner, Eric and Dudley, Rick and Slipper, Matthew and Norden, Ian and Bakhta, Abdelhamid},
+  title        = {{EIP-1559}: Fee market change for {ETH} 1.0 chain},
+  howpublished = {Ethereum Improvement Proposals, no. 1559},
   year         = {2019},
-  howpublished = {\url{https://eips.ethereum.org/EIPS/eip-1559}}
+  url          = {https://eips.ethereum.org/EIPS/eip-1559}
 }
 
 @article{szabo1997formalizing,
-  title   = {Formalizing and Securing Relationships on Public Networks},
   author  = {Szabo, Nick},
+  title   = {Formalizing and securing relationships on public networks},
   journal = {First Monday},
   volume  = {2},
   number  = {9},
@@ -266,78 +467,74 @@
 }
 
 @misc{solidity2024docs,
-  title        = {Solidity Documentation},
   author       = {{Solidity Team}},
+  title        = {Solidity documentation},
   year         = {2024},
-  howpublished = {\url{https://docs.soliditylang.org}},
-  note         = {Ghi phiên bản và ngày truy cập khi trích dẫn}
+  url          = {https://docs.soliditylang.org}
 }
 
 @misc{openzeppelin2024contracts,
-  title        = {{OpenZeppelin} Contracts Documentation},
   author       = {{OpenZeppelin}},
+  title        = {{OpenZeppelin} Contracts documentation},
   year         = {2024},
-  howpublished = {\url{https://docs.openzeppelin.com/contracts}},
-  note         = {Ghi phiên bản và ngày truy cập khi trích dẫn}
+  url          = {https://docs.openzeppelin.com/contracts}
 }
 
 @inproceedings{atzei2017survey,
-  title     = {A Survey of Attacks on {Ethereum} Smart Contracts ({SoK})},
   author    = {Atzei, Nicola and Bartoletti, Massimo and Cimoli, Tiziana},
-  booktitle = {Principles of Security and Trust (POST 2017)},
-  series    = {Lecture Notes in Computer Science},
-  volume    = {10204},
+  title     = {A survey of attacks on {Ethereum} smart contracts ({SoK})},
+  booktitle = {Principles of Security and Trust (POST 2017), Lecture Notes in Computer Science, vol. 10204},
   pages     = {164--186},
   publisher = {Springer},
+  address   = {Berlin, Heidelberg},
   year      = {2017},
   doi       = {10.1007/978-3-662-54455-6_8}
 }
 
 @misc{eip20,
-  title        = {{ERC-20}: Token Standard},
   author       = {Vogelsteller, Fabian and Buterin, Vitalik},
+  title        = {{ERC-20}: Token standard},
+  howpublished = {Ethereum Improvement Proposals, no. 20},
   year         = {2015},
-  howpublished = {\url{https://eips.ethereum.org/EIPS/eip-20}},
-  note         = {Ethereum Improvement Proposal 20}
+  url          = {https://eips.ethereum.org/EIPS/eip-20}
 }
 
 @misc{eip721,
-  title        = {{ERC-721}: Non-Fungible Token Standard},
   author       = {Entriken, William and Shirley, Dieter and Evans, Jacob and Sachs, Nastassia},
+  title        = {{ERC-721}: Non-fungible token standard},
+  howpublished = {Ethereum Improvement Proposals, no. 721},
   year         = {2018},
-  howpublished = {\url{https://eips.ethereum.org/EIPS/eip-721}},
-  note         = {Ethereum Improvement Proposal 721}
+  url          = {https://eips.ethereum.org/EIPS/eip-721}
 }
 
 @misc{eip1193,
-  title        = {{EIP-1193}: Ethereum Provider {JavaScript} {API}},
   author       = {Vogelsteller, Fabian and Ghods, Ryan and Maia, Victor and Garreau, Marc and Marks, Erik},
+  title        = {{EIP-1193}: Ethereum provider {JavaScript} {API}},
+  howpublished = {Ethereum Improvement Proposals, no. 1193},
   year         = {2018},
-  howpublished = {\url{https://eips.ethereum.org/EIPS/eip-1193}}
+  url          = {https://eips.ethereum.org/EIPS/eip-1193}
 }
 
 @misc{ethers2024docs,
-  title        = {ethers.js v6 Documentation},
   author       = {Moore, Richard},
+  title        = {ethers.js v6 documentation},
   year         = {2024},
-  howpublished = {\url{https://docs.ethers.org/v6/}},
-  note         = {Ghi ngày truy cập khi trích dẫn}
+  url          = {https://docs.ethers.org/v6/}
 }
 
 @inproceedings{xu2017taxonomy,
-  title     = {A Taxonomy of Blockchain-Based Systems for Architecture Design},
   author    = {Xu, Xiwei and Weber, Ingo and Staples, Mark and Zhu, Liming and Bosch, Jan and Bass, Len and Pautasso, Cesare and Rimba, Paul},
-  booktitle = {2017 IEEE International Conference on Software Architecture (ICSA)},
+  title     = {A taxonomy of blockchain-based systems for architecture design},
+  booktitle = {Proc. 2017 IEEE Int. Conf. Software Architecture (ICSA)},
   pages     = {243--252},
   year      = {2017},
   doi       = {10.1109/ICSA.2017.33}
 }
 
 @misc{benet2014ipfs,
-  title         = {{IPFS} -- Content Addressed, Versioned, {P2P} File System},
-  author        = {Benet, Juan},
-  year          = {2014},
-  eprint        = {1407.3561},
-  archivePrefix = {arXiv},
-  howpublished  = {\url{https://arxiv.org/abs/1407.3561}}
+  author       = {Benet, Juan},
+  title        = {{IPFS} -- Content addressed, versioned, {P2P} file system},
+  howpublished = {arXiv preprint arXiv:1407.3561},
+  year         = {2014},
+  url          = {https://arxiv.org/abs/1407.3561}
 }

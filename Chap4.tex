@@ -1,0 +1,223 @@
+% ============================================================
+% CHƯƠNG 4 — CÔNG NGHỆ, XÂY DỰNG VÀ KIỂM THỬ HỆ THỐNG
+% Tạo ngày 17/11/2026 khi Chương 2 đổi thành "Phân tích hệ thống" và Chương 3 thành "Thiết kế hệ thống".
+% Chương này gom (i) khung chương "Công nghệ sử dụng" cũ (Chương 2 trước 17/11/2026) và (ii) các mục
+% Xây dựng ứng dụng, Kiểm thử, Triển khai của Chương 3 cũ "Thiết kế, triển khai và đánh giá".
+% Bản trước: backup/2026-11-17_truoc-phantich-thietke/Chap2.tex, Chap3.tex.
+% CHƯA \input trong main.tex (chưa viết nội dung) — bỏ dấu % ở dòng \input{Chap4} để khôi phục.
+% Bảng API (\BangAPI) đã dùng ở Chương 3 (Thiết kế API), không đặt lại ở đây.
+%
+% Hướng dẫn của mẫu SoICT cho phần công nghệ: không quá 10 trang; chỉ giới thiệu công nghệ đồ án thực sự
+% dùng; với mỗi công nghệ nêu (i) yêu cầu nó phục vụ (NC-xx, VĐ-x, yêu cầu phi chức năng ở Chương 2),
+% (ii) phương án thay thế, (iii) lý do chọn.
+% Văn phong: xem ghi chú đầu Chap1.tex. [VIẾT SAU] toàn chương.
+% ============================================================
+
+\chapter{CÔNG NGHỆ, XÂY DỰNG VÀ KIỂM THỬ HỆ THỐNG}
+\chaptermark{CÔNG NGHỆ, XÂY DỰNG VÀ KIỂM THỬ}
+\label{chap:congnghe}
+\label{chap:cosolythuyet}
+\label{chap:xaydung}
+\label{chap:ketqua}
+\input{figures_chap4}
+\input{figures_chap5}
+
+% Tổng quan (Normal, không tiêu đề): chương trình bày các công nghệ đồ án dùng để hiện thực thiết kế ở
+% Chương 3, kết quả cài đặt, kiểm thử và triển khai trên Sepolia.
+% [VIẾT SAU] \canviet{Đoạn tổng quan chương}
+
+% ============ PHẦN A — CÔNG NGHỆ SỬ DỤNG (từ Chương 2 cũ) ============
+% [VIẾT SAU] Toàn bộ các mục dưới đây chưa viết nội dung — bỏ dấu % để khôi phục.
+% % ------------------------------------------------------------
+% \section{Blockchain và nền tảng Ethereum}
+% \label{sec:blockchain}
+% \label{sec:ethereum}
+%
+% \subsection*{Blockchain}
+% \label{subsec:cautrucblock}
+% \label{subsec:dongthuan}
+% % Ý cần có (ngắn gọn, chỉ phần đồ án dùng): khối, mã băm khối trước, sổ cái chỉ ghi thêm (ledger) ->
+% % vì sao dữ liệu on-chain khó sửa, phục vụ yêu cầu toàn vẹn ở mục \ref{sec:phichucnang} và VĐ-2;
+% % đồng thuận PoW/PoS, Ethereum chuyển sang PoS (The Merge 15/9/2022).
+% % Trích: \cite{nakamoto2008bitcoin,zheng2017overview,ethereum2024pos}. Nhắc \autoref{fig:chuoikhoi} trước hình.
+% % [VIẾT SAU] \canviet{Blockchain}
+% %
+% % \HinhChuoiKhoi
+%
+% \subsection*{Lựa chọn nền tảng blockchain}
+% \label{subsec:phanloai}
+% % Bảng so sánh Ethereum (public) với Hyperledger Fabric (permissioned, mà Vaccargiu dùng) và Chia
+% % (CAD Trust dùng): mô hình truy cập, đồng thuận, ngôn ngữ smart contract, chuẩn token, ví, testnet, chi phí.
+% % Lý do chọn Ethereum: phiếu giao nhiệm vụ; chuẩn ERC-721/ERC-20; MetaMask; testnet công khai để bên thứ ba
+% % tự kiểm tra (VĐ-2, NC-07). Nhược điểm: phí gas, dữ liệu công khai -> xử lý ở yêu cầu quyền riêng tư.
+% % [VIẾT SAU] \canviet{Lựa chọn nền tảng blockchain}
+%
+% \subsection*{Tài khoản, giao dịch và phí gas}
+% \label{subsec:taikhoan}
+% \label{subsec:evm}
+% % Ý cần có: EOA và contract account; khóa riêng, địa chỉ ví; giao dịch ký số, nonce; EVM, gas, EIP-1559.
+% % Đây là cơ sở cho phần đo gas ở Chương 3. Trích: \cite{buterin2014ethereum,wood2014yellow,eip1559}.
+% % [VIẾT SAU] \canviet{Tài khoản, giao dịch và phí gas}
+%
+% \subsection*{Testnet Sepolia và Etherscan}
+% \label{subsec:sepolia}
+% % Ý cần có: mainnet và testnet; Sepolia, faucet; Etherscan để tra giao dịch, xác minh (verify) mã hợp đồng.
+% % Lý do: phạm vi nguyên mẫu (mục \ref{sec:muctieu}), không tốn phí thật.
+% % [VIẾT SAU] \canviet{Testnet Sepolia}
+%
+% % ------------------------------------------------------------
+% \section{Smart contract và công cụ phát triển}
+% \label{sec:smartcontract}
+%
+% \subsection*{Smart contract và ngôn ngữ Solidity}
+% \label{subsec:khainiemsc}
+% \label{subsec:solidity}
+% % Ý cần có: định nghĩa (Szabo); tự thực thi, không sửa được mã sau triển khai; event và log (dùng cho
+% % bộ đồng bộ sự kiện); cấu trúc contract (state variable, function, modifier, event), kế thừa.
+% % Yêu cầu phục vụ: NC-03, NC-06 (ràng buộc sê-ri, không hủy hai lần thành ràng buộc kỹ thuật).
+% % Trích: \cite{szabo1997formalizing,buterin2014ethereum,solidity2024docs}.
+% % [VIẾT SAU] \canviet{Smart contract và Solidity}
+%
+% \subsection*{Thư viện OpenZeppelin và Hardhat}
+% \label{subsec:openzeppelin}
+% % OpenZeppelin 5: ERC721, ERC20, AccessControl (VERIFIER_ROLE...), Pausable, ReentrancyGuard -> NC-09 và
+% % yêu cầu bảo mật. Hardhat: biên dịch, Hardhat Network, test Mocha/Chai, coverage, gas reporter.
+% % Phương án thay thế: Foundry, Truffle (đã ngừng phát triển); lý do chọn Hardhat (JavaScript cùng ngôn ngữ backend).
+% % Trích: \cite{openzeppelin2024contracts}.
+% % [VIẾT SAU] \canviet{OpenZeppelin và Hardhat}
+%
+% \subsection*{Các lỗ hổng thường gặp của smart contract}
+% \label{subsec:baomat}
+% % Reentrancy, kiểm soát truy cập sai, tràn số (Solidity >= 0.8 tự kiểm tra), tx.origin. Mỗi lỗ hổng
+% % 1–2 câu và cách phòng trong đồ án; công cụ quét Slither. Trích: \cite{atzei2017survey}.
+% % [VIẾT SAU] \canviet{Lỗ hổng smart contract}
+%
+% % ------------------------------------------------------------
+% \section{Các chuẩn token}
+% \label{sec:token-standards}
+%
+% \subsection*{ERC-20 và ERC-721}
+% \label{subsec:erc20}
+% \label{subsec:erc721}
+% % ERC-20: fungible token, totalSupply, balanceOf, transfer, approve, transferFrom, allowance \cite{eip20}.
+% % ERC-721: NFT, ownerOf, safeTransferFrom, tokenURI, onERC721Received \cite{eip721}.
+% % [VIẾT SAU] \canviet{ERC-20 và ERC-721}
+%
+% \subsection*{Lựa chọn chuẩn token cho tín chỉ các-bon}
+% \label{subsec:chontoken}
+% % Bảng so sánh ERC-20 / ERC-721 / ERC-1155 theo: giữ metadata riêng từng lô, chia nhỏ, thanh khoản,
+% % hỗ trợ ví. Kết luận: mỗi lô là một NFT ERC-721 (giữ dự án, vintage, dãy sê-ri, NC-03), pool ERC-20
+% % cho giao dịch từng phần (NC-05); kế thừa mô hình Batch NFT/TCO2/BCT của Toucan (mục \ref{sec:khaosatsobo}).
+% % [VIẾT SAU] \canviet{Lựa chọn chuẩn token}
+%
+% % ------------------------------------------------------------
+% \section{Ứng dụng web giao tiếp với blockchain}
+% \label{sec:dapp}
+%
+% \subsection*{Kiến trúc dApp}
+% \label{subsec:kientrucdapp}
+% % Luồng một giao dịch từ giao diện tới smart contract (giải thích \autoref{fig:luongdapp}).
+% % [VIẾT SAU] \canviet{Kiến trúc dApp}
+% %
+% % \HinhLuongDApp
+%
+% \subsection*{Ví MetaMask, ethers.js và Next.js}
+% \label{subsec:metamask}
+% \label{subsec:ethers}
+% % MetaMask giữ khóa riêng, EIP-1193 (window.ethereum) \cite{eip1193}; ethers.js: Provider, Signer,
+% % Contract, ABI, call và send \cite{ethers2024docs}; Next.js cho giao diện. Yêu cầu phục vụ: tính dễ dùng,
+% % người dùng tự ký giao dịch (backend không giữ khóa). Phương án thay thế: web3.js, viem; React thuần.
+% % [VIẾT SAU] \canviet{MetaMask, ethers.js và Next.js}
+%
+% % ------------------------------------------------------------
+% \section{Công nghệ phía off-chain}
+% \label{sec:offchain-congnghe}
+% \label{sec:onoffchain-lythuyet}
+% % Node.js + Express (API RESTful), PostgreSQL (dữ liệu theo CAD Trust V2.0, NC-10), JWT, xác thực bằng
+% % chữ ký ví. Tiêu chí chọn dữ liệu on-chain/off-chain theo \cite{xu2017taxonomy}; neo mã băm keccak256 của hồ sơ;
+% % IPFS \cite{benet2014ipfs} là hướng mở rộng (hiện lưu tệp cục bộ). Phương án thay thế: MongoDB; lý do chọn
+% % CSDL quan hệ (mô hình CAD Trust có quan hệ rõ, giống UNDP dùng PostgreSQL).
+% % [VIẾT SAU] \canviet{Công nghệ off-chain}
+
+
+% ============ PHẦN B — XÂY DỰNG, KIỂM THỬ, TRIỂN KHAI (từ Chương 3 cũ) ============
+% ------------------------------------------------------------
+\section{Xây dựng ứng dụng}
+\label{sec:xaydung}
+
+\subsection*{Thư viện và công cụ sử dụng}
+\label{sec:moitruong}
+% Mẫu SoICT: bảng công cụ có phiên bản (và URL). Giải thích \autoref{tab:congnghe}; lý do chọn công cụ đã nêu
+% ở Chương 2 nên chỉ nhắc lại ngắn. Cấu trúc mã nguồn theo \autoref{fig:cautrucma}.
+% [VIẾT SAU] \canviet{Thư viện và công cụ sử dụng}
+
+\BangCongNghe
+
+\HinhCauTrucMa
+
+\subsection*{Kết quả đạt được}
+\label{subsec:ketquadatduoc}
+\label{sec:caidat-hopdong}
+\label{sec:caidat-backend}
+% Mẫu SoICT: mô tả các sản phẩm đóng gói, thành phần, vai trò; bảng thống kê số dòng mã, số tệp, số hợp đồng,
+% số endpoint, dung lượng.
+% Nội dung cài đặt từ Chương 4 cũ (chỉ tóm lược, chi tiết đóng góp ở Chương 4):
+%  - CarbonCreditNFT: struct CreditBatch (projectId, vintage, serialFrom, quantity, retired, documentHash,
+%    verifier, issuedAt); mintBatch: seriesKey = keccak256(projectId, vintage), serialFrom >= nextAvailableSerial,
+%    documentUsed[documentHash]; retire hủy từ đầu dãy sê-ri còn lại; retireFor cho pool (RETIREMENT_AGENT_ROLE);
+%    Pausable ghi đè _update.
+%  - CarbonPool: decimals = 0; nạp qua onERC721Received; redeem đốt remainingOf(tokenId); retire đốt token rồi
+%    gọi retireFor; ReentrancyGuard.
+%  - Phân quyền: DEFAULT_ADMIN_ROLE và vai trò phát hành ISSUER_ROLE (cơ quan quản lý, mỗi tỉnh một tài khoản),
+%    VERIFIER_ROLE (VVB, chỉ phê duyệt off-chain), RETIREMENT_AGENT_ROLE (pool). [CẦN SỬA MÃ] thêm ISSUER_ROLE.
+%  - Backend: db/schema.sql từ ERD; xác thực nonce -> personal_sign -> ethers.verifyMessage -> JWT 8 giờ;
+%    API theo \autoref{tab:api} (backend không giữ khóa riêng); indexer quét queryFilter, khóa (tx_hash, log_index),
+%    chưa xử lý reorg.
+% [VIẾT SAU] \canviet{Kết quả đạt được}
+
+% \BangAPI   % [17/11/2026] đã dùng ở Chương 3, mục Thiết kế API
+
+\subsection*{Minh họa các chức năng chính}
+\label{subsec:minhhoa}
+\label{sec:caidat-frontend}
+% Mỗi màn hình 1 ảnh chụp + giải thích ngắn: danh sách dự án, chi tiết dự án, tra cứu sê-ri, chứng nhận hủy,
+% dự án của tôi, thẩm định (VVB), ví tín chỉ, dashboard, quản trị. Chụp khi chạy thật (README "Chạy thử cục bộ").
+% [VIẾT SAU] \canviet{Minh họa các chức năng chính}
+
+% ------------------------------------------------------------
+\section{Kiểm thử}
+\label{sec:kiemthu}
+\label{sec:pp-kiemthu}
+\label{sec:kq-chucnang}
+% Mẫu SoICT: 2–3 trang; thiết kế ca kiểm thử cho 2–3 chức năng quan trọng nhất (phát hành, hủy từ pool, tra cứu),
+% nêu kỹ thuật kiểm thử; tổng kết số ca và kết quả; giải thích ca không đạt. Ca kiểm thử khác đưa vào Phụ lục.
+% Ba mức: kiểm thử đơn vị hợp đồng trên Hardhat Network (Mocha/Chai, loadFixture); kiểm thử API với pg-mem và
+% supertest; kiểm thử tích hợp e2e-indexer và smoke-api. Ghi cấu hình máy, phiên bản Node, Hardhat.
+% Nhận xét độ phủ: nhánh của CarbonPool 75% vì ... (xem coverage/index.html).
+% Chi phí gas: quy đổi ETH/USD theo giá gas tại thời điểm đo (ghi nguồn, ngày); vì sao mintBatch, retire tốn gas.
+% Kịch bản chống tính toán kép (\BangTinhToanKep) đặt ở Chương 4, mục \ref{sec:gp-tinhtoankep}.
+% [VIẾT SAU] \canviet{Kiểm thử}
+
+\BangTestHopDong
+
+\BangTestAPI
+
+\BangDoPhu
+
+\BangGas
+
+% ------------------------------------------------------------
+\section{Triển khai}
+\label{sec:trienkhai}
+\label{sec:kq-sepolia}
+% Giải thích \autoref{fig:trienkhai}: Sepolia + RPC, backend + PostgreSQL, frontend; địa chỉ hợp đồng,
+% link Etherscan (đã verify), vài giao dịch mẫu (mint, retire), ảnh chụp.
+% [VIẾT SAU] \canviet{Triển khai}
+
+\HinhTrienKhai
+
+
+% ------------------------------------------------------------
+% Kết chương (Normal, không tiêu đề): tóm tắt bộ công nghệ (bảng Công nghệ | Phiên bản | Vai trò | Yêu cầu
+% phục vụ), kết quả cài đặt, kiểm thử, triển khai; dẫn sang Chương 5 (giải pháp và đóng góp).
+% [VIẾT SAU] \canviet{Kết chương 4}

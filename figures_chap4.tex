@@ -1,0 +1,143 @@
+% ============================================================
+% HÌNH VÀ BẢNG CHƯƠNG 4 (CÔNG NGHỆ, XÂY DỰNG VÀ KIỂM THỬ) — gọi bằng macro trong Chap4.tex
+%   \HinhChuoiKhoi  : cấu trúc liên kết các khối           (fig:chuoikhoi)   [chuyển từ figures_chap2 ngày 17/11/2026]
+%   \HinhLuongDApp  : luồng tương tác của dApp              (fig:luongdapp)   [chuyển từ figures_chap2 ngày 17/11/2026]
+%   \BangCongNghe   : công nghệ và phiên bản sử dụng      (tab:congnghe)
+%   \HinhTrienKhai  : sơ đồ triển khai hệ thống            (fig:trienkhai)
+%   \HinhCauTrucMa  : cấu trúc thư mục mã nguồn            (fig:cautrucma)
+% Phiên bản lấy từ package.json / hardhat.config.js tại thời điểm 21/10/2026.
+% ============================================================
+
+% ---------- Cấu trúc liên kết các khối ----------
+\newcommand{\HinhChuoiKhoi}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    truong/.style={draw, minimum width=3.3cm, minimum height=0.55cm,
+                   font=\footnotesize, fill=white, inner sep=1pt},
+    tieude/.style={truong, fill=gray!20, font=\footnotesize\bfseries}]
+  \foreach \i/\x/\ten in {0/0/N-1, 1/4.6/N, 2/9.2/N+1} {
+    \node[tieude] (h\i) at (\x,0) {Khối \ten};
+    \node[truong, below=0pt of h\i] (p\i) {Mã băm khối trước};
+    \node[truong, below=0pt of p\i] (t\i) {Dấu thời gian};
+    \node[truong, below=0pt of t\i] (m\i) {Gốc Merkle};
+    \node[truong, below=0pt of m\i, minimum height=1cm, align=center] (g\i)
+        {Danh sách\\giao dịch};
+    \node[draw, thick, rounded corners=2pt, inner sep=3pt, fit=(h\i)(g\i)] (b\i) {};
+  }
+  \draw[->, thick] (p1.west) -- (b0.east |- p1.west);
+  \draw[->, thick] (p2.west) -- (b1.east |- p2.west);
+  \node[font=\large] at (-2.35,-1.4) {$\cdots$};
+  \node[font=\large] at (11.55,-1.4) {$\cdots$};
+\end{tikzpicture}
+\caption[Cấu trúc liên kết giữa các khối trong chuỗi khối]{Cấu trúc liên kết giữa các khối trong chuỗi khối \hinhtao[Claude]{20/10/2026}}
+\label{fig:chuoikhoi}
+\end{figure}}
+
+% ---------- Luồng tương tác của ứng dụng phi tập trung ----------
+\newcommand{\HinhLuongDApp}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    hop/.style={draw, rounded corners=3pt, align=center, font=\footnotesize,
+                text width=2.1cm, minimum height=1.1cm, fill=white},
+    nhan/.style={font=\scriptsize, align=center}]
+  \node[hop]                         (u)   at (0,0)     {Người dùng};
+  \node[hop]                         (fe)  at (3.7,0)   {Giao diện web\\(Next.js,\\ethers.js)};
+  \node[hop]                         (mm)  at (7.4,0)   {Ví\\MetaMask\\(giữ khóa riêng)};
+  \node[hop, text width=2.6cm, minimum height=1.6cm, fill=gray!12]
+                                     (net) at (11.3,0)  {Mạng Ethereum\\(Sepolia)\\nút RPC, EVM,\\hợp đồng thông minh};
+  \node[hop]                         (be)  at (3.7,-3)  {Backend\\(Node.js, Express)};
+  \node[hop]                         (db)  at (0,-3)    {CSDL off-chain\\(PostgreSQL)};
+
+  \draw[->] (u) -- node[nhan, above] {thao tác} (fe);
+  \draw[->] (fe) -- node[nhan, above] {yêu cầu ký\\(EIP-1193)} (mm);
+  \draw[->] (mm) -- node[nhan, above] {giao dịch\\đã ký} (net);
+  \draw[->, dashed] (fe.north) to[bend left=22]
+      node[nhan, above] {đọc trạng thái on-chain (call)} (net.north);
+  \draw[->] (net.south) |- node[nhan, pos=0.75, below] {sự kiện (Minted, Transfer, Retired\ldots)} (be.east);
+  \draw[<->] (fe) -- node[nhan, right] {API REST} (be);
+  \draw[<->] (be) -- node[nhan, above] {đọc/ghi} (db);
+\end{tikzpicture}
+\caption[Luồng tương tác giữa giao diện, ví MetaMask, mạng Ethereum và backend]{Luồng tương tác giữa giao diện, ví MetaMask, mạng Ethereum và backend \hinhtao[Claude]{20/10/2026}}
+\label{fig:luongdapp}
+\end{figure}}
+
+\newcommand{\BangCongNghe}{%
+\begin{table}[htbp]
+\centering
+\caption{Công nghệ và phiên bản sử dụng}
+\label{tab:congnghe}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{3.2cm}|p{4.4cm}|X|}
+\hline
+\textbf{Thành phần} & \textbf{Công nghệ (phiên bản)} & \textbf{Vai trò}\\ \hline
+Hợp đồng thông minh & Solidity 0.8.24, OpenZeppelin Contracts 5.1.0 & ERC-721, ERC-20, AccessControl, Pausable, ReentrancyGuard\\ \hline
+Môi trường phát triển & Hardhat 2.29, hardhat-toolbox 5 (ethers 6, Mocha/Chai, solidity-coverage, gas reporter) & Biên dịch, kiểm thử, đo độ phủ và gas, triển khai\\ \hline
+Mạng blockchain & Hardhat Network (cục bộ), Ethereum Sepolia & Kiểm thử và triển khai thử nghiệm\\ \hline
+Backend & Node.js 22, Express 4.21, jsonwebtoken 9, multer & API REST, xác thực bằng chữ ký ví, tải hồ sơ\\ \hline
+Cơ sở dữ liệu & PostgreSQL 16 (pg 8.13); pg-mem khi kiểm thử & Lưu dữ liệu off-chain theo mô hình CAD Trust\\ \hline
+Đồng bộ sự kiện & ethers 6.13 (JsonRpcProvider, queryFilter) & Đọc sự kiện on-chain vào CSDL\\ \hline
+Frontend & Next.js 14.2 (App Router), React 18.3, ethers 6.13 & Giao diện web, kết nối MetaMask\\ \hline
+Ví & MetaMask & Ký đăng nhập và ký giao dịch\\ \hline
+\end{tabularx}
+\end{table}}
+
+\newcommand{\HinhTrienKhai}{%
+\begin{figure}[htbp]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tikzpicture}[>=Stealth, font=\footnotesize,
+    hop/.style={draw, rounded corners=3pt, align=center, fill=white, minimum height=1.1cm, text width=3.2cm},
+    nhan/.style={font=\scriptsize, align=center}]
+  \node[hop] (br)  at (0,0)    {\textbf{Trình duyệt}\\ giao diện Next.js\\ + MetaMask};
+  \node[hop] (fe)  at (0,-3.2) {\textbf{Máy chủ frontend}\\ Next.js (Vercel)};
+  \node[hop] (be)  at (5.2,0)  {\textbf{Máy chủ backend}\\ Express, port 4000\\ + bộ đồng bộ sự kiện};
+  \node[hop] (db)  at (10.4,0) {\textbf{PostgreSQL}};
+  \node[hop] (fs)  at (10.4,-3.2) {\textbf{Kho tệp}\\ uploads/ (hoặc IPFS)};
+  \node[hop] (rpc) at (5.2,-3.2) {\textbf{Nút RPC}\\ (Infura/Alchemy)};
+  \node[hop, fill=gray!10] (eth) at (5.2,-6.0) {\textbf{Ethereum Sepolia}\\ CarbonCreditNFT, CarbonPool};
+  \draw[->] (fe) -- node[nhan, left] {tải trang\\ (HTTPS)} (br);
+  \draw[<->] (br) -- node[nhan, above] {REST/JSON\\ + JWT} (be);
+  \draw[<->] (be) -- node[nhan, above] {SQL} (db);
+  \draw[->] (be) -- node[nhan, right] {lưu tệp} (fs);
+  \draw[->] (be) -- node[nhan, right] {đọc sự kiện} (rpc);
+  \draw[->] (br.south east) to[bend left=10] node[nhan, pos=0.35, right] {MetaMask ký\\ và gửi giao dịch} (rpc.north west);
+  \draw[<->] (rpc) -- (eth);
+\end{tikzpicture}
+\end{adjustbox}
+\caption[Sơ đồ triển khai hệ thống]{Sơ đồ triển khai hệ thống \hinhtao[Claude]{21/10/2026}}
+\label{fig:trienkhai}
+\end{figure}}
+
+\newcommand{\HinhCauTrucMa}{%
+\begin{figure}[htbp]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}l l@{}}
+\texttt{DATN-CarbonCreditOnBlockChain/} & \\
+\texttt{\quad contracts/} & \textit{Hardhat}\\
+\texttt{\quad\quad contracts/CarbonCreditNFT.sol} & lô tín chỉ ERC-721: mint, retire\\
+\texttt{\quad\quad contracts/CarbonPool.sol} & pool ERC-20: deposit, redeem, retire\\
+\texttt{\quad\quad test/CarbonCredit.test.js} & 26 test case TC-01 đến TC-26\\
+\texttt{\quad\quad scripts/deploy.js} & triển khai, cấp quyền\\
+\texttt{\quad\quad scripts/demo.js} & kịch bản demo, đo gas\\
+\texttt{\quad\quad scripts/e2e-indexer.js} & kiểm thử on-chain $\rightarrow$ CSDL\\
+\texttt{\quad\quad scripts/smoke-api.js} & kiểm thử toàn hệ thống đang chạy\\
+\texttt{\quad backend/} & \textit{Node.js + Express}\\
+\texttt{\quad\quad db/schema.sql} & lược đồ CSDL (CAD Trust + ứng dụng)\\
+\texttt{\quad\quad src/routes/*.js} & các nhóm endpoint API\\
+\texttt{\quad\quad src/indexer.js} & đồng bộ sự kiện on-chain\\
+\texttt{\quad\quad test/api.test.js} & 16 test case API-01 đến API-16\\
+\texttt{\quad frontend/} & \textit{Next.js}\\
+\texttt{\quad\quad app/} & các trang giao diện\\
+\texttt{\quad\quad components/WalletProvider.js} & đăng nhập bằng ví\\
+\texttt{\quad\quad lib/chain.js, lib/api.js} & gọi hợp đồng và API\\
+\end{tabular}
+\caption[Cấu trúc thư mục mã nguồn]{Cấu trúc thư mục mã nguồn \hinhtao[Claude]{21/10/2026}}
+\label{fig:cautrucma}
+\end{figure}}

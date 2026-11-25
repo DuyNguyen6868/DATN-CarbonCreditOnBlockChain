@@ -221,3 +221,6 @@ __marimo__/
 
 # Office lock files
 ~$*
+
+# Python template ignores lib/; frontend/lib is source code
+!frontend/lib/

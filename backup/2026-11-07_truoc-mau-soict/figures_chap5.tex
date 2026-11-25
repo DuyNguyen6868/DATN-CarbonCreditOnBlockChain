@@ -1,0 +1,141 @@
+% ============================================================
+% BẢNG CHƯƠNG 5 — số liệu lấy trực tiếp từ kết quả chạy ngày 21/10/2026
+%   (npx hardhat test / coverage / REPORT_GAS, npm test trong backend)
+%   \BangTestHopDong : 26 test case hợp đồng               (tab:testhopdong)
+%   \BangTestAPI     : 16 test case API                    (tab:testapi)
+%   \BangDoPhu       : độ phủ mã hợp đồng                  (tab:dophu)
+%   \BangGas         : chi phí gas các thao tác chính      (tab:gas)
+%   \BangTinhToanKep : kịch bản chống tính toán kép        (tab:tinhtoankep)
+% CHẠY LẠI và cập nhật số liệu nếu sửa hợp đồng. Cột "Yêu cầu" cần điền mã YC-xx
+% sau khi bạn lập bảng yêu cầu chức năng ở mục \ref{subsec:ycchucnang}.
+% ============================================================
+
+\newcommand{\BangTestHopDong}{%
+\begingroup\small
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{|p{1.25cm}|p{8.8cm}|p{1.55cm}|p{1.55cm}|}
+\caption{Kết quả kiểm thử đơn vị hợp đồng thông minh}\label{tab:testhopdong}\\
+\hline
+\textbf{Mã} & \textbf{Kịch bản kiểm thử} & \textbf{Yêu cầu} & \textbf{Kết quả}\\ \hline
+\endfirsthead
+\hline
+\textbf{Mã} & \textbf{Kịch bản kiểm thử} & \textbf{Yêu cầu} & \textbf{Kết quả}\\ \hline
+\endhead
+\multicolumn{4}{|l|}{\textit{Phát hành (Minting)}}\\ \hline
+TC-01 & VVB mint lô tín chỉ, lưu đúng thông tin và phát sự kiện CreditMinted & YC-?? & Đạt\\ \hline
+TC-02 & Tài khoản không có VERIFIER\_ROLE không mint được & YC-?? & Đạt\\ \hline
+TC-03 & Chặn dãy sê-ri chồng lấn trong cùng dự án và vintage (phát hành kép) & YC-?? & Đạt\\ \hline
+TC-04 & Cho phép lô kế tiếp không chồng lấn, và cùng dãy sê-ri ở vintage khác & YC-?? & Đạt\\ \hline
+TC-05 & Chặn dùng lại cùng một báo cáo thẩm định (phát hành kép) & YC-?? & Đạt\\ \hline
+TC-06 & Từ chối số lượng 0 và sê-ri 0 & YC-?? & Đạt\\ \hline
+\multicolumn{4}{|l|}{\textit{Chuyển nhượng và hủy (Retirement)}}\\ \hline
+TC-07 & Chủ sở hữu chuyển nhượng NFT lô tín chỉ & YC-?? & Đạt\\ \hline
+TC-08 & Hủy một phần lô, cấp chứng nhận với dãy sê-ri đúng & YC-?? & Đạt\\ \hline
+TC-09 & Hủy hết lô thì NFT bị đốt, không chuyển nhượng hay hủy lại được (sử dụng kép) & YC-?? & Đạt\\ \hline
+TC-10 & Không hủy quá số còn lại, không hủy 0, bắt buộc có người thụ hưởng & YC-?? & Đạt\\ \hline
+TC-11 & Người không sở hữu không hủy được; người được approve thì hủy được & YC-?? & Đạt\\ \hline
+TC-12 & retireFor chỉ dành cho RETIREMENT\_AGENT\_ROLE đang giữ NFT & YC-?? & Đạt\\ \hline
+TC-13 & getBatch của lô không tồn tại bị từ chối & YC-?? & Đạt\\ \hline
+TC-14 & Cơ quan quản lý tạm dừng thì chặn mint, chuyển nhượng và hủy & YC-?? & Đạt\\ \hline
+TC-15 & Hỗ trợ các interface ERC-721 và AccessControl & YC-?? & Đạt\\ \hline
+\multicolumn{4}{|l|}{\textit{Pool ERC-20 (giao dịch từng phần)}}\\ \hline
+TC-16 & Nạp NFT vào pool nhận đúng số token, NFT bị khóa trong pool & YC-?? & Đạt\\ \hline
+TC-17 & Nạp bằng safeTransferFrom trực tiếp; lô đã hủy một phần chỉ nhận phần còn lại & YC-?? & Đạt\\ \hline
+TC-18 & Pool từ chối NFT không phải của hợp đồng tín chỉ & YC-?? & Đạt\\ \hline
+TC-19 & Chuyển token ERC-20 từng phần cho người mua & YC-?? & Đạt\\ \hline
+TC-20 & Người mua hủy từ pool, chứng nhận ghi người mua và dãy sê-ri; token đã đốt không dùng lại được (sử dụng kép) & YC-?? & Đạt\\ \hline
+TC-21 & Bất biến: tổng cung token bằng tổng phần còn lại của các lô trong pool & YC-?? & Đạt\\ \hline
+TC-22 & Đổi lại (redeem) lô cần đốt đủ token bằng phần còn lại & YC-?? & Đạt\\ \hline
+TC-23 & Thao tác với lô không nằm trong pool bị từ chối & YC-?? & Đạt\\ \hline
+TC-24 & NFT trong pool không thể bị chủ cũ bán riêng (bán kép) & YC-?? & Đạt\\ \hline
+TC-25 & Hủy từ pool quá phần còn lại của lô bị từ chối, số dư không đổi & YC-?? & Đạt\\ \hline
+TC-26 & Nạp lô đã hủy hết (không còn tồn tại) bị từ chối & YC-?? & Đạt\\ \hline
+\end{longtable}
+\endgroup}
+
+\newcommand{\BangTestAPI}{%
+\begingroup\small
+\renewcommand{\arraystretch}{1.12}
+\begin{longtable}{|p{1.35cm}|p{8.7cm}|p{1.55cm}|p{1.55cm}|}
+\caption{Kết quả kiểm thử API và bộ đồng bộ sự kiện}\label{tab:testapi}\\
+\hline
+\textbf{Mã} & \textbf{Kịch bản kiểm thử} & \textbf{Yêu cầu} & \textbf{Kết quả}\\ \hline
+\endfirsthead
+\hline
+\textbf{Mã} & \textbf{Kịch bản kiểm thử} & \textbf{Yêu cầu} & \textbf{Kết quả}\\ \hline
+\endhead
+API-01 & Đăng nhập bằng chữ ký ví, tài khoản mới tự chọn vai trò & YC-?? & Đạt\\ \hline
+API-02 & Chữ ký sai hoặc dùng lại nonce bị từ chối & YC-?? & Đạt\\ \hline
+API-03 & Không tự đăng ký được vai trò VERIFIER; ADMIN cấp được & YC-?? & Đạt\\ \hline
+API-04 & Endpoint quản trị từ chối người không phải ADMIN và người chưa đăng nhập & YC-?? & Đạt\\ \hline
+API-05 & Chủ dự án đăng ký dự án; trùng mã dự án bị từ chối & YC-?? & Đạt\\ \hline
+API-06 & Gửi yêu cầu cấp tín chỉ cần báo cáo giám sát đã tải lên & YC-?? & Đạt\\ \hline
+API-07 & Chỉ VVB duyệt được; duyệt xong trả về tham số mint với sê-ri đề xuất & YC-?? & Đạt\\ \hline
+API-08 & Báo cáo thẩm định đã dùng không duyệt được yêu cầu khác (phát hành kép, off-chain) & YC-?? & Đạt\\ \hline
+API-09 & Sự kiện CreditMinted tạo đợt cấp, khối tín chỉ và chuyển yêu cầu sang MINTED & YC-?? & Đạt\\ \hline
+API-10 & Sự kiện trùng (cùng tx\_hash, log\_index) không bị ghi hai lần & YC-?? & Đạt\\ \hline
+API-11 & Sự kiện CreditRetired tách khối và tạo chứng nhận tra cứu được & YC-?? & Đạt\\ \hline
+API-12 & Tra cứu theo số sê-ri cho biết sê-ri đã hủy hay còn hiệu lực & YC-?? & Đạt\\ \hline
+API-13 & Dashboard so sánh tín chỉ đã hủy với phần phát thải vượt hạn ngạch & YC-?? & Đạt\\ \hline
+API-14 & Hủy hết phần còn lại thì không còn khối Held; thống kê khớp & YC-?? & Đạt\\ \hline
+API-15 & Xuất dữ liệu dự án theo cấu trúc CAD Trust & YC-?? & Đạt\\ \hline
+API-16 & Metadata NFT và tài liệu công khai cho phép đối chiếu mã băm & YC-?? & Đạt\\ \hline
+E2E-01 & Bộ đồng bộ đọc sự kiện thật trên mạng Hardhat (mint, nạp pool, hủy); chạy lại không ghi trùng; phần còn lại on-chain khớp CSDL & YC-?? & Đạt\\ \hline
+E2E-02 & Kiểm thử toàn hệ thống đang chạy: đăng nhập ví, đăng ký dự án, yêu cầu, VVB duyệt và mint, nạp pool, bán, hủy, tra cứu, dashboard & YC-?? & Đạt\\ \hline
+\end{longtable}
+\endgroup}
+
+\newcommand{\BangDoPhu}{%
+\begin{table}[htbp]
+\centering
+\caption{Độ phủ mã của bộ kiểm thử hợp đồng (solidity-coverage)}
+\label{tab:dophu}
+\begin{tabular}{|l|r|r|r|r|}
+\hline
+\textbf{Tệp} & \textbf{Câu lệnh} & \textbf{Nhánh} & \textbf{Hàm} & \textbf{Dòng}\\ \hline
+CarbonCreditNFT.sol & 100\% & 94,44\% & 100\% & 100\%\\ \hline
+CarbonPool.sol & 100\% & 75,00\% & 100\% & 100\%\\ \hline
+\textbf{Tổng} & \textbf{100\%} & \textbf{88,46\%} & \textbf{100\%} & \textbf{100\%}\\ \hline
+\end{tabular}
+\end{table}}
+
+\newcommand{\BangGas}{%
+\begin{table}[htbp]
+\centering
+\caption{Chi phí gas của các thao tác chính (Solidity 0.8.24, optimizer 200 runs)}
+\label{tab:gas}
+\small
+\begin{tabular}{|l|l|r|r|r|}
+\hline
+\textbf{Hợp đồng} & \textbf{Thao tác} & \textbf{Nhỏ nhất} & \textbf{Lớn nhất} & \textbf{Trung bình}\\ \hline
+CarbonCreditNFT & Triển khai & -- & -- & 2.431.505\\ \hline
+CarbonPool & Triển khai & -- & -- & 1.167.804\\ \hline
+CarbonCreditNFT & mintBatch & 260.483 & 294.683 & 288.105\\ \hline
+CarbonCreditNFT & retire (trực tiếp) & 206.215 & 261.001 & 243.049\\ \hline
+CarbonCreditNFT & transferFrom & -- & -- & 57.310\\ \hline
+CarbonCreditNFT & safeTransferFrom vào pool & -- & -- & 182.071\\ \hline
+CarbonPool & deposit & 116.482 & 184.882 & 157.522\\ \hline
+CarbonPool & transfer (PCC) & 29.683 & 51.595 & 47.208\\ \hline
+CarbonPool & retire (từ pool) & 262.346 & 282.681 & 274.041\\ \hline
+CarbonPool & redeem & -- & -- & 84.162\\ \hline
+\end{tabular}
+\end{table}}
+
+\newcommand{\BangTinhToanKep}{%
+\begin{table}[htbp]
+\centering
+\caption{Kịch bản chống tính toán kép và cơ chế chặn}
+\label{tab:tinhtoankep}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{2.6cm}|X|X|p{1.9cm}|}
+\hline
+\textbf{Dạng} & \textbf{Kịch bản tấn công} & \textbf{Cơ chế chặn} & \textbf{Test}\\ \hline
+Phát hành kép & VVB mint lô có dãy sê-ri chồng lên lô đã cấp của cùng dự án và vintage & nextAvailableSerial: sê-ri phải tăng dần, lỗi SerialOverlap & TC-03\\ \hline
+Phát hành kép & Dùng lại một báo cáo thẩm định để cấp lần hai (kể cả cho dự án khác) & documentUsed on-chain (DocumentAlreadyUsed) và verifications.document\_hash unique off-chain & TC-05, API-08\\ \hline
+Sử dụng kép & Hủy lại hoặc chuyển nhượng tín chỉ đã hủy & Trừ phần đã hủy khỏi lô; hủy hết thì đốt NFT & TC-09, TC-10\\ \hline
+Sử dụng kép & Dùng lại token PCC đã đốt khi hủy từ pool & \_burn trước khi gọi retireFor; số dư không đủ thì giao dịch bị hoàn tác & TC-20\\ \hline
+Bán kép & Chủ cũ bán riêng NFT đã nạp vào pool (đã nhận token tương ứng) & NFT thuộc sở hữu của pool, chỉ ra qua redeem khi đốt đủ token & TC-24, TC-21\\ \hline
+Tuyên bố kép (trong hệ thống) & Hai bên cùng nhận đã bù trừ bằng một dãy sê-ri & Mỗi chứng nhận ghi dãy sê-ri và người thụ hưởng duy nhất; tra cứu công khai theo sê-ri & TC-08, API-12\\ \hline
+\end{tabularx}
+\end{table}}

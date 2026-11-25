@@ -1,0 +1,72 @@
+% ============================================================
+% CHƯƠNG 5 — KẾT QUẢ THỰC NGHIỆM
+% Khung chương: đề mục + gợi ý + bảng số liệu (figures_chap5.tex, lấy từ lần chạy 21/10/2026).
+% \canviet{...} = chỗ bạn tự viết. Chạy lại test/coverage/gas nếu sửa mã và cập nhật bảng.
+% ============================================================
+
+\chapter{KẾT QUẢ THỰC NGHIỆM}
+\label{chap:ketqua}
+\input{figures_chap5}
+
+% [VIẾT SAU] \canviet{Đoạn mở đầu chương}
+
+% ------------------------------------------------------------
+\section{Môi trường và phương pháp kiểm thử}
+\label{sec:pp-kiemthu}
+% Ba mức: (1) kiểm thử đơn vị hợp đồng trên Hardhat Network (Mocha/Chai, loadFixture);
+% (2) kiểm thử API với PostgreSQL giả lập (pg-mem) và supertest; (3) kiểm thử tích hợp
+% e2e-indexer (sự kiện thật -> CSDL) và smoke-api (toàn hệ thống đang chạy).
+% Nêu cấu hình máy, phiên bản Node/Hardhat.
+% [VIẾT SAU] \canviet{Môi trường và phương pháp kiểm thử}
+
+% ------------------------------------------------------------
+\section{Kết quả kiểm thử chức năng}
+\label{sec:kq-chucnang}
+% Điền cột "Yêu cầu" (YC-xx) trong hai bảng để truy vết về mục \ref{subsec:ycchucnang}.
+% [VIẾT SAU] \canviet{Nhận xét kết quả kiểm thử chức năng}
+
+\BangTestHopDong
+
+\BangTestAPI
+
+\BangDoPhu
+
+% Nhận xét độ phủ: nhánh của CarbonPool 75% vì ... (xem coverage/index.html để chỉ ra nhánh chưa phủ).
+
+% ------------------------------------------------------------
+\section{Kịch bản chống tính toán kép}
+\label{sec:kq-tinhtoankep}
+% Đây là phần quan trọng nhất của chương: đối chiếu từng dạng ở Chương 1 (Schneider) với cơ chế chặn.
+% Có thể chèn ảnh/log từ `npx hardhat run scripts/demo.js` (các dòng [CHẶN]).
+% Nêu rõ giới hạn: không chặn được phát hành kép GIỮA các hệ thống đăng ký khác nhau.
+% [VIẾT SAU] \canviet{Phân tích kịch bản chống tính toán kép}
+
+\BangTinhToanKep
+
+% ------------------------------------------------------------
+\section{Chi phí gas}
+\label{sec:kq-gas}
+% Quy đổi ra ETH/USD theo giá gas tại thời điểm đo (ghi rõ nguồn và ngày), so sánh các thao tác;
+% vì sao mintBatch và retire tốn nhiều gas (ghi chuỗi projectId, struct, mảng chứng nhận).
+% [VIẾT SAU] \canviet{Phân tích chi phí gas}
+
+\BangGas
+
+% ------------------------------------------------------------
+\section{Triển khai trên mạng thử nghiệm Sepolia}
+\label{sec:kq-sepolia}
+% Địa chỉ hợp đồng, link Etherscan (đã verify), một vài giao dịch mẫu (mint, retire), ảnh chụp.
+% [VIẾT SAU] \canviet{Kết quả triển khai trên Sepolia}
+
+% ------------------------------------------------------------
+\section{Đánh giá và hạn chế}
+\label{sec:danhgia}
+% Đối chiếu mục tiêu ở mục \ref{subsec:muctieu}: đạt/chưa đạt. Hạn chế đã biết từ mã nguồn:
+%  - chưa xử lý reorg khi đồng bộ sự kiện; chưa có kiểm thử tải cho API;
+%  - NFT gửi vào pool bằng transferFrom (không phải safeTransferFrom) sẽ bị kẹt;
+%  - backend lưu tệp cục bộ (chưa dùng IPFS); dữ liệu phát thải là tự khai báo;
+%  - tên trường CAD Trust cần đối chiếu từ điển dữ liệu V2.0 chính thức.
+% [VIẾT SAU] \canviet{Đánh giá và hạn chế}
+
+\section{Kết luận chương}
+% [VIẾT SAU] \canviet{Kết luận chương 5}

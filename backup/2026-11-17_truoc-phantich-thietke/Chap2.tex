@@ -1,0 +1,146 @@
+% ============================================================
+% CHƯƠNG 2 — CÔNG NGHỆ SỬ DỤNG  (mẫu SoICT chương 3)
+% Sắp xếp lại ngày 07/11/2026 theo mẫu Do_An_Latex_SoiCT. Bản trước: backup/2026-11-07_truoc-mau-soict/Chap2.tex
+% (tên cũ "CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ"). Mục "Các nghiên cứu và hệ thống liên quan" (sec:lienquan:
+% Vaccargiu, Liu, Toucan, Tsai) đã chuyển, rút gọn, vào Chương 1 mục 1.5.4 (subsec:verra-undp) vì mẫu SoICT
+% đặt khảo sát hệ thống tương tự ở chương khảo sát; bản đầy đủ vẫn nằm trong file backup.
+%
+% Hướng dẫn của mẫu SoICT cho chương này:
+%   - không quá 10 trang; nội dung dài hơn đưa vào Phụ lục; phân tích và tóm tắt, không trình bày dài dòng;
+%   - chỉ giới thiệu công nghệ, nền tảng, thư viện mà đồ án thực sự dùng; không trình bày lại kiến thức
+%     phổ thông hay sách giáo khoa;
+%   - với mỗi công nghệ: (i) nó giải quyết vấn đề / yêu cầu nào ở Chương 1 (NC-xx, VĐ-x, yêu cầu phi chức năng),
+%     (ii) các phương án thay thế, (iii) lý do chọn; có thể dùng bảng so sánh;
+%   - phần thiết kế, cài đặt cụ thể để ở Chương 3.
+% Văn phong: đoạn văn liên kết, câu chủ động có chủ ngữ thật ("đồ án", "Ethereum", "MetaMask"...; hạn chế xưng
+% "em", "tác giả" chỉ dùng ở Kết chương), mục con dùng \subsection*,
+% giữ thuật ngữ tiếng Anh (smart contract, token, gas, testnet...). Xem ghi chú đầu Chap1.tex.
+% ============================================================
+
+\chapter{CÔNG NGHỆ SỬ DỤNG}
+\label{chap:congnghe}
+\label{chap:cosolythuyet}
+\input{figures_chap2}
+
+% Tổng quan (Normal, không tiêu đề): chương trình bày các công nghệ mà đồ án dùng để hiện thực kiến trúc lai
+% ở mục \ref{sec:dinhhuong}: blockchain và Ethereum, smart contract Solidity với OpenZeppelin và Hardhat, các chuẩn
+% token ERC-721, ERC-20, cách ứng dụng web giao tiếp với blockchain qua MetaMask và ethers.js, và
+% phần off-chain Node.js, PostgreSQL. Với mỗi công nghệ nêu yêu cầu nó phục vụ và lý do chọn.
+% [VIẾT SAU] \canviet{Đoạn tổng quan chương}
+
+% [VIẾT SAU] Toàn bộ các mục dưới đây chưa viết nội dung — bỏ dấu % để khôi phục.
+% % ------------------------------------------------------------
+% \section{Blockchain và nền tảng Ethereum}
+% \label{sec:blockchain}
+% \label{sec:ethereum}
+%
+% \subsection*{Blockchain}
+% \label{subsec:cautrucblock}
+% \label{subsec:dongthuan}
+% % Ý cần có (ngắn gọn, chỉ phần đồ án dùng): khối, mã băm khối trước, sổ cái chỉ ghi thêm (ledger) ->
+% % vì sao dữ liệu on-chain khó sửa, phục vụ yêu cầu toàn vẹn ở mục \ref{sec:phichucnang} và VĐ-2;
+% % đồng thuận PoW/PoS, Ethereum chuyển sang PoS (The Merge 15/9/2022).
+% % Trích: \cite{nakamoto2008bitcoin,zheng2017overview,ethereum2024pos}. Nhắc \autoref{fig:chuoikhoi} trước hình.
+% % [VIẾT SAU] \canviet{Blockchain}
+% %
+% % \HinhChuoiKhoi
+%
+% \subsection*{Lựa chọn nền tảng blockchain}
+% \label{subsec:phanloai}
+% % Bảng so sánh Ethereum (public) với Hyperledger Fabric (permissioned, mà Vaccargiu dùng) và Chia
+% % (CAD Trust dùng): mô hình truy cập, đồng thuận, ngôn ngữ smart contract, chuẩn token, ví, testnet, chi phí.
+% % Lý do chọn Ethereum: phiếu giao nhiệm vụ; chuẩn ERC-721/ERC-20; MetaMask; testnet công khai để bên thứ ba
+% % tự kiểm tra (VĐ-2, NC-07). Nhược điểm: phí gas, dữ liệu công khai -> xử lý ở yêu cầu quyền riêng tư.
+% % [VIẾT SAU] \canviet{Lựa chọn nền tảng blockchain}
+%
+% \subsection*{Tài khoản, giao dịch và phí gas}
+% \label{subsec:taikhoan}
+% \label{subsec:evm}
+% % Ý cần có: EOA và contract account; khóa riêng, địa chỉ ví; giao dịch ký số, nonce; EVM, gas, EIP-1559.
+% % Đây là cơ sở cho phần đo gas ở Chương 3. Trích: \cite{buterin2014ethereum,wood2014yellow,eip1559}.
+% % [VIẾT SAU] \canviet{Tài khoản, giao dịch và phí gas}
+%
+% \subsection*{Testnet Sepolia và Etherscan}
+% \label{subsec:sepolia}
+% % Ý cần có: mainnet và testnet; Sepolia, faucet; Etherscan để tra giao dịch, xác minh (verify) mã hợp đồng.
+% % Lý do: phạm vi nguyên mẫu (mục \ref{sec:muctieu}), không tốn phí thật.
+% % [VIẾT SAU] \canviet{Testnet Sepolia}
+%
+% % ------------------------------------------------------------
+% \section{Smart contract và công cụ phát triển}
+% \label{sec:smartcontract}
+%
+% \subsection*{Smart contract và ngôn ngữ Solidity}
+% \label{subsec:khainiemsc}
+% \label{subsec:solidity}
+% % Ý cần có: định nghĩa (Szabo); tự thực thi, không sửa được mã sau triển khai; event và log (dùng cho
+% % bộ đồng bộ sự kiện); cấu trúc contract (state variable, function, modifier, event), kế thừa.
+% % Yêu cầu phục vụ: NC-03, NC-06 (ràng buộc sê-ri, không hủy hai lần thành ràng buộc kỹ thuật).
+% % Trích: \cite{szabo1997formalizing,buterin2014ethereum,solidity2024docs}.
+% % [VIẾT SAU] \canviet{Smart contract và Solidity}
+%
+% \subsection*{Thư viện OpenZeppelin và Hardhat}
+% \label{subsec:openzeppelin}
+% % OpenZeppelin 5: ERC721, ERC20, AccessControl (VERIFIER_ROLE...), Pausable, ReentrancyGuard -> NC-09 và
+% % yêu cầu bảo mật. Hardhat: biên dịch, Hardhat Network, test Mocha/Chai, coverage, gas reporter.
+% % Phương án thay thế: Foundry, Truffle (đã ngừng phát triển); lý do chọn Hardhat (JavaScript cùng ngôn ngữ backend).
+% % Trích: \cite{openzeppelin2024contracts}.
+% % [VIẾT SAU] \canviet{OpenZeppelin và Hardhat}
+%
+% \subsection*{Các lỗ hổng thường gặp của smart contract}
+% \label{subsec:baomat}
+% % Reentrancy, kiểm soát truy cập sai, tràn số (Solidity >= 0.8 tự kiểm tra), tx.origin. Mỗi lỗ hổng
+% % 1–2 câu và cách phòng trong đồ án; công cụ quét Slither. Trích: \cite{atzei2017survey}.
+% % [VIẾT SAU] \canviet{Lỗ hổng smart contract}
+%
+% % ------------------------------------------------------------
+% \section{Các chuẩn token}
+% \label{sec:token-standards}
+%
+% \subsection*{ERC-20 và ERC-721}
+% \label{subsec:erc20}
+% \label{subsec:erc721}
+% % ERC-20: fungible token, totalSupply, balanceOf, transfer, approve, transferFrom, allowance \cite{eip20}.
+% % ERC-721: NFT, ownerOf, safeTransferFrom, tokenURI, onERC721Received \cite{eip721}.
+% % [VIẾT SAU] \canviet{ERC-20 và ERC-721}
+%
+% \subsection*{Lựa chọn chuẩn token cho tín chỉ các-bon}
+% \label{subsec:chontoken}
+% % Bảng so sánh ERC-20 / ERC-721 / ERC-1155 theo: giữ metadata riêng từng lô, chia nhỏ, thanh khoản,
+% % hỗ trợ ví. Kết luận: mỗi lô là một NFT ERC-721 (giữ dự án, vintage, dãy sê-ri, NC-03), pool ERC-20
+% % cho giao dịch từng phần (NC-05); kế thừa mô hình Batch NFT/TCO2/BCT của Toucan (mục \ref{sec:khaosatsobo}).
+% % [VIẾT SAU] \canviet{Lựa chọn chuẩn token}
+%
+% % ------------------------------------------------------------
+% \section{Ứng dụng web giao tiếp với blockchain}
+% \label{sec:dapp}
+%
+% \subsection*{Kiến trúc dApp}
+% \label{subsec:kientrucdapp}
+% % Luồng một giao dịch từ giao diện tới smart contract (giải thích \autoref{fig:luongdapp}).
+% % [VIẾT SAU] \canviet{Kiến trúc dApp}
+% %
+% % \HinhLuongDApp
+%
+% \subsection*{Ví MetaMask, ethers.js và Next.js}
+% \label{subsec:metamask}
+% \label{subsec:ethers}
+% % MetaMask giữ khóa riêng, EIP-1193 (window.ethereum) \cite{eip1193}; ethers.js: Provider, Signer,
+% % Contract, ABI, call và send \cite{ethers2024docs}; Next.js cho giao diện. Yêu cầu phục vụ: tính dễ dùng,
+% % người dùng tự ký giao dịch (backend không giữ khóa). Phương án thay thế: web3.js, viem; React thuần.
+% % [VIẾT SAU] \canviet{MetaMask, ethers.js và Next.js}
+%
+% % ------------------------------------------------------------
+% \section{Công nghệ phía off-chain}
+% \label{sec:offchain-congnghe}
+% \label{sec:onoffchain-lythuyet}
+% % Node.js + Express (API RESTful), PostgreSQL (dữ liệu theo CAD Trust V2.0, NC-10), JWT, xác thực bằng
+% % chữ ký ví. Tiêu chí chọn dữ liệu on-chain/off-chain theo \cite{xu2017taxonomy}; neo mã băm keccak256 của hồ sơ;
+% % IPFS \cite{benet2014ipfs} là hướng mở rộng (hiện lưu tệp cục bộ). Phương án thay thế: MongoDB; lý do chọn
+% % CSDL quan hệ (mô hình CAD Trust có quan hệ rõ, giống UNDP dùng PostgreSQL).
+% % [VIẾT SAU] \canviet{Công nghệ off-chain}
+
+% ------------------------------------------------------------
+% Kết chương (Normal, không tiêu đề): tóm tắt bộ công nghệ đã chọn (có thể kèm bảng tổng hợp
+% Công nghệ | Phiên bản | Vai trò | Yêu cầu phục vụ) và dẫn sang Chương 3.
+% [VIẾT SAU] \canviet{Kết chương 2}

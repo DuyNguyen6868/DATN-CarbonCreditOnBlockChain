@@ -1,206 +1,427 @@
 % ============================================================
-% CHƯƠNG 2 — CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ  (Giai đoạn 2 của phiếu, phần tìm hiểu công nghệ)
-% Nguyên tắc: chỉ trình bày kiến thức được dùng lại ở Chương 3–4. Mỗi mục nên kết thúc bằng
-% 1–2 câu "áp dụng trong đồ án như thế nào".
-% Hình mới của chương: figures_chap2.tex. Khóa trích dẫn gợi ý đã có sẵn trong References.bib.
+% CHƯƠNG 2 — PHÂN TÍCH HỆ THỐNG
+% Viết lại ngày 17/11/2026 theo yêu cầu của sinh viên: đổi Chương 2 "Công nghệ sử dụng" thành
+% "Phân tích hệ thống". Nội dung gồm phần Tổng quan chức năng và Đặc tả chức năng trước đây để trong
+% chú thích ở cuối Chương 1, cùng mục Yêu cầu phi chức năng chuyển từ Chương 1 sang.
+% Khung chương Công nghệ cũ chuyển sang Chap4.tex. Bản trước: backup/2026-11-17_truoc-phantich-thietke/.
+%
+% Nguồn đối chiếu khi viết: contracts/contracts/*.sol, backend/src/routes/*.js, backend/db/schema.sql,
+% frontend/app/*. Tên lỗi revert, tên trạng thái, đường dẫn API lấy đúng như trong mã nguồn.
+% Theo quyết định ngày 07/11/2026: VVB chỉ phê duyệt (off-chain), cơ quan quản lý phát hành (ISSUER_ROLE).
+% [CẦN SỬA MÃ] Mã nguồn hiện vẫn để mintBatch dưới VERIFIER_ROLE và nút mint ở trang /verifier.
+%
+% Văn phong: đoạn văn liên kết, câu chủ động có chủ ngữ thật; "tác giả" chỉ ở Kết chương; mục con dùng
+% \subsection*; giữ thuật ngữ tiếng Anh (use case, smart contract, token, pool, revert...).
+% [BẢN NHÁP] Sinh viên đọc lại và sửa theo văn phong của mình.
+%
+% Bổ sung ngày 25/11/2026 (bản trước: backup/2026-11-25_truoc-bo-sung-uc/): thêm UC12 "Đăng nhập bằng chữ ký
+% ví" vào biểu đồ tổng quát; thêm bốn biểu đồ phân rã UC05, UC10, UC11, UC03; thêm đặc tả UC12 và UC07
+% (tổng cộng bảy đặc tả, trong giới hạn 4–7 của mẫu SoICT).
 % ============================================================
 
-\chapter{CƠ SỞ LÝ THUYẾT VÀ CÔNG NGHỆ}
-\label{chap:cosolythuyet}
+\chapter{PHÂN TÍCH HỆ THỐNG}
+\label{chap:phantich}
 \input{figures_chap2}
 
-% Đoạn mở đầu chương: chương trình bày nền tảng blockchain, Ethereum, hợp đồng thông minh, chuẩn token,
-% dApp và cách lưu trữ on-chain/off-chain; cuối chương tổng hợp các nghiên cứu liên quan.
-\canviet{Đoạn mở đầu chương}
+Chương~\ref{chap:khaosat} đã rút ra mười nhu cầu chức năng NC-01 đến NC-10 từ kết quả khảo sát, và chương này chuyển các nhu cầu đó thành mô hình chức năng của hệ thống bằng ngôn ngữ UML. Mục~\ref{sec:tongquanchucnang} xác định các tác nhân, vẽ biểu đồ use case\index{Use case} tổng quát, phân rã các use case mức cao thành những use case con mà từng tác nhân trực tiếp thao tác, rồi mô tả quy trình nghiệp vụ nối các use case lại với nhau. Mục~\ref{sec:dactachucnang} đặc tả chi tiết bảy use case có ràng buộc nghiệp vụ chặt nhất, trong đó mỗi đặc tả ghi rõ phần việc nào diễn ra off-chain và phần việc nào do smart contract kiểm tra. Mục~\ref{sec:phichucnang} nêu các yêu cầu phi chức năng mà thiết kế ở Chương~\ref{chap:thietke} phải đáp ứng.
 
 % ------------------------------------------------------------
-\section{Công nghệ chuỗi khối}
-\label{sec:blockchain}
+\section{Tổng quan chức năng}
+\label{sec:tongquanchucnang}
 
-\subsection{Khái niệm và cấu trúc dữ liệu}
-\label{subsec:cautrucblock}
-% Ý cần có: khối, tiêu đề khối, mã băm khối trước, gốc Merkle, danh sách giao dịch;
-% vì sao sửa một khối cũ làm gãy cả chuỗi (tính bất biến); sổ cái phân tán, nút.
-% Trích: \cite{nakamoto2008bitcoin} \cite{zheng2017overview}. Thuật ngữ: xem Thuat_ngu.md mục 3.
-% Nhớ nhắc \autoref{fig:chuoikhoi} trong đoạn văn trước khi hình xuất hiện.
-\canviet{Khái niệm và cấu trúc dữ liệu chuỗi khối}
+\subsection*{Các tác nhân}
+\label{subsec:tacnhan}
 
-\HinhChuoiKhoi
+Hệ thống có năm tác nhân, tương ứng với các bên liên quan mà Chương~\ref{chap:khaosat} đã xác định (\autoref{tab:tacnhan}). Mỗi tác nhân có hai loại quyền tách biệt nhau: quyền off-chain là vai trò của tài khoản trong backend, gắn với địa chỉ ví sau khi người dùng đăng nhập bằng chữ ký ví, còn quyền on-chain là vai trò mà smart contract kiểm tra khi nhận giao dịch. Cách tách này xuất phát từ quyết định giữ nguyên phân công của quy trình trong nước, trong đó VVB thẩm định và đề xuất còn cơ quan quản lý mới có thẩm quyền cấp tín chỉ~\cite{mae2025qd2935,vietnam2026nghidinh396}. Vì vậy VVB chỉ có vai trò VERIFIER ở backend và không có quyền phát hành on-chain, còn ví của cơ quan quản lý giữ vai trò phát hành ISSUER\_ROLE trong hợp đồng NFT. Chủ dự án và doanh nghiệp mua không cần vai trò on-chain nào, vì hợp đồng xác định quyền của họ theo quyền sở hữu NFT hoặc số dư token. Người xem công khai không cần ví và không cần đăng nhập, và mọi tác nhân khác cũng có quyền tra cứu như người xem công khai.
 
-\subsection{Cơ chế đồng thuận}
-\label{subsec:dongthuan}
-% Ý cần có: bằng chứng công việc (PoW) và bằng chứng cổ phần (PoS); Ethereum chuyển sang PoS
-% (sự kiện The Merge, 15/9/2022). Có thể nhắc DAG (\cite{liu2024blockchain}) như một hướng khác.
-% Trích: \cite{zheng2017overview} \cite{ethereum2024pos}.
-\canviet{Cơ chế đồng thuận}
+\begin{table}[!htbp]
+    \centering
+    \caption{Các tác nhân của hệ thống}
+    \label{tab:tacnhan}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.5cm}|L{2.3cm}|L{3.0cm}|Y|}
+        \hline
+        \HD{Tác nhân} & \HD{Vai trò off-chain} & \HD{Vai trò on-chain} & \HD{Công việc chính} \\
+        \hline
+        Chủ dự án & PROJECT\_\allowbreak OWNER & Không (chủ sở hữu NFT) & Đăng ký dự án, tải hồ sơ, gửi yêu cầu cấp, nhận lô tín chỉ, nạp lô vào pool, bán tín chỉ \\
+        \hline
+        VVB & VERIFIER & Không & Thẩm định hồ sơ ngoài hệ thống, tải báo cáo thẩm định, phê duyệt hoặc từ chối yêu cầu cấp \\
+        \hline
+        Cơ quan quản lý & ADMIN & DEFAULT\_\allowbreak ADMIN\_\allowbreak ROLE, ISSUER\_\allowbreak ROLE & Phát hành lô tín chỉ, quản lý tài khoản và vai trò, tạm dừng hợp đồng khi có sự cố, xuất dữ liệu \\
+        \hline
+        Doanh nghiệp mua & BUYER & Không (chủ sở hữu NFT hoặc token) & Mua, chuyển nhượng, hủy tín chỉ; khai báo phát thải và theo dõi dashboard \\
+        \hline
+        Người xem công khai & Không đăng nhập & Không & Tra cứu tín chỉ theo số sê-ri, xem chứng nhận hủy, tải hồ sơ để đối chiếu mã băm \\
+        \hline
+    \end{tabularx}
+\end{table}
 
-\subsection{Phân loại chuỗi khối}
-\label{subsec:phanloai}
-% Ý cần có: chuỗi khối công khai và chuỗi khối cấp phép; so sánh Ethereum với Hyperledger Fabric
-% (nên làm bảng: mô hình truy cập, đồng thuận, ngôn ngữ hợp đồng, chuẩn token, chi phí, công cụ ví).
-% Kết luận lý do chọn Ethereum: phiếu giao nhiệm vụ, chuẩn ERC, MetaMask, testnet công khai.
-\canviet{Phân loại chuỗi khối và lý do chọn Ethereum}
+\subsection*{Biểu đồ use case tổng quát}
+\label{subsec:usecase}
 
-% ------------------------------------------------------------
-\section{Nền tảng Ethereum}
-\label{sec:ethereum}
+\autoref{fig:usecase} trình bày biểu đồ use case tổng quát với mười hai use case UC01 đến UC12, và \autoref{tab:usecase} cho biết mỗi use case đáp ứng nhu cầu chức năng nào ở Bảng~\ref{tab:ks-nhucauchucnang}. Bốn use case đầu thuộc về hai tác nhân có thẩm quyền: VVB phê duyệt yêu cầu cấp (UC01), còn cơ quan quản lý phát hành lô tín chỉ (UC02), quản lý tài khoản và phân quyền (UC03), xuất dữ liệu theo mô hình CAD Trust V2.0 (UC04). Chủ dự án bắt đầu vòng đời tín chỉ bằng việc đăng ký dự án, tải hồ sơ (UC05) và gửi yêu cầu cấp (UC06). Sau khi có tín chỉ, chủ dự án và doanh nghiệp mua cùng tham gia hai use case giao dịch là nạp tín chỉ vào pool để đổi lấy token (UC07) và mua bán, chuyển nhượng tín chỉ (UC08). Doanh nghiệp mua kết thúc vòng đời của tín chỉ bằng việc hủy tín chỉ để bù trừ phát thải (UC09) và theo dõi kết quả trên dashboard (UC10). Use case tra cứu (UC11) mở cho người xem công khai, vì khả năng kiểm tra độc lập của bên thứ ba là yêu cầu trung tâm của đồ án. Use case đăng nhập bằng chữ ký ví (UC12) là bước chung của bốn tác nhân có tài khoản, và mọi use case trừ UC04 và UC11 đều bao gồm (include) UC12; biểu đồ không vẽ các quan hệ include này để tránh rối, đồng thời đặt UC12 ở giữa biểu đồ để đường nối từ bốn tác nhân không cắt nhau.
 
-\subsection{Tài khoản và giao dịch}
-\label{subsec:taikhoan}
-% Ý cần có: tài khoản ngoài (EOA) và tài khoản hợp đồng; khóa riêng, địa chỉ ví; giao dịch được ký,
-% nonce. Trích: \cite{buterin2014ethereum} \cite{wood2014yellow}.
-\canviet{Tài khoản và giao dịch trên Ethereum}
+\HinhUseCase
 
-\subsection{Máy ảo Ethereum và phí gas}
-\label{subsec:evm}
-% Ý cần có: EVM thực thi bytecode; gas, gas limit; phí cơ sở và phí ưu tiên theo EIP-1559.
-% Đây là cơ sở cho phần đo chi phí gas ở Chương 5. Trích: \cite{wood2014yellow} \cite{eip1559}.
-\canviet{Máy ảo Ethereum và phí gas}
+\begin{table}[!htbp]
+    \centering
+    \caption{Danh sách use case và nhu cầu chức năng tương ứng}
+    \label{tab:usecase}
+    \small
+    \begin{tabularx}{\textwidth}{|L{1.3cm}|Y|L{3.6cm}|L{2.2cm}|}
+        \hline
+        \HD{Mã} & \HD{Use case} & \HD{Tác nhân} & \HD{Nhu cầu} \\
+        \hline
+        UC01 & Thẩm định, phê duyệt yêu cầu cấp & VVB & NC-02 \\
+        \hline
+        UC02 & Phát hành lô tín chỉ (mint) & Cơ quan quản lý & NC-03, NC-09 \\
+        \hline
+        UC03 & Quản lý tài khoản, phân quyền, tạm dừng hợp đồng & Cơ quan quản lý & NC-09 \\
+        \hline
+        UC04 & Xuất dữ liệu theo CAD Trust V2.0 & Cơ quan quản lý, hệ thống ngoài & NC-10 \\
+        \hline
+        UC05 & Đăng ký dự án, tải hồ sơ & Chủ dự án & NC-01 \\
+        \hline
+        UC06 & Gửi yêu cầu cấp tín chỉ & Chủ dự án & NC-02 \\
+        \hline
+        UC07 & Nạp tín chỉ vào pool, đổi token & Chủ dự án, doanh nghiệp mua & NC-05 \\
+        \hline
+        UC08 & Mua bán, chuyển nhượng tín chỉ & Chủ dự án, doanh nghiệp mua & NC-04, NC-05 \\
+        \hline
+        UC09 & Hủy tín chỉ để bù trừ (retire) & Doanh nghiệp mua & NC-06 \\
+        \hline
+        UC10 & Theo dõi dashboard phát thải & Doanh nghiệp mua & NC-08 \\
+        \hline
+        UC11 & Tra cứu tín chỉ, chứng nhận hủy & Mọi tác nhân & NC-07 \\
+        \hline
+        UC12 & Đăng nhập bằng chữ ký ví & Chủ dự án, VVB, cơ quan quản lý, doanh nghiệp mua & NC-09 (hỗ trợ mọi NC) \\
+        \hline
+    \end{tabularx}
+\end{table}
 
-\subsection{Mạng thử nghiệm Sepolia}
-\label{subsec:sepolia}
-% Ý cần có: mainnet và testnet; Sepolia, faucet; Etherscan để tra cứu giao dịch và hợp đồng.
-\canviet{Mạng thử nghiệm Sepolia}
+\FloatBarrier
+\subsection*{Biểu đồ use case phân rã ``Đăng ký dự án, tải hồ sơ''}
+\label{subsec:uc-duan}
 
-% ------------------------------------------------------------
-\section{Hợp đồng thông minh}
-\label{sec:smartcontract}
+Use case UC05 mở đầu vòng đời của tín chỉ, và \autoref{fig:uc-duan} phân rã use case này thành bốn use case con của chủ dự án. Khi đăng ký dự án mới, chủ dự án nhập các trường của bảng Project trong CAD Trust V2.0 như mã dự án trên hệ thống đăng ký gốc, tên dự án, chương trình, phương pháp luận và lĩnh vực. Use case này bao gồm bước nhập vị trí và các bên liên quan, vì mô hình CAD Trust tách hai nhóm thông tin này thành hai bảng riêng, và backend ghi cả ba phần trong cùng một giao dịch cơ sở dữ liệu. Backend từ chối mã dự án đã tồn tại, vì mã dự án cùng với vintage tạo thành khóa mà smart contract dùng để chặn phát hành kép. Chủ dự án sửa được các trường mô tả của dự án nhưng không tự đổi được trạng thái dự án, vì trạng thái thuộc quyền của cơ quan quản lý ở UC03. Từ danh sách dự án của mình, chủ dự án có thể mở trang chi tiết của từng dự án, nên use case xem chi tiết là phần mở rộng (extend) của use case xem danh sách. Use case tải hồ sơ dùng chung cho UC05, UC06 và UC01: hệ thống tính mã băm keccak256 của nội dung tệp, và nếu một tệp có cùng mã băm đã nằm trong kho thì hệ thống trả lại bản ghi cũ thay vì lưu thêm một bản.
+% [CẦN SỬA MÃ] Backend đã có PATCH /api/projects/:id nhưng trang /owner chưa có biểu mẫu sửa dự án.
+% [CẦN SỬA MÃ] Hồ sơ PDD chưa gắn với dự án: chưa có route ghi bảng validations (validation_body, document_hash).
 
-\subsection{Khái niệm}
-\label{subsec:khainiemsc}
-% Ý cần có: định nghĩa (Szabo); đặc điểm: tự thực thi, đã triển khai thì không sửa được mã;
-% sự kiện (event) và nhật ký (log). Trích: \cite{szabo1997formalizing} \cite{buterin2014ethereum}.
-\canviet{Khái niệm hợp đồng thông minh}
+\HinhUCDuAn
 
-\subsection{Ngôn ngữ Solidity và thư viện OpenZeppelin}
-\label{subsec:solidity}
-% Ý cần có: cấu trúc một contract (biến trạng thái, hàm, modifier, event); kế thừa;
-% OpenZeppelin: ERC721, ERC20, AccessControl (vai trò như VERIFIER_ROLE); Hardhat để biên dịch, kiểm thử.
-% Trích: \cite{solidity2024docs} \cite{openzeppelin2024contracts}.
-\canviet{Solidity và OpenZeppelin}
+\subsection*{Biểu đồ use case phân rã ``Phát hành tín chỉ''}
+\label{subsec:uc-phathanh}
 
-\subsection{Các lỗ hổng bảo mật thường gặp}
-\label{subsec:baomat}
-% Ý cần có: reentrancy, kiểm soát truy cập sai, tràn số (Solidity >= 0.8 đã tự kiểm tra), dùng tx.origin.
-% Mỗi lỗ hổng: 1–2 câu giải thích và cách phòng trong đồ án. Công cụ quét: Slither.
-% Trích: \cite{atzei2017survey}.
-\canviet{Lỗ hổng bảo mật hợp đồng thông minh}
+Nhóm use case phát hành gồm UC06, UC01 và UC02, và \autoref{fig:uc-phathanh} phân rã nhóm này thành các bước mà từng tác nhân thực hiện. Chủ dự án gửi yêu cầu cấp và theo dõi trạng thái của yêu cầu, VVB xem danh sách yêu cầu đang chờ rồi phê duyệt hoặc từ chối, còn cơ quan quản lý phát hành lô tín chỉ cho các yêu cầu đã phê duyệt. Hai use case gửi yêu cầu và phê duyệt đều bao gồm (include) bước tải hồ sơ lên, vì hệ thống tính mã băm keccak256 của tệp ngay khi nhận tệp và chỉ chấp nhận yêu cầu tham chiếu tới mã băm của một tệp đã có. Nhờ vậy báo cáo giám sát của chủ dự án và báo cáo thẩm định của VVB luôn gắn với một giá trị băm cố định, và giá trị băm của báo cáo thẩm định về sau nằm trong dữ liệu của NFT. Use case phát hành bao gồm bước ký giao dịch bằng MetaMask, vì backend không giữ khóa riêng của bất kỳ tác nhân nào và giao dịch phát hành phải xuất phát từ chính ví của cơ quan quản lý.
 
-% ------------------------------------------------------------
-\section{Các chuẩn token trên Ethereum}
-\label{sec:token-standards}
+\HinhUCPhatHanh
 
-\subsection{Chuẩn ERC-20}
-\label{subsec:erc20}
-% Ý cần có: token có thể thay thế; các hàm totalSupply, balanceOf, transfer, approve, transferFrom,
-% allowance và sự kiện Transfer, Approval. Trích: \cite{eip20}.
-\canviet{Chuẩn ERC-20}
+\subsection*{Biểu đồ use case phân rã ``Giao dịch và hủy tín chỉ''}
+\label{subsec:uc-giaodich}
 
-\subsection{Chuẩn ERC-721}
-\label{subsec:erc721}
-% Ý cần có: token không thể thay thế (NFT); ownerOf, safeTransferFrom, tokenURI (metadata);
-% sự kiện Transfer. Trích: \cite{eip721}.
-\canviet{Chuẩn ERC-721}
+\autoref{fig:uc-giaodich} phân rã ba use case UC07, UC08 và UC09 thành sáu use case con ứng với sáu hàm của hai smart contract. Người giữ một lô có thể chuyển nhượng nguyên lô dưới dạng NFT, hoặc nạp lô vào pool để nhận token PCC (Pooled Carbon Credit) theo tỷ lệ 1 token cho 1~tCO$_2$e còn lại của lô, sau đó chuyển từng phần token cho người mua. Người giữ đủ token có thể đổi token lấy lại một lô cụ thể trong pool (redeem) khi cần giữ nguyên thông tin dự án của lô đó. Việc hủy tín chỉ có hai đường: người giữ NFT hủy trực tiếp một phần hoặc toàn bộ lô, còn người giữ token hủy từ pool bằng cách chỉ định lô cần hủy và số lượng. Cả hai đường hủy đều có thể mở rộng (extend) sang bước xem chứng nhận hủy, và mọi use case trong hình đều bao gồm bước ký giao dịch bằng MetaMask giống như use case phát hành; hình không vẽ quan hệ này để tránh rối.
 
-\subsection{Lựa chọn chuẩn token cho tín chỉ carbon}
-\label{subsec:chontoken}
-% Ý cần có: vì sao mỗi lô tín chỉ là một NFT ERC-721 (giữ metadata riêng: dự án, vintage, số sê-ri),
-% vì sao pool dùng ERC-20 (thay thế được, thanh khoản); ERC-1155 là phương án thay thế.
-% Liên hệ mô hình TCO2/BCT của Toucan ở mục \ref{sec:token}. Nên có bảng so sánh ERC-20/721/1155.
-\canviet{Lựa chọn chuẩn token}
+\HinhUCGiaoDich
 
-% ------------------------------------------------------------
-\section{Ứng dụng phi tập trung và Web3}
-\label{sec:dapp}
+\FloatBarrier
+\subsection*{Biểu đồ use case phân rã ``Theo dõi dashboard phát thải''}
+\label{subsec:uc-dashboard}
 
-\subsection{Kiến trúc ứng dụng phi tập trung}
-\label{subsec:kientrucdapp}
-% Ý cần có: các thành phần của dApp và luồng một giao dịch đi từ giao diện tới hợp đồng
-% (giải thích theo \autoref{fig:luongdapp}); phần nào chạy on-chain, phần nào off-chain.
-\canviet{Kiến trúc dApp}
+Use case UC10 cho doanh nghiệp mua biết lượng tín chỉ đã hủy có đủ bù phần phát thải vượt hạn ngạch hay chưa, và \autoref{fig:uc-dashboard} phân rã use case này thành bốn use case con. Doanh nghiệp khai báo lượng phát thải và hạn ngạch được phân bổ theo từng năm; khi doanh nghiệp khai báo lại cho một năm đã có số liệu, số liệu mới thay thế số liệu cũ, nên use case sửa số liệu là phần mở rộng của use case khai báo. Bảng bù trừ theo năm lấy phần phát thải vượt hạn ngạch làm lượng cần bù, so với tổng số tín chỉ mà ví của doanh nghiệp đã hủy trong năm đó theo thời điểm hủy, rồi ghi tình trạng ``Đã bù đủ'' hoặc ``Chưa đủ''. Hai nguồn số liệu của bảng này có độ tin cậy khác nhau: số liệu phát thải do doanh nghiệp tự khai báo và mang tính mô phỏng, vì đồ án không kết nối với hệ thống kiểm kê khí nhà kính, còn số tín chỉ đã hủy lấy từ chứng nhận hủy nên ai cũng đối chiếu được với dữ liệu on-chain. Từ danh sách chứng nhận hủy của mình, doanh nghiệp mở được từng chứng nhận cụ thể, tức là đi sang use case xem chứng nhận hủy của UC11.
 
-\HinhLuongDApp
+\HinhUCDashboard
 
-\subsection{Ví MetaMask}
-\label{subsec:metamask}
-% Ý cần có: ví giữ khóa riêng, khóa không rời ví; giao diện gọi ví qua chuẩn EIP-1193 (window.ethereum);
-% người dùng xác nhận và ký giao dịch. Trích: \cite{eip1193}.
-\canviet{Ví MetaMask}
+\subsection*{Biểu đồ use case phân rã ``Tra cứu tín chỉ, chứng nhận hủy''}
+\label{subsec:uc-tracuu}
 
-\subsection{Thư viện ethers.js và framework Next.js}
-\label{subsec:ethers}
-% Ý cần có: Provider, Signer, Contract, ABI; đọc (call) và ghi (gửi giao dịch); Next.js cho giao diện.
-% Trích: \cite{ethers2024docs}.
-\canviet{ethers.js và Next.js}
+\autoref{fig:uc-tracuu} phân rã use case UC11 thành năm use case con của người xem công khai, và mọi tác nhân khác cũng dùng được các use case này mà không cần đăng nhập. Người xem bắt đầu từ danh sách dự án kèm số liệu tổng hợp về số dự án, số lô và lượng tín chỉ đã cấp, đã hủy, rồi mở chi tiết một dự án để xem vị trí, các bên liên quan, các đợt thẩm định, các đợt cấp và các khối tín chỉ. Use case tra cứu theo số sê-ri trả lời câu hỏi một tín chỉ cụ thể đã được cấp chưa, đang do ví nào giữ hay đã bị hủy cho ai. Khi tín chỉ đã bị hủy, người xem đi tiếp sang chứng nhận hủy, nên use case xem chứng nhận hủy mở rộng use case tra cứu. Từ chi tiết dự án và chứng nhận hủy, người xem mở được giao dịch gốc trên Etherscan, còn từ chi tiết dự án, người xem tải được dữ liệu của dự án theo cấu trúc CAD Trust V2.0 (UC04). Use case tải hồ sơ cho phép bên thứ ba tự tính lại mã băm của báo cáo thẩm định và so với mã băm lưu trong NFT, và đây là cách kiểm tra duy nhất trong nhóm này không phụ thuộc vào dữ liệu do backend trả về.
 
-% ------------------------------------------------------------
-\section{Lưu trữ dữ liệu on-chain và off-chain}
-\label{sec:onoffchain-lythuyet}
-% Ý cần có: tiêu chí quyết định dữ liệu nào để on-chain (chi phí, tính công khai, kích thước, tần suất
-% thay đổi) theo \cite{xu2017taxonomy}; neo mã băm (lưu keccak256 của hồ sơ trên chuỗi); IPFS định danh
-% tệp theo nội dung \cite{benet2014ipfs}; đồng bộ dữ liệu bằng cách lắng nghe sự kiện.
-% CAD Trust (mục \ref{subsec:cadtrust}) dùng cùng nguyên lý. Thiết kế cụ thể để ở Chương 3.
-\canviet{Lưu trữ on-chain và off-chain}
+\HinhUCTraCuu
 
-% ------------------------------------------------------------
-\section{Các nghiên cứu và hệ thống liên quan}
-\label{sec:lienquan}
-% Hai mục dưới đây chuyển nguyên từ Chương 1 (chỉ sửa thuật ngữ).
-\canviet{Câu dẫn vào mục}
+\FloatBarrier
+\subsection*{Biểu đồ use case phân rã ``Quản lý tài khoản, phân quyền''}
+\label{subsec:uc-quantri}
 
-\subsection{Đổi mới số hóa MRV: ứng dụng blockchain và Internet vạn vật (IoT)}
-\label{sec:dmrv}
+\autoref{fig:uc-quantri} phân rã use case UC03 thành bốn use case con của cơ quan quản lý. Cơ quan quản lý xem danh sách tài khoản và đổi vai trò off-chain của một địa chỉ ví giữa bốn giá trị ADMIN, VERIFIER, PROJECT\_OWNER và BUYER. Ngoài danh sách ví quản trị mà đơn vị vận hành cấu hình khi triển khai, đây là cách duy nhất để một ví nhận vai trò VVB hoặc cơ quan quản lý, vì ở UC12 người dùng chỉ được tự đăng ký vai trò chủ dự án hoặc doanh nghiệp mua. Khi cơ quan quản lý cấp hoặc thu hồi vai trò ADMIN của một ví, chẳng hạn khi thêm tài khoản phát hành cho một tỉnh theo NC-09, use case đổi vai trò mở rộng sang use case cấp hoặc thu hồi ISSUER\_ROLE trong hợp đồng NFT. Giao diện thực hiện bước on-chain trước và chỉ đổi vai trò off-chain khi giao dịch đã có xác nhận, để vai trò ở hai phía không lệch nhau khi người dùng từ chối ký. Cơ quan quản lý cũng đổi trạng thái dự án theo các giá trị của CAD Trust là Listed, Validated, Registered, Completed và Withdrawn, trong đó trạng thái Withdrawn chặn mọi yêu cầu cấp mới của dự án.
+% [CẦN SỬA MÃ] frontend/app/admin hiện cấp, thu hồi VERIFIER_ROLE khi đổi vai trò sang hoặc khỏi VERIFIER.
 
-Dù các hệ thống đăng ký tập trung đang dần chuẩn hóa dữ liệu, một rào cản lớn của thị trường tín chỉ carbon vẫn nằm ở khâu đo đạc, báo cáo, thẩm định (MRV) tại thực địa. MRV truyền thống phụ thuộc nhiều vào chuyên gia tư vấn có chi phí cao, kiểm toán thủ công và các báo cáo giấy theo chu kỳ dài (thường là hàng năm), gây khó khăn về nguồn lực cho các doanh nghiệp vừa và nhỏ (SMEs)\index{SMEs}~\cite{tsai2024blockchain}. Việc kết hợp Internet vạn vật (IoT)\index{IoT (Internet vạn vật)} với công nghệ sổ cái phân tán (Blockchain/DLT)\index{Blockchain}\index{DLT|see{Blockchain}} dẫn tới hướng MRV kỹ thuật số (Digital MRV)\index{MRV!Digital MRV}, trong đó dữ liệu được thu thập tự động và được dùng làm đầu vào cho hợp đồng thông minh (Smart Contract)\index{Hop dong thong minh@Hợp đồng thông minh (Smart Contract)} khi cấp tín chỉ~\cite{vaccargiu2026blockchain}.
+\HinhUCQuanTri
 
-Nghiên cứu của Vaccargiu và cộng sự (công bố tại hội thảo BoSE trong khuôn khổ IEEE SANER 2026) đề xuất một kiến trúc phần mềm hướng blockchain cho việc chứng nhận tín chỉ carbon, với ví dụ thực tế là một hệ thống quang điện (PV) công suất 100~kWp~\cite{vaccargiu2026blockchain}. Trong mô hình này, việc thu thập dữ liệu và chứng nhận được tổ chức thành 4 lớp:
+Use case tạm dừng và tiếp tục hợp đồng gọi hai hàm pause và unpause của CarbonCreditNFT. Khi hợp đồng NFT tạm dừng, mọi thao tác phát hành, chuyển NFT và hủy tín chỉ đều bị từ chối, và các thao tác nạp, đổi lại, hủy qua pool cũng bị từ chối vì đều gọi sang hợp đồng NFT. Riêng việc chuyển token PCC giữa các ví vẫn diễn ra bình thường, vì hợp đồng pool không có cơ chế tạm dừng riêng; người nhận token trong thời gian này chưa hủy được tín chỉ cho tới khi hợp đồng NFT hoạt động lại.
 
-\begin{enumerate}
-    \item \textbf{Lớp cảm biến vật lý (Physical Sensing Layer):} Dưới cấp độ phần cứng, hệ thống triển khai 8 đồng hồ đo năng lượng thông minh 3 pha (Smart Energy Meters)\index{Dong ho do nang luong thong minh@Đồng hồ đo năng lượng thông minh}, bao phủ 24 pha điện độc lập. Các cảm biến này liên tục thu thập dữ liệu về công suất tác dụng, dòng điện, điện áp, tần số và hệ số công suất ở tần suất rất cao (1 đến 2 giây một lần)~\cite{vaccargiu2026blockchain}.
-    \item \textbf{Lớp thu thập dữ liệu (Data Collection Layer):} Đóng vai trò là cổng nối, liên tục nhận luồng dữ liệu thời gian thực từ các cảm biến IoT~\cite{vaccargiu2026blockchain}.
-    \item \textbf{Lớp tổng hợp dữ liệu tại biên (Data Aggregation Layer):} Gửi toàn bộ dữ liệu thô (tần suất giây) lên blockchain là không khả thi do chi phí lưu trữ lớn và tải mạng cao. Lớp tổng hợp tại biên (Edge-level aggregation)\index{Dien toan bien@Điện toán biên (Edge Computing)} tổng hợp dữ liệu theo từng phút (1.440 bản ghi mỗi ngày), sau đó gom thành các lô 5 phút để ghi lên chuỗi khối, giảm số lần ghi xuống 288 lần mỗi ngày mà vẫn giữ được tổng sản lượng điện~\cite{vaccargiu2026blockchain}.
-    \item \textbf{Lớp chứng nhận và chuỗi khối (Blockchain and Certification Layer):} Dữ liệu tổng hợp được ghi vào một chuỗi khối cấp phép (permissioned blockchain)\index{Blockchain!cap phep@cấp phép (permissioned)}, cụ thể là Hyperledger Fabric\index{Hyperledger Fabric}. Tại đây, các hợp đồng thông minh kiểm tra tổng sản lượng năng lượng tái tạo theo các tiêu chí đã lập trình sẵn và thực hiện việc tạo, đăng ký tín chỉ~\cite{vaccargiu2026blockchain}. Phần giới thiệu của bài báo cho rằng hợp đồng thông minh có thể thay thế các bên trung gian như môi giới, đại lý xác minh và hệ thống đăng ký; tuy nhiên, phần thảo luận của chính bài báo vẫn giữ bước thẩm định bởi bên thứ ba được công nhận và nhấn mạnh rằng blockchain là công cụ hỗ trợ, không thay thế quá trình chứng nhận~\cite{vaccargiu2026blockchain}.
-\end{enumerate}
+Hai use case còn lại không cần phân rã. UC04 chỉ gồm một thao tác là gọi API xuất dữ liệu của một dự án theo cấu trúc CAD Trust V2.0, và hệ thống ngoài gọi trực tiếp API này mà không qua giao diện. UC12 là bước chung mà bốn tác nhân có tài khoản thực hiện trước các use case cần đăng nhập, và luồng của use case này được đặc tả ở \autoref{tab:dt-uc12}.
 
-\HinhVaccargiu
+\FloatBarrier
+\subsection*{Quy trình nghiệp vụ}
+\label{subsec:quytrinh}
 
-\autoref{fig:vaccargiu} minh họa tổng quan kiến trúc 4 lớp nêu trên.
+Quy trình chính của hệ thống đi qua cả năm tác nhân và nối các use case ở trên thành một chuỗi, nên đồ án mô tả quy trình này bằng biểu đồ hoạt động có chia làn (\autoref{fig:quytrinh}). Quy trình bắt đầu khi chủ dự án đăng ký dự án, tải báo cáo giám sát lên và gửi yêu cầu cấp, và hệ thống lưu yêu cầu ở trạng thái SUBMITTED. VVB thẩm định hồ sơ; nếu hồ sơ không đạt, VVB ghi lý do từ chối, yêu cầu chuyển sang REJECTED và chủ dự án bổ sung hồ sơ rồi gửi một yêu cầu mới. Nếu hồ sơ đạt, VVB tải báo cáo thẩm định lên và phê duyệt, còn hệ thống ghi kết quả thẩm định và đề xuất sê-ri đầu của lô bằng sê-ri lớn nhất đã cấp cho cùng dự án và cùng vintage cộng thêm một. Cơ quan quản lý ký giao dịch phát hành, smart contract kiểm tra vai trò, dãy sê-ri và mã băm rồi tạo NFT, sau đó bộ đồng bộ sự kiện cập nhật yêu cầu sang MINTED. Phần sau của quy trình diễn ra hoàn toàn on-chain: chủ dự án nạp lô vào pool và bán token PCC, doanh nghiệp mua token rồi hủy tín chỉ, và smart contract đốt token, ghi chứng nhận hủy với dãy sê-ri cụ thể.
 
-Theo nhóm tác giả, cách kết hợp này giúp hồ sơ giảm phát thải khó bị sửa đổi, minh bạch và có thể được bên thứ ba kiểm tra. Ngoài giao dịch tín chỉ, dữ liệu này còn có thể phục vụ báo cáo bền vững của doanh nghiệp theo Chỉ thị Báo cáo Bền vững Doanh nghiệp của Liên minh Châu Âu (Directive EU 2022/2464)\index{CSRD (Directive EU 2022/2464)}, góp phần hạn chế việc tuyên bố sai về môi trường (greenwashing)\index{Greenwashing}~\cite{vaccargiu2026blockchain}. Bài báo nêu nguyên tắc một tín chỉ chỉ có thể được bán hoặc được dùng cho tuyên bố nội bộ, không thể cả hai, và cho rằng sổ cái phân tán khiến việc tuyên bố cùng một lượng giảm phát thải nhiều lần trở nên khó khăn hơn; tuy nhiên, bài báo chưa mô tả cụ thể cơ chế khóa hay hủy tín chỉ trong hợp đồng thông minh~\cite{vaccargiu2026blockchain}. Đây là một khác biệt với đồ án, vốn thiết kế cụ thể bước VVB phê duyệt trước khi mint và hàm hủy tín chỉ (mục \ref{subsec:khoangtrong}).
+\HinhQuyTrinh
 
-Ngoài ra, nghiên cứu của Liu và cộng sự (2024) trên tạp chí \textit{Energy} (Elsevier) đề xuất dùng chuỗi khối dạng Đồ thị Có hướng Không chu trình (Directed Acyclic Graph -- DAG)\index{DAG (Directed Acyclic Graph)} cho giao dịch chứng chỉ năng lượng tái tạo (RECs)\index{RECs} giữa nhà cung cấp và người tiêu dùng. Khác với blockchain dùng Proof-of-Work\index{Co che dong thuan@Cơ chế đồng thuận!Proof-of-Work} (tiêu thụ nhiều điện năng) hoặc Proof-of-Stake\index{Co che dong thuan@Cơ chế đồng thuận!Proof-of-Stake}, trong cấu trúc DAG các giao dịch không cần được gom vào khối tuần tự; mỗi giao dịch mới xác nhận một số giao dịch trước đó. Theo kết quả mô phỏng của nhóm tác giả, so với cơ chế Proof-of-Stake, phương án đề xuất giảm 41\% thời gian giao dịch và 65\% năng lượng tiêu thụ~\cite{liu2024blockchain}. Để bảo vệ thông tin của người tiêu dùng, hệ thống sử dụng định danh phi tập trung (DID), chữ ký số, mật khẩu dùng một lần (OTP) và các tài khoản trung gian để che giấu mẫu hình giao dịch~\cite{liu2024blockchain}. Hướng tiếp cận này phù hợp với các bên tham gia không muốn công khai thông tin giao dịch của mình trên sổ cái~\cite{liu2024blockchain}.
-
-\subsection{Token hóa (tokenization) và giao thức tài chính phi tập trung (DeFi)}
-\label{sec:token}
-
-Trong khi các giải pháp như Hyperledger Fabric hướng tới môi trường doanh nghiệp cấp phép (permissioned), các dự án Web3\index{Web3} và Tổ chức Tự trị Phi tập trung (DAO)\index{DAO} tiếp cận thị trường carbon theo hướng token hóa tài sản thực (Real World Assets -- RWA Tokenization)\index{Token hoa@Token hóa (Tokenization)}\index{RWA|see{Token hóa}}. Token hóa tạo ra các token trên chuỗi khối đại diện cho tín chỉ carbon đã được cấp trên hệ thống đăng ký truyền thống, kèm theo các thuộc tính của tín chỉ đó~\cite{toucan2025docs}.
-
-Toucan Protocol\index{Toucan Protocol} và KlimaDAO\index{KlimaDAO} là hai trong những nền tảng đầu tiên xây dựng cầu nối giữa tín chỉ carbon và tài chính phi tập trung (DeFi)\index{DeFi}, đưa các tín chỉ đã được cấp (như VCUs từ Verra) lên các chuỗi khối tương thích EVM\index{EVM} như Polygon và Celo~\cite{toucan2025docs}. Toucan Protocol dùng nhiều loại token khác nhau để vừa giữ được thông tin riêng của từng dự án, vừa tạo ra token có thể thay thế cho nhau để tăng thanh khoản~\cite{toucan2025docs}. Quy trình token hóa và hủy tín chỉ qua Toucan gồm các bước sau:
-
-\begin{enumerate}
-    \item \textbf{Cầu nối từ Verra và Batch NFT (ERC-721):}\index{Toucan Protocol!Batch NFT} Người dùng tạo một Batch NFT (ERC-721)\index{NFT} trên Polygon, sau đó hủy lô tín chỉ trên Verra Registry và ghi mã định danh của Batch NFT vào ghi chú hủy. Mỗi lô chỉ được gồm tín chỉ của cùng một dự án và cùng năm vintage. Số sê-ri của Verra được ghi vào NFT và được người xác minh của Toucan phê duyệt~\cite{toucan2025docs}.
-    \item \textbf{Tạo TCO2 (ERC-20):}\index{Toucan Protocol!TCO2} Batch NFT đã được duyệt được chia nhỏ thành token TCO2. TCO2 là token ERC-20\index{ERC-20}, mỗi đợt cấp (vintage) của một dự án có một hợp đồng TCO2 riêng giữ siêu dữ liệu của dự án; 1 TCO2 tương ứng 1 tín chỉ (1 tCO$_2$e)~\cite{toucan2025docs}. Cầu nối từ Verra hiện đã ngừng hoạt động vì Verra không còn chấp nhận việc token hóa tín chỉ theo cách này~\cite{toucan2025docs}.
-    \item \textbf{Nạp vào pool và đổi lại (Pool Tokens -- ERC-20):} Việc giao dịch trực tiếp hàng nghìn loại TCO2 khác nhau làm thanh khoản bị phân tán. Toucan dùng các hợp đồng pool: các TCO2 đáp ứng tiêu chí chấp nhận của pool (ví dụ năm vintage, loại dự án) có thể được nạp vào pool để nhận token ERC-20 có thể thay thế như Base Carbon Tonne (BCT)\index{Toucan Protocol!BCT (Base Carbon Tonne)} hoặc Nature Carbon Tonne (NCT)\index{Toucan Protocol!NCT (Nature Carbon Tonne)}, mỗi token tương ứng 1 tấn CO$_2$e và có thể giao dịch trên các sàn phi tập trung (DEX)\index{DEX}. Ngược lại, người giữ pool token có thể đổi lại (redeem) lấy TCO2 của một dự án cụ thể~\cite{toucan2025docs}.
-    \item \textbf{Hủy tín chỉ (retire):} Người giữ TCO2 gọi hàm \texttt{retire()} của hợp đồng TCO2 để hủy tín chỉ; lượng token tương ứng bị đốt (burn) và loại khỏi lưu thông. Hàm \texttt{retireAndMintCertificate()} vừa hủy tín chỉ vừa tạo NFT chứng nhận hủy (RetirementCertificate)\index{Huy tin chi@Hủy tín chỉ (retirement)!tren chuoi@trên chuỗi khối}, ghi tên bên hủy, người thụ hưởng và thông điệp hủy; các thông tin này được ghi công khai trên chuỗi khối~\cite{toucan2025docs}. Toucan cũng cung cấp hợp đồng \texttt{OffsetHelper}\index{Toucan Protocol!OffsetHelper} để gộp các bước hoán đổi, đổi lại và hủy trong một giao dịch~\cite{toucan2025docs}.
-\end{enumerate}
-% [GÓP Ý] Đã bỏ các chi tiết lấy từ bài blog Medium nhưng không đối chiếu được với tài liệu chính thức
-% của Toucan: tên hàm retireSpecificProject(), phí đổi 10% của NCT, chức năng đa chuỗi qua Hyperlane.
-
-\HinhToucan
-
-\autoref{fig:toucan} tóm tắt luồng token hóa và hủy tín chỉ theo giao thức Toucan.
-
-Tại Đài Loan, nghiên cứu của Tsai (2024) xây dựng một nền tảng giao dịch tín chỉ carbon trên Ethereum\index{Ethereum} cho các doanh nghiệp vừa và nhỏ, nhằm hỗ trợ đáp ứng Cơ chế điều chỉnh biên giới carbon (CBAM)\index{CBAM} của EU -- có giai đoạn áp dụng chính thức từ năm 2026 -- và dự luật Clean Competition Act của Hoa Kỳ~\cite{tsai2024blockchain}. Hệ thống dùng giao diện React.js\index{React.js} kết nối ví MetaMask\index{MetaMask}, còn các chức năng chính như phát hành và hủy tín chỉ được thực hiện bằng hợp đồng thông minh Solidity\index{Solidity}. Để giảm chi phí gas, hồ sơ doanh nghiệp có dung lượng lớn được lưu ngoài chuỗi (off-chain)\index{Off-chain}, chỉ mã băm và thông tin chuyển quyền sở hữu được ghi lên chuỗi (on-chain)\index{On-chain}, tạo thành một mô hình lai cho đối tượng SMEs~\cite{tsai2024blockchain}. Trong một thí nghiệm có đối chứng với hệ thống tập trung, tác giả ghi nhận nền tảng giúp giảm thời gian và chi phí giao dịch, đồng thời dùng mô hình Kano để đánh giá mức độ hài lòng của người dùng~\cite{tsai2024blockchain}.
-
-\subsection{Đánh giá và khoảng trống mà đồ án giải quyết}
-\label{subsec:khoangtrong}
-% Nên có bảng so sánh: Verra Registry, UNDP National Carbon Registry, CAD Trust, Toucan Protocol,
-% Vaccargiu và cộng sự, nền tảng cho SMEs, và hệ thống của đồ án; tiêu chí gợi ý: nền tảng
-% (tập trung / blockchain nào), quyền sở hữu ghi on-chain, cơ chế chống double counting,
-% mô hình dữ liệu theo chuẩn, mã nguồn mở. Sau bảng, nêu rõ điểm đồ án kế thừa và điểm khác.
-\canviet{Đánh giá và khoảng trống}
+Biểu đồ cho thấy điểm chuyển giao giữa hai phần của kiến trúc lai nằm ở bước ký giao dịch phát hành. Trước bước này, mọi thay đổi chỉ nằm trong cơ sở dữ liệu off-chain và có thể quay lại, ví dụ một yêu cầu bị từ chối thì chủ dự án gửi yêu cầu khác. Sau bước này, dữ liệu lô tín chỉ và mọi thao tác chuyển nhượng, hủy nằm trên blockchain, và cơ sở dữ liệu chỉ nhận bản sao qua bộ đồng bộ sự kiện.
 
 % ------------------------------------------------------------
-\section{Kết luận chương}
-% 3–5 câu: các kiến thức chính và lựa chọn công nghệ được mang sang Chương 3.
-\canviet{Kết luận chương 2}
+\section{Đặc tả chức năng}
+\label{sec:dactachucnang}
+
+Mục này đặc tả bảy use case có ràng buộc nghiệp vụ chặt nhất, gồm đăng nhập bằng chữ ký ví (UC12), gửi yêu cầu cấp (UC06), phê duyệt yêu cầu cấp (UC01), phát hành lô tín chỉ (UC02), nạp tín chỉ vào pool (UC07), hủy tín chỉ (UC09) và tra cứu tín chỉ (UC11). Mỗi đặc tả ghi tác nhân, tiền điều kiện, luồng sự kiện chính, các luồng thay thế và hậu điều kiện. Ở các use case ghi dữ liệu on-chain, luồng thay thế liệt kê đúng tên lỗi (custom error) mà smart contract trả về khi giao dịch bị hủy (revert), vì đó là nơi các ràng buộc chống tính toán kép thực sự có hiệu lực. Mọi use case ghi on-chain đều có chung tiền điều kiện là người dùng đã kết nối ví MetaMask ở đúng mạng Sepolia.
+
+\subsection*{Đặc tả use case ``Đăng nhập bằng chữ ký ví''}
+\label{subsec:dt-uc12}
+
+Use case UC12 (\autoref{tab:dt-uc12}) thay cho cơ chế tên đăng nhập và mật khẩu thông thường. Người dùng chứng minh quyền kiểm soát một địa chỉ ví bằng cách ký một thông điệp do backend tạo ra, và vì thông điệp chứa một nonce ngẫu nhiên chỉ dùng một lần, chữ ký của lần đăng nhập trước không dùng lại được cho lần sau. Việc ký thông điệp không tạo giao dịch on-chain nên người dùng không tốn phí gas. Vai trò mà người dùng chọn chỉ có tác dụng ở lần đăng nhập đầu tiên, khi hệ thống tạo tài khoản; ở các lần sau, backend luôn dùng vai trò đã lưu.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Đặc tả use case ``Đăng nhập bằng chữ ký ví'' (UC12)}
+    \label{tab:dt-uc12}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.8cm}|Y|}
+        \hline
+        Tác nhân & Chủ dự án, VVB, cơ quan quản lý, doanh nghiệp mua \\
+        \hline
+        Tiền điều kiện & Trình duyệt đã cài MetaMask và có tài khoản ví; MetaMask đang ở mạng mà hệ thống triển khai hợp đồng \\
+        \hline
+        Luồng sự kiện chính & (1) Người dùng chọn vai trò muốn đăng ký (chủ dự án hoặc doanh nghiệp mua) rồi chọn ``Kết nối MetaMask''.\newline
+        (2) MetaMask hỏi quyền kết nối; giao diện lấy địa chỉ ví và kiểm tra mã mạng.\newline
+        (3) Giao diện gửi địa chỉ ví tới backend; backend tạo nonce ngẫu nhiên, thay nonce cũ của ví nếu có, và trả về thông điệp đăng nhập chứa địa chỉ ví và nonce.\newline
+        (4) MetaMask hiển thị thông điệp, và người dùng ký thông điệp.\newline
+        (5) Giao diện gửi địa chỉ ví, chữ ký và vai trò đã chọn tới backend.\newline
+        (6) Backend khôi phục địa chỉ từ chữ ký, so với địa chỉ đã khai, rồi xóa nonce.\newline
+        (7) Nếu ví chưa có tài khoản, backend tạo tài khoản: ví thuộc danh sách quản trị cấu hình sẵn nhận vai trò ADMIN, các ví khác nhận vai trò đã chọn.\newline
+        (8) Backend cấp JWT có hiệu lực tám giờ; giao diện lưu JWT và hiển thị các mục điều hướng theo vai trò. \\
+        \hline
+        Luồng thay thế & (2a) Trình duyệt chưa cài MetaMask: giao diện thông báo chưa cài MetaMask.\newline
+        (2b) MetaMask ở sai mạng: giao diện yêu cầu người dùng chuyển sang đúng mạng.\newline
+        (4a) Người dùng từ chối ký: use case kết thúc, người dùng chưa đăng nhập.\newline
+        (6a) Ví chưa lấy nonce hoặc nonce đã dùng: backend từ chối với mã HTTP 401.\newline
+        (6b) Chữ ký không khớp với địa chỉ đã khai: backend từ chối với mã HTTP 401.\newline
+        (7a) Vai trò tự chọn không phải PROJECT\_OWNER hoặc BUYER: backend từ chối với mã HTTP 400.\newline
+        (8a) Người dùng đổi tài khoản trong MetaMask: giao diện xóa JWT và đăng xuất. \\
+        \hline
+        Hậu điều kiện & Người dùng có phiên đăng nhập gắn với đúng địa chỉ ví và vai trò; nonce đã bị xóa nên chữ ký vừa dùng không phát lại được \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\subsection*{Đặc tả use case ``Gửi yêu cầu cấp tín chỉ''}
+\label{subsec:dt-uc06}
+
+Use case UC06 (\autoref{tab:dt-uc06}) là bước duy nhất mà chủ dự án đưa dữ liệu giảm phát thải vào hệ thống. Backend kiểm tra ba điều kiện trước khi lưu yêu cầu: người gửi phải là chủ của dự án, dự án chưa ở trạng thái rút (Withdrawn), và báo cáo giám sát mà yêu cầu tham chiếu phải đã có trong kho hồ sơ. Use case này chưa tạo giao dịch on-chain nào.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Đặc tả use case ``Gửi yêu cầu cấp tín chỉ'' (UC06)}
+    \label{tab:dt-uc06}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.8cm}|Y|}
+        \hline
+        Tác nhân & Chủ dự án \\
+        \hline
+        Tiền điều kiện & Chủ dự án đã đăng nhập bằng chữ ký ví với vai trò PROJECT\_OWNER; dự án thuộc chủ dự án và không ở trạng thái Withdrawn \\
+        \hline
+        Luồng sự kiện chính & (1) Chủ dự án mở trang ``Dự án của tôi'' và chọn dự án.\newline
+        (2) Chủ dự án chọn tệp báo cáo giám sát và tải lên.\newline
+        (3) Hệ thống tính mã băm keccak256 của tệp, lưu tệp và trả lại mã băm.\newline
+        (4) Chủ dự án nhập năm vintage, số lượng tCO$_2$e, kỳ báo cáo và gửi yêu cầu.\newline
+        (5) Hệ thống kiểm tra quyền sở hữu dự án, trạng thái dự án và mã băm báo cáo giám sát, rồi lưu yêu cầu ở trạng thái SUBMITTED.\newline
+        (6) Hệ thống hiển thị yêu cầu trong danh sách của chủ dự án và danh sách chờ thẩm định của VVB. \\
+        \hline
+        Luồng thay thế & (4a) Số lượng không phải số nguyên dương hoặc vintage không hợp lệ: hệ thống báo lỗi dữ liệu và giữ nguyên biểu mẫu.\newline
+        (5a) Dự án không thuộc người gửi: hệ thống từ chối yêu cầu.\newline
+        (5b) Dự án đã rút: hệ thống từ chối và thông báo dự án không còn nhận yêu cầu cấp.\newline
+        (5c) Báo cáo giám sát chưa có trong kho hồ sơ: hệ thống báo lỗi, chủ dự án quay lại bước (2). \\
+        \hline
+        Hậu điều kiện & Một yêu cầu cấp mới ở trạng thái SUBMITTED, gắn mã băm báo cáo giám sát; dữ liệu on-chain không thay đổi \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\subsection*{Đặc tả use case ``Thẩm định, phê duyệt yêu cầu cấp''}
+\label{subsec:dt-uc01}
+
+Use case UC01 (\autoref{tab:dt-uc01}) thể hiện vai trò của VVB trong hệ thống. Việc thẩm định thực tế, gồm đối chiếu số liệu giám sát với phương pháp luận và khảo sát hiện trường, diễn ra ngoài hệ thống, còn hệ thống chỉ ghi nhận kết quả và báo cáo thẩm định. Backend chặn sớm trường hợp một báo cáo thẩm định đã dùng cho đợt cấp khác, dù smart contract vẫn kiểm tra lại điều kiện này ở bước phát hành.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Đặc tả use case ``Thẩm định, phê duyệt yêu cầu cấp'' (UC01)}
+    \label{tab:dt-uc01}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.8cm}|Y|}
+        \hline
+        Tác nhân & VVB \\
+        \hline
+        Tiền điều kiện & VVB đã đăng nhập với vai trò VERIFIER; yêu cầu cấp ở trạng thái SUBMITTED \\
+        \hline
+        Luồng sự kiện chính & (1) VVB mở trang ``Thẩm định'' và chọn một yêu cầu đang chờ.\newline
+        (2) VVB tải báo cáo giám sát về và đối chiếu mã băm của tệp với mã băm ghi trong yêu cầu.\newline
+        (3) VVB thẩm định hồ sơ ngoài hệ thống, sau đó nhập tên tổ chức thẩm định và tải báo cáo thẩm định lên.\newline
+        (4) VVB chọn ``Phê duyệt''.\newline
+        (5) Hệ thống kiểm tra yêu cầu vẫn ở trạng thái SUBMITTED, báo cáo thẩm định đã có trong kho hồ sơ và chưa dùng cho đợt cấp nào.\newline
+        (6) Hệ thống đề xuất sê-ri đầu của lô, rồi trong cùng một giao dịch cơ sở dữ liệu ghi bản ghi thẩm định và chuyển yêu cầu sang APPROVED.\newline
+        (7) Hệ thống trả lại tham số phát hành để cơ quan quản lý ký ở UC02. \\
+        \hline
+        Luồng thay thế & (4a) VVB chọn ``Từ chối'' và nhập lý do: hệ thống chuyển yêu cầu sang REJECTED và lưu lý do; chủ dự án bổ sung hồ sơ rồi gửi yêu cầu mới.\newline
+        (5a) Yêu cầu đã được xử lý trước đó: hệ thống báo xung đột trạng thái.\newline
+        (5b) Báo cáo thẩm định đã dùng cho một đợt cấp khác: hệ thống từ chối phê duyệt. \\
+        \hline
+        Hậu điều kiện & Yêu cầu ở trạng thái APPROVED, có bản ghi thẩm định, mã băm báo cáo thẩm định và sê-ri đầu dự kiến \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\subsection*{Đặc tả use case ``Phát hành lô tín chỉ''}
+\label{subsec:dt-uc02}
+
+Use case UC02 (\autoref{tab:dt-uc02}) là điểm chặn phát hành kép trong phạm vi hệ thống. Hợp đồng CarbonCreditNFT không tin vào tham số mà backend đề xuất, mà tự kiểm tra lại bốn điều kiện: ví gọi hàm có vai trò phát hành, số lượng lớn hơn không, mã băm báo cáo thẩm định chưa dùng, và sê-ri đầu không nhỏ hơn sê-ri tiếp theo được phép của cặp (mã dự án, vintage). Nếu một điều kiện không thỏa mãn, toàn bộ giao dịch bị hủy và trạng thái on-chain giữ nguyên.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Đặc tả use case ``Phát hành lô tín chỉ'' (UC02)}
+    \label{tab:dt-uc02}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.8cm}|Y|}
+        \hline
+        Tác nhân & Cơ quan quản lý \\
+        \hline
+        Tiền điều kiện & Ví của cơ quan quản lý có vai trò ISSUER\_ROLE; yêu cầu cấp ở trạng thái APPROVED; hợp đồng không ở trạng thái tạm dừng \\
+        \hline
+        Luồng sự kiện chính & (1) Cơ quan quản lý mở danh sách yêu cầu đã phê duyệt.\newline
+        (2) Hệ thống hiển thị tham số phát hành: ví nhận (ví chủ dự án), mã dự án, vintage, sê-ri đầu, số lượng, mã băm báo cáo thẩm định và URI metadata.\newline
+        (3) Cơ quan quản lý chọn ``Phát hành''; MetaMask hiển thị giao dịch gọi hàm mintBatch kèm phí gas ước tính.\newline
+        (4) Cơ quan quản lý ký giao dịch.\newline
+        (5) Hợp đồng CarbonCreditNFT kiểm tra vai trò, số lượng, mã băm và dãy sê-ri.\newline
+        (6) Hợp đồng tạo NFT cho ví chủ dự án, lưu dữ liệu lô, đánh dấu mã băm đã dùng, dời sê-ri tiếp theo được phép và phát sự kiện CreditMinted.\newline
+        (7) Bộ đồng bộ sự kiện đọc CreditMinted, ghi đợt cấp và khối tín chỉ vào cơ sở dữ liệu, chuyển yêu cầu sang MINTED.\newline
+        (8) Giao diện hiển thị dãy sê-ri đã cấp và liên kết tới giao dịch trên Etherscan. \\
+        \hline
+        Luồng thay thế & (4a) Cơ quan quản lý từ chối ký trong MetaMask: không có giao dịch nào, yêu cầu giữ trạng thái APPROVED.\newline
+        (5a) Ví không có vai trò phát hành: hợp đồng revert với lỗi AccessControlUnauthorizedAccount.\newline
+        (5b) Sê-ri đầu chồng lấn dãy đã cấp: revert SerialOverlap.\newline
+        (5c) Mã băm báo cáo thẩm định đã dùng: revert DocumentAlreadyUsed.\newline
+        (5d) Hợp đồng đang tạm dừng: revert EnforcedPause.\newline
+        Ở mọi luồng (5a)–(5d), giao diện hiển thị tên lỗi và yêu cầu giữ trạng thái APPROVED. \\
+        \hline
+        Hậu điều kiện & Chủ dự án sở hữu một NFT mới đại diện cho lô tín chỉ; dãy sê-ri và mã băm của lô không thể dùng lại; cơ sở dữ liệu off-chain có bản sao của đợt cấp \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\subsection*{Đặc tả use case ``Nạp tín chỉ vào pool, đổi token''}
+\label{subsec:dt-uc07}
+
+Use case UC07 (\autoref{tab:dt-uc07}) là nơi hệ thống chặn bán kép giữa hai dạng của cùng một lô tín chỉ. Giao diện không gọi hàm deposit của pool, vì hàm này cần thêm một giao dịch approve trước, mà chuyển thẳng NFT vào pool bằng hàm safeTransferFrom của hợp đồng NFT. Hợp đồng pool chỉ đúc token trong hàm onERC721Received, nên dù NFT đi vào pool theo đường nào thì cũng qua cùng một điểm kiểm tra. Luồng thay thế (1a) mô tả chiều ngược lại là đổi token lấy lại lô (redeem), trong đó người gọi phải đốt số token bằng đúng phần còn lại của lô.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Đặc tả use case ``Nạp tín chỉ vào pool, đổi token'' (UC07)}
+    \label{tab:dt-uc07}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.8cm}|Y|}
+        \hline
+        Tác nhân & Người giữ lô tín chỉ (chủ dự án hoặc doanh nghiệp mua) \\
+        \hline
+        Tiền điều kiện & Người dùng đã đăng nhập; ví đang sở hữu NFT của lô và lô còn tín chỉ chưa hủy; hợp đồng NFT không ở trạng thái tạm dừng \\
+        \hline
+        Luồng sự kiện chính & (1) Người dùng mở trang ``Ví tín chỉ''; hệ thống hiển thị các lô NFT mà ví đang giữ, gồm mã dự án, vintage, dãy sê-ri và số lượng còn lại.\newline
+        (2) Người dùng chọn ``Nạp vào pool'' ở một lô.\newline
+        (3) Giao diện tạo giao dịch gọi hàm safeTransferFrom của CarbonCreditNFT để chuyển NFT từ ví người dùng sang địa chỉ CarbonPool; người dùng ký bằng MetaMask.\newline
+        (4) CarbonCreditNFT kiểm tra người gọi là chủ sở hữu hoặc người được ủy quyền, chuyển NFT sang pool rồi gọi hàm onERC721Received của pool.\newline
+        (5) CarbonPool kiểm tra NFT đến từ đúng hợp đồng CarbonCreditNFT, đọc phần còn lại của lô, thêm lô vào danh sách đang khóa, đúc cho người nạp số token PCC bằng phần còn lại và phát sự kiện Deposited.\newline
+        (6) Bộ đồng bộ sự kiện đọc sự kiện Transfer, đổi chủ sở hữu của khối tín chỉ thành pool và đánh dấu khối đang trong pool.\newline
+        (7) Giao diện hiển thị số dư PCC mới, và lô xuất hiện trong danh sách các lô trong pool. \\
+        \hline
+        Luồng thay thế & (1a) Người giữ token muốn lấy lại một lô trong pool: người dùng chọn ``Đổi lại cả lô'', giao diện gọi hàm redeem của CarbonPool; pool kiểm tra lô đang trong pool, đốt số token bằng phần còn lại của lô, bỏ lô khỏi danh sách đang khóa, trả NFT về ví người gọi và phát sự kiện Redeemed. Ở luồng này, lô không nằm trong pool thì giao dịch revert với lỗi NotInPool, còn người gọi không đủ token thì revert ERC20InsufficientBalance.\newline
+        (3a) Người dùng từ chối ký: không có giao dịch nào, lô vẫn nằm trong ví.\newline
+        (4a) Người gọi không có quyền với NFT: revert ERC721InsufficientApproval.\newline
+        (4b) Hợp đồng NFT đang tạm dừng: revert EnforcedPause.\newline
+        (5a) NFT gửi tới pool không thuộc hợp đồng CarbonCreditNFT: revert UnsupportedNFT. \\
+        \hline
+        Hậu điều kiện & NFT của lô bị khóa trong pool và chỉ ra khỏi pool qua redeem hoặc khi bị đốt do hủy hết; tổng cung PCC tăng đúng bằng phần còn lại của lô, nên tổng cung PCC vẫn bằng tổng phần còn lại của các lô trong pool \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\subsection*{Đặc tả use case ``Hủy tín chỉ''}
+\label{subsec:dt-uc09}
+
+Use case UC09 (\autoref{tab:dt-uc09}) mô tả đường hủy từ pool, là trường hợp phức tạp hơn trong hai đường hủy, còn đường hủy trực tiếp từ lô nằm ở luồng thay thế (1a). Điểm cần lưu ý là người hủy từ pool chỉ cầm token có thể thay thế, nhưng chứng nhận hủy vẫn ghi được dãy sê-ri cụ thể, vì người hủy phải chỉ định lô và hợp đồng NFT luôn hủy từ đầu phần sê-ri còn lại của lô đó.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Đặc tả use case ``Hủy tín chỉ'' (UC09)}
+    \label{tab:dt-uc09}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.8cm}|Y|}
+        \hline
+        Tác nhân & Doanh nghiệp mua (hoặc bất kỳ người giữ tín chỉ nào) \\
+        \hline
+        Tiền điều kiện & Ví của doanh nghiệp giữ đủ token PCC; lô cần hủy đang nằm trong pool; hợp đồng không ở trạng thái tạm dừng \\
+        \hline
+        Luồng sự kiện chính & (1) Doanh nghiệp mở trang ``Ví tín chỉ'' và chọn một lô trong pool.\newline
+        (2) Doanh nghiệp nhập số lượng cần hủy, tên người thụ hưởng và lý do hủy.\newline
+        (3) Giao diện tạo giao dịch gọi hàm retire của CarbonPool; doanh nghiệp ký bằng MetaMask.\newline
+        (4) CarbonPool kiểm tra lô đang trong pool và đốt số token tương ứng của doanh nghiệp.\newline
+        (5) CarbonPool gọi hàm retireFor của CarbonCreditNFT; hợp đồng NFT kiểm tra bên gọi có vai trò RETIREMENT\_AGENT\_ROLE, số lượng không vượt phần còn lại và người thụ hưởng không rỗng.\newline
+        (6) Hợp đồng NFT tính dãy sê-ri bị hủy từ đầu phần còn lại, cộng vào số đã hủy của lô, lưu chứng nhận hủy và phát sự kiện CreditRetired; nếu lô đã hủy hết thì đốt NFT.\newline
+        (7) Bộ đồng bộ sự kiện tách khối tín chỉ thành phần đã hủy và phần còn lại, ghi chứng nhận hủy vào cơ sở dữ liệu.\newline
+        (8) Giao diện hiển thị liên kết tới trang chứng nhận hủy. \\
+        \hline
+        Luồng thay thế & (1a) Doanh nghiệp giữ NFT của lô: giao diện gọi hàm retire của CarbonCreditNFT, và hợp đồng kiểm tra người gọi là chủ sở hữu hoặc người được ủy quyền thay cho các bước (4)–(5).\newline
+        (4a) Lô không nằm trong pool: revert NotInPool.\newline
+        (4b) Doanh nghiệp không đủ token: revert ERC20InsufficientBalance.\newline
+        (5a) Số lượng vượt phần còn lại của lô: revert ExceedsRemaining.\newline
+        (5b) Người thụ hưởng để trống: revert EmptyBeneficiary. \\
+        \hline
+        Hậu điều kiện & Số token tương ứng đã bị đốt; dãy sê-ri đã hủy không thể chuyển nhượng hay hủy lại; chứng nhận hủy công khai, ai cũng tra cứu được \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\subsection*{Đặc tả use case ``Tra cứu tín chỉ, chứng nhận hủy''}
+\label{subsec:dt-uc11}
+
+Use case UC11 (\autoref{tab:dt-uc11}) không thay đổi dữ liệu nhưng là use case thể hiện rõ nhất giá trị của hệ thống đối với bên thứ ba. Người xem không cần tài khoản, và ngoài kết quả do backend trả về, người xem còn có hai cách tự kiểm tra: mở giao dịch trên Etherscan để xem sự kiện gốc, và tải hồ sơ về để tự tính lại mã băm rồi so với mã băm lưu trong NFT.
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Đặc tả use case ``Tra cứu tín chỉ, chứng nhận hủy'' (UC11)}
+    \label{tab:dt-uc11}
+    \small
+    \begin{tabularx}{\textwidth}{|L{2.8cm}|Y|}
+        \hline
+        Tác nhân & Người xem công khai (mọi tác nhân) \\
+        \hline
+        Tiền điều kiện & Không có; người xem không cần ví và không cần đăng nhập \\
+        \hline
+        Luồng sự kiện chính & (1) Người xem mở trang ``Tra cứu'' và nhập mã dự án, vintage, số sê-ri.\newline
+        (2) Hệ thống tìm khối tín chỉ chứa số sê-ri đó.\newline
+        (3) Hệ thống hiển thị trạng thái của tín chỉ (đang giữ hoặc đã hủy), ví đang giữ hoặc pool, lô chứa tín chỉ, đợt cấp và mã băm báo cáo thẩm định.\newline
+        (4) Nếu tín chỉ đã hủy, hệ thống hiển thị chứng nhận hủy gồm người hủy, người thụ hưởng, dãy sê-ri, thời điểm và liên kết tới giao dịch trên Etherscan.\newline
+        (5) Người xem có thể tải hồ sơ về và tự tính mã băm để đối chiếu với mã băm on-chain. \\
+        \hline
+        Luồng thay thế & (1a) Tham số không hợp lệ: hệ thống báo lỗi dữ liệu.\newline
+        (2a) Không có khối tín chỉ nào chứa số sê-ri: hệ thống thông báo không tìm thấy. \\
+        \hline
+        Hậu điều kiện & Dữ liệu không thay đổi \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\FloatBarrier
+% ------------------------------------------------------------
+% Mục này chuyển nguyên văn từ Chương 1 sang ngày 17/11/2026 (giữ nhãn cũ).
+\section{Yêu cầu phi chức năng}
+\label{sec:phichucnang}
+\label{subsec:ycphichucnang}
+
+Ngoài các chức năng ở Bảng~\ref{tab:ks-nhucauchucnang}, hệ thống phải đáp ứng một số yêu cầu phi chức năng, trong đó quan trọng nhất là tính toàn vẹn và khả năng kiểm tra. Mỗi dãy sê-ri chỉ phát hành một lần, quyền sở hữu và trạng thái hủy lấy dữ liệu on-chain làm gốc, và bên thứ ba phải tự kiểm tra được lịch sử của một tín chỉ mà không cần hỏi đơn vị vận hành. Cơ sở dữ liệu off-chain chỉ là bản sao phục vụ truy vấn, nên khi hai phía lệch nhau thì hệ thống lấy dữ liệu on-chain làm chuẩn.
+
+Về bảo mật, chỉ những tài khoản có vai trò phù hợp mới được phát hành tín chỉ hoặc thay đổi vai trò, và smart contract phải chống được các lỗ hổng phổ biến như reentrancy. Yêu cầu này đi cùng yêu cầu về quyền riêng tư, vì Thông tư 11/2026/TT-BNNMT vừa yêu cầu công khai thông tin (Điều~4) vừa yêu cầu bảo mật thông tin giao dịch (Điều~24)~\cite{vietnam2026thongtu11}. Để dung hòa hai yêu cầu đó, hệ thống chỉ ghi on-chain địa chỉ ví, dãy sê-ri, trạng thái và mã băm hồ sơ; thông tin định danh doanh nghiệp, hồ sơ và giá giao dịch nằm off-chain và có phân quyền truy cập, giống cách CAD Trust và Verra đang làm~\cite{cadtrust2025datamodel,verra2020registryv2}.
+
+Về chi phí, hệ thống cần giữ chi phí gas của các thao tác chính ở mức chấp nhận được, và quá trình kiểm thử sẽ đo chi phí này. Về khả năng tương thích và bảo trì, dữ liệu off-chain theo mô hình CAD Trust V2.0, còn kiến trúc tách lớp để sau này bổ sung chữ ký số của VVB, kết nối dữ liệu MRV hay ánh xạ sang mã trong nước mà không phải sửa smart contract đã triển khai. Về tính dễ dùng, giao diện hướng dẫn người dùng từng bước khi kết nối và ký giao dịch bằng ví MetaMask, vì phần lớn người dùng nghiệp vụ chưa quen với ví blockchain.
+
+% ------------------------------------------------------------
+% Kết chương (Normal, không tiêu đề).
+Qua chương này, tác giả đã chuyển mười nhu cầu chức năng ở Chương~\ref{chap:khaosat} thành mười hai use case của năm tác nhân, trong đó quyền của mỗi tác nhân chia thành vai trò off-chain trong backend và vai trò on-chain trong smart contract, còn đăng nhập bằng chữ ký ví gắn hai loại vai trò đó vào cùng một địa chỉ ví. Sáu biểu đồ phân rã đã chia các use case mức cao thành những thao tác cụ thể mà mỗi tác nhân thực hiện trên giao diện. Biểu đồ hoạt động cho thấy bước ký giao dịch phát hành là ranh giới giữa phần off-chain, nơi các bước chuẩn bị hồ sơ còn có thể quay lại, và phần on-chain, nơi dữ liệu lô tín chỉ và mọi thao tác chuyển nhượng, hủy không thể sửa. Bảy đặc tả use case đã chỉ ra cụ thể điều kiện nào backend kiểm tra để chặn sớm và điều kiện nào smart contract kiểm tra lại để bảo đảm ràng buộc chống tính toán kép, cùng với tên lỗi tương ứng khi giao dịch bị hủy. Chương~\ref{chap:thietke} sẽ dựa trên các use case và yêu cầu phi chức năng này để thiết kế kiến trúc, các lớp, cơ sở dữ liệu và giao diện của hệ thống.

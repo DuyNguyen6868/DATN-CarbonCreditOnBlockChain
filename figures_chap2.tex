@@ -1,62 +1,302 @@
 % ============================================================
-% HÌNH VẼ CHƯƠNG 2 (TikZ) — gọi bằng macro trong Chap2.tex
-%   \HinhChuoiKhoi  : cấu trúc liên kết các khối          (fig:chuoikhoi)
-%   \HinhLuongDApp  : luồng tương tác của dApp             (fig:luongdapp)
+% HÌNH VẼ CHƯƠNG 2 — PHÂN TÍCH HỆ THỐNG (TikZ), gọi bằng macro trong Chap2.tex
+% Viết lại ngày 17/11/2026 khi Chương 2 đổi thành "Phân tích hệ thống". Hai hình cũ của chương
+% Công nghệ (\HinhChuoiKhoi, \HinhLuongDApp) đã chuyển sang figures_chap4.tex.
+%   \HinhUseCase       : biểu đồ use case tổng quát (chuyển từ figures_chap3, vẽ lại có mã UC)  (fig:usecase)
+%   \HinhUCPhatHanh    : use case phân rã "Phát hành tín chỉ"                                   (fig:uc-phathanh)
+%   \HinhUCGiaoDich    : use case phân rã "Giao dịch và hủy tín chỉ"                            (fig:uc-giaodich)
+%   \HinhQuyTrinh      : biểu đồ hoạt động của quy trình nghiệp vụ chính                         (fig:quytrinh)
+% Thêm ngày 25/11/2026 (bốn biểu đồ phân rã còn thiếu, vẽ theo route backend và trang frontend thật):
+%   \HinhUCDuAn        : use case phân rã "Đăng ký dự án, tải hồ sơ" (UC05)                      (fig:uc-duan)
+%   \HinhUCDashboard   : use case phân rã "Theo dõi dashboard phát thải" (UC10)                  (fig:uc-dashboard)
+%   \HinhUCTraCuu      : use case phân rã "Tra cứu tín chỉ, chứng nhận hủy" (UC11)               (fig:uc-tracuu)
+%   \HinhUCQuanTri     : use case phân rã "Quản lý tài khoản, phân quyền" (UC03)                 (fig:uc-quantri)
 % ============================================================
 
-% ---------- Cấu trúc liên kết các khối ----------
-\newcommand{\HinhChuoiKhoi}{%
+% Hình người (tác nhân UML)
+\tikzset{
+  tacnhan/.pic={
+    \draw[thick] (0,0.62) circle (0.15);
+    \draw[thick] (0,0.47) -- (0,0.05);
+    \draw[thick] (-0.25,0.33) -- (0.25,0.33);
+    \draw[thick] (0,0.05) -- (-0.18,-0.28);
+    \draw[thick] (0,0.05) -- (0.18,-0.28);
+  },
+  uc/.style={draw, ellipse, align=center, font=\footnotesize, inner sep=1pt,
+             minimum height=0.72cm, fill=white},
+  ucquanhe/.style={->, >=Stealth, dashed},
+  ucnhan/.style={font=\scriptsize, fill=white, inner sep=1pt}
+}
+
+% ---------- Biểu đồ use case tổng quát ----------
+\newcommand{\HinhUseCase}{%
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[
-    >=Stealth,
-    truong/.style={draw, minimum width=3.3cm, minimum height=0.55cm,
-                   font=\footnotesize, fill=white, inner sep=1pt},
-    tieude/.style={truong, fill=gray!20, font=\footnotesize\bfseries}]
-  \foreach \i/\x/\ten in {0/0/N-1, 1/4.6/N, 2/9.2/N+1} {
-    \node[tieude] (h\i) at (\x,0) {Khối \ten};
-    \node[truong, below=0pt of h\i] (p\i) {Mã băm khối trước};
-    \node[truong, below=0pt of p\i] (t\i) {Dấu thời gian};
-    \node[truong, below=0pt of t\i] (m\i) {Gốc Merkle};
-    \node[truong, below=0pt of m\i, minimum height=1cm, align=center] (g\i)
-        {Danh sách\\giao dịch};
-    \node[draw, thick, rounded corners=2pt, inner sep=3pt, fit=(h\i)(g\i)] (b\i) {};
+\begin{tikzpicture}[font=\footnotesize]
+  % Sửa ngày 07/11/2026: VVB thẩm định, phê duyệt; cơ quan quản lý phát hành (mint).
+  % Vẽ lại ngày 17/11/2026: thêm mã UC01–UC11, tác nhân Người xem công khai và use case xuất dữ liệu CAD Trust.
+  % Sửa ngày 25/11/2026: thêm UC12 "Đăng nhập bằng chữ ký ví" cho bốn tác nhân có tài khoản. UC12 đặt giữa
+  % UC04 và UC05 (không theo thứ tự số) để đường nối từ bốn tác nhân không cắt nhau.
+  \draw[thick] (2.3,-5.85) rectangle (10.5,4.95);
+  \node[font=\footnotesize\bfseries] at (6.4,4.62) {Hệ thống quản lý tín chỉ các-bon};
+  \foreach \ten/\y/\noidung in {
+      uc01/4.0/{UC01. Thẩm định, phê duyệt yêu cầu cấp},
+      uc02/3.15/{UC02. Phát hành lô tín chỉ (mint)},
+      uc03/2.3/{UC03. Quản lý tài khoản, phân quyền},
+      uc04/1.45/{UC04. Xuất dữ liệu theo CAD Trust V2.0},
+      uc12/0.6/{UC12. Đăng nhập bằng chữ ký ví},
+      uc05/-0.25/{UC05. Đăng ký dự án, tải hồ sơ},
+      uc06/-1.1/{UC06. Gửi yêu cầu cấp tín chỉ},
+      uc07/-1.95/{UC07. Nạp tín chỉ vào pool, đổi token},
+      uc08/-2.8/{UC08. Mua bán, chuyển nhượng tín chỉ},
+      uc09/-3.65/{UC09. Hủy tín chỉ để bù trừ (retire)},
+      uc10/-4.5/{UC10. Theo dõi dashboard phát thải},
+      uc11/-5.35/{UC11. Tra cứu tín chỉ, chứng nhận hủy}} {
+    \draw (6.4,\y) ellipse (3.95cm and 0.38cm);
+    \node at (6.4,\y) {\noidung};
+    \coordinate (\ten-w) at (2.45,\y);
+    \coordinate (\ten-e) at (10.35,\y);
   }
-  \draw[->, thick] (p1.west) -- (b0.east |- p1.west);
-  \draw[->, thick] (p2.west) -- (b1.east |- p2.west);
-  \node[font=\large] at (-2.35,-1.4) {$\cdots$};
-  \node[font=\large] at (11.55,-1.4) {$\cdots$};
+  % Tác nhân bên trái
+  \pic at (0.6,3.75) {tacnhan};  \node at (0.6,3.2) {VVB};
+  \pic at (0.6,-1.45) {tacnhan}; \node at (0.6,-2.0) {Chủ dự án};
+  \pic at (0.6,-5.0) {tacnhan};  \node[align=center] at (0.6,-5.7) {Người xem\\công khai};
+  % Tác nhân bên phải
+  \pic at (11.7,2.3) {tacnhan};  \node[align=left, anchor=west] at (12.0,2.35) {Cơ quan\\quản lý};
+  \pic at (11.7,-3.4) {tacnhan}; \node[align=left, anchor=west] at (12.0,-3.35) {Doanh nghiệp\\mua};
+  % Liên kết
+  \foreach \u in {uc01,uc12} \draw (0.9,4.05) -- (\u-w);
+  \foreach \u in {uc12,uc05,uc06,uc07,uc08} \draw (0.9,-1.15) -- (\u-w);
+  \draw (0.9,-4.7) -- (uc11-w);
+  \foreach \u in {uc02,uc03,uc04,uc12} \draw (11.4,2.6) -- (\u-e);
+  \foreach \u in {uc12,uc07,uc08,uc09,uc10,uc11} \draw (11.4,-3.1) -- (\u-e);
 \end{tikzpicture}
-\caption{Cấu trúc liên kết giữa các khối trong chuỗi khối}
-\label{fig:chuoikhoi}
+\caption[Biểu đồ use case tổng quát của hệ thống]{Biểu đồ use case tổng quát của hệ thống \hinhtao[Claude]{20/10/2026; Updated: 25/11/2026}}
+\label{fig:usecase}
 \end{figure}}
 
-% ---------- Luồng tương tác của ứng dụng phi tập trung ----------
-\newcommand{\HinhLuongDApp}{%
+% ---------- Use case phân rã "Phát hành tín chỉ" ----------
+\newcommand{\HinhUCPhatHanh}{%
 \begin{figure}[htbp]
 \centering
+\begin{tikzpicture}[font=\footnotesize]
+  % Sửa ngày 17/11/2026: tách hai use case bên phải thành hai dòng và dời sang phải để không chồng lên cột trái.
+  \draw[thick] (2.6,-3.75) rectangle (14.4,2.75);
+  \node[font=\footnotesize\bfseries] at (8.5,2.42) {Phát hành tín chỉ};
+  \node[uc] (gui)    at (6.0,1.6)  {UC06. Gửi yêu cầu cấp tín chỉ};
+  \node[uc] (xem)    at (6.0,0.5)  {Xem yêu cầu cấp};
+  \node[uc] (duyet)  at (6.0,-0.6) {UC01. Phê duyệt yêu cầu cấp};
+  \node[uc] (tuchoi) at (6.0,-1.7) {Từ chối yêu cầu cấp};
+  \node[uc] (mint)   at (6.0,-2.8) {UC02. Phát hành lô tín chỉ};
+  \node[uc] (tai)    at (12.3,0.5) {Tải hồ sơ,\\tính mã băm};
+  \node[uc] (ky)     at (12.3,-2.8) {Ký giao dịch\\bằng MetaMask};
+  \draw[ucquanhe] (gui) -- node[ucnhan, sloped, above] {$\ll$include$\gg$} (tai);
+  \draw[ucquanhe] (duyet) -- node[ucnhan, sloped, below] {$\ll$include$\gg$} (tai);
+  \draw[ucquanhe] (mint) -- node[ucnhan, above] {$\ll$include$\gg$} (ky);
+  % Tác nhân
+  \pic at (0.9,1.25) {tacnhan};  \node at (0.9,0.7) {Chủ dự án};
+  \pic at (0.9,-1.15) {tacnhan}; \node at (0.9,-1.7) {VVB};
+  \pic at (0.9,-3.15) {tacnhan}; \node[align=center] at (0.9,-3.85) {Cơ quan\\quản lý};
+  \draw (1.2,1.55) -- (gui.west);
+  \draw (1.2,1.55) -- (xem.west);
+  \draw (1.2,-0.85) -- (xem.west);
+  \draw (1.2,-0.85) -- (duyet.west);
+  \draw (1.2,-0.85) -- (tuchoi.west);
+  \draw (1.2,-2.85) -- (mint.west);
+\end{tikzpicture}
+\caption[Biểu đồ use case phân rã ``Phát hành tín chỉ'']{Biểu đồ use case phân rã ``Phát hành tín chỉ'' \hinhtao[Claude]{17/11/2026}}
+\label{fig:uc-phathanh}
+\end{figure}}
+
+% ---------- Use case phân rã "Giao dịch và hủy tín chỉ" ----------
+\newcommand{\HinhUCGiaoDich}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+  \draw[thick] (2.6,-3.95) rectangle (14.4,3.45);
+  \node[font=\footnotesize\bfseries] at (8.5,3.12) {Giao dịch và hủy tín chỉ};
+  \node[uc, minimum width=4.8cm] (t1) at (6.0,2.2)  {Chuyển nhượng lô NFT};
+  \node[uc, minimum width=4.8cm] (t2) at (6.0,1.1)  {Nạp lô vào pool};
+  \node[uc, minimum width=4.8cm] (t3) at (6.0,0.0)  {Đổi token lấy lô (redeem)};
+  \node[uc, minimum width=4.8cm] (t4) at (6.0,-1.1) {Chuyển token PCC};
+  \node[uc, minimum width=4.8cm] (t5) at (6.0,-2.2) {Hủy tín chỉ từ lô};
+  \node[uc, minimum width=4.8cm] (t6) at (6.0,-3.3) {Hủy tín chỉ từ pool};
+  \node[uc] (cn) at (12.3,-2.75) {Xem chứng nhận hủy};
+  \draw[ucquanhe] (cn) -- node[ucnhan, sloped, above] {$\ll$extend$\gg$} (t5);
+  \draw[ucquanhe] (cn) -- node[ucnhan, sloped, below] {$\ll$extend$\gg$} (t6);
+  % Tác nhân
+  \pic at (0.9,1.4) {tacnhan};   \node at (0.9,0.85) {Chủ dự án};
+  \pic at (0.9,-1.9) {tacnhan};  \node[align=center] at (0.9,-2.6) {Doanh nghiệp\\mua};
+  \foreach \u in {t1,t2,t4} \draw (1.2,1.7) -- (\u.west);
+  \foreach \u in {t1,t3,t4,t5,t6} \draw (1.2,-1.6) -- (\u.west);
+\end{tikzpicture}
+\caption[Biểu đồ use case phân rã ``Giao dịch và hủy tín chỉ'']{Biểu đồ use case phân rã ``Giao dịch và hủy tín chỉ'' \hinhtao[Claude]{17/11/2026}}
+\label{fig:uc-giaodich}
+\end{figure}}
+
+% ---------- Biểu đồ hoạt động của quy trình nghiệp vụ ----------
+\newcommand{\HinhQuyTrinh}{%
+\begin{figure}[htbp]
+\centering
+\begin{adjustbox}{max width=\textwidth, max totalheight=0.78\textheight}
 \begin{tikzpicture}[
     >=Stealth,
-    hop/.style={draw, rounded corners=3pt, align=center, font=\footnotesize,
-                text width=2.1cm, minimum height=1.1cm, fill=white},
-    nhan/.style={font=\scriptsize, align=center}]
-  \node[hop]                         (u)   at (0,0)     {Người dùng};
-  \node[hop]                         (fe)  at (3.7,0)   {Giao diện web\\(Next.js,\\ethers.js)};
-  \node[hop]                         (mm)  at (7.4,0)   {Ví\\MetaMask\\(giữ khóa riêng)};
-  \node[hop, text width=2.6cm, minimum height=1.6cm, fill=gray!12]
-                                     (net) at (11.3,0)  {Mạng Ethereum\\(Sepolia)\\nút RPC, EVM,\\hợp đồng thông minh};
-  \node[hop]                         (be)  at (3.7,-3)  {Backend\\(Node.js, Express)};
-  \node[hop]                         (db)  at (0,-3)    {CSDL off-chain\\(PostgreSQL)};
-
-  \draw[->] (u) -- node[nhan, above] {thao tác} (fe);
-  \draw[->] (fe) -- node[nhan, above] {yêu cầu ký\\(EIP-1193)} (mm);
-  \draw[->] (mm) -- node[nhan, above] {giao dịch\\đã ký} (net);
-  \draw[->, dashed] (fe.north) to[bend left=22]
-      node[nhan, above] {đọc trạng thái on-chain (call)} (net.north);
-  \draw[->] (net.south) |- node[nhan, pos=0.75, below] {sự kiện (Minted, Transfer, Retired\ldots)} (be.east);
-  \draw[<->] (fe) -- node[nhan, right] {API REST} (be);
-  \draw[<->] (be) -- node[nhan, above] {đọc/ghi} (db);
+    hd/.style={draw, rounded corners=6pt, align=center, font=\scriptsize,
+               text width=2.6cm, minimum height=0.62cm, fill=white, inner sep=2pt},
+    rn/.style={draw, diamond, aspect=1.8, font=\scriptsize, inner sep=1pt, fill=white},
+    nhan/.style={font=\scriptsize, fill=white, inner sep=1pt}]
+  % Làn (swimlane)
+  \foreach \x/\ten in {0/Chủ dự án, 3.3/Hệ thống, 6.6/VVB, 9.9/Cơ quan quản lý, 13.2/Doanh nghiệp}
+    \node[font=\scriptsize\bfseries] at (\x,0.75) {\ten};
+  \foreach \x in {-1.65,1.65,4.95,8.25,11.55,14.85}
+    \draw[gray] (\x,1.1) -- (\x,-18.0);
+  \draw[gray] (-1.65,1.1) -- (14.85,1.1);
+  \draw[gray] (-1.65,0.4) -- (14.85,0.4);
+  \draw[gray] (-1.65,-18.0) -- (14.85,-18.0);
+  % Nút (sửa ngày 17/11/2026: giãn khoảng cách dọc để nút hai, ba dòng không chồng lên nhau)
+  \node[circle, fill=black, inner sep=3pt] (bd) at (0,0) {};
+  \node[hd] (a1)  at (0,-0.8)     {Đăng ký dự án};
+  \node[hd] (a2)  at (0,-1.85)    {Tải báo cáo giám sát lên};
+  \node[hd] (a3)  at (0,-2.95)    {Gửi yêu cầu cấp tín chỉ};
+  \node[hd] (a4)  at (3.3,-4.1)   {Lưu yêu cầu (SUBMITTED)};
+  \node[hd] (a5)  at (6.6,-5.15)  {Thẩm định hồ sơ};
+  \node[rn] (d1)  at (6.6,-6.2)   {Đạt?};
+  \node[hd] (a6)  at (3.3,-6.2)   {Ghi lý do từ chối (REJECTED)};
+  \node[hd] (a7)  at (6.6,-7.4)   {Tải báo cáo thẩm định, phê duyệt};
+  \node[hd] (a8)  at (3.3,-8.65)  {Ghi kết quả thẩm định, đề xuất sê-ri (APPROVED)};
+  \node[hd] (a9)  at (9.9,-9.9)   {Ký giao dịch phát hành lô};
+  \node[hd] (a10) at (3.3,-11.15) {Kiểm tra vai trò, sê-ri, mã băm; tạo NFT lô};
+  \node[hd] (a11) at (3.3,-12.45) {Đồng bộ sự kiện (MINTED)};
+  \node[hd] (a12) at (0,-13.6)    {Nạp lô vào pool, bán token PCC};
+  \node[hd] (a13) at (13.2,-14.7) {Mua token PCC};
+  \node[hd] (a14) at (13.2,-15.75) {Hủy tín chỉ, nhập người thụ hưởng};
+  \node[hd] (a15) at (3.3,-16.9)  {Đốt token, ghi chứng nhận hủy};
+  \node[circle, draw, inner sep=4pt] (kt) at (3.3,-17.6) {};
+  \node[circle, fill=black, inner sep=2pt] at (kt) {};
+  % Luồng
+  \draw[->] (bd) -- (a1);
+  \draw[->] (a1) -- (a2);
+  \draw[->] (a2) -- (a3);
+  \draw[->] (a3.south) |- (a4.west);
+  \draw[->] (a4.south) |- (a5.west);
+  \draw[->] (a5) -- (d1);
+  \draw[->] (d1.west) -- node[nhan, above] {không} (a6.east);
+  \draw[->] (a6.west) -- node[nhan, above, pos=0.55] {bổ sung hồ sơ} (-1.45,-6.2) |- (a2.west);
+  \draw[->] (d1.south) -- node[nhan, right] {đạt} (a7.north);
+  \draw[->] (a7.south) |- (a8.east);
+  \draw[->] (a8.south) |- (a9.west);
+  \draw[->] (a9.south) |- (a10.east);
+  \draw[->] (a10) -- (a11);
+  \draw[->] (a11.south) |- (a12.east);
+  \draw[->] (a12.south) |- (a13.west);
+  \draw[->] (a13) -- (a14);
+  \draw[->] (a14.south) |- (a15.east);
+  \draw[->] (a15) -- (kt);
 \end{tikzpicture}
-\caption{Luồng tương tác giữa giao diện, ví MetaMask, mạng Ethereum và backend}
-\label{fig:luongdapp}
+\end{adjustbox}
+\caption[Biểu đồ hoạt động của quy trình cấp, giao dịch và hủy tín chỉ]{Biểu đồ hoạt động của quy trình cấp, giao dịch và hủy tín chỉ \hinhtao[Claude]{17/11/2026}}
+\label{fig:quytrinh}
+\end{figure}}
+
+% ---------- Use case phân rã "Đăng ký dự án, tải hồ sơ" (UC05) ----------
+% Nguồn: backend/src/routes/projects.js (POST, PATCH, GET ?owner=), routes/documents.js, frontend/app/owner.
+\newcommand{\HinhUCDuAn}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+  \draw[thick] (2.6,-2.65) rectangle (14.4,2.65);
+  \node[font=\footnotesize\bfseries] at (8.5,2.32) {Đăng ký dự án, tải hồ sơ};
+  \node[uc, minimum width=4.8cm] (dk)   at (6.0,1.45)  {Đăng ký dự án mới};
+  \node[uc, minimum width=4.8cm] (sua)  at (6.0,0.4)   {Sửa thông tin dự án};
+  \node[uc, minimum width=4.8cm] (ds)   at (6.0,-0.65) {Xem danh sách dự án của tôi};
+  \node[uc, minimum width=4.8cm] (tai)  at (6.0,-1.7)  {Tải hồ sơ, tính mã băm};
+  \node[uc] (vt) at (12.2,1.45)  {Nhập vị trí,\\các bên liên quan};
+  \node[uc] (ct) at (12.2,-0.65) {Xem chi tiết dự án};
+  \draw[ucquanhe] (dk) -- node[ucnhan, above] {$\ll$include$\gg$} (vt);
+  \draw[ucquanhe] (ct) -- node[ucnhan, above] {$\ll$extend$\gg$} (ds);
+  % Tác nhân
+  \pic at (0.9,-0.25) {tacnhan}; \node at (0.9,-0.8) {Chủ dự án};
+  \foreach \u in {dk,sua,ds,tai} \draw (1.2,0.05) -- (\u.west);
+\end{tikzpicture}
+\caption[Biểu đồ use case phân rã ``Đăng ký dự án, tải hồ sơ'']{Biểu đồ use case phân rã ``Đăng ký dự án, tải hồ sơ'' \hinhtao[Claude]{25/11/2026}}
+\label{fig:uc-duan}
+\end{figure}}
+
+% ---------- Use case phân rã "Theo dõi dashboard phát thải" (UC10) ----------
+% Nguồn: backend/src/routes/dashboard.js (GET /me, PUT /emissions), frontend/app/dashboard, app/wallet.
+\newcommand{\HinhUCDashboard}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+  \draw[thick] (2.6,-2.65) rectangle (14.4,2.65);
+  \node[font=\footnotesize\bfseries] at (8.5,2.32) {Theo dõi dashboard phát thải};
+  \node[uc, minimum width=5.2cm] (kb) at (6.2,1.45)  {Khai báo phát thải,\\hạn ngạch theo năm};
+  \node[uc, minimum width=5.2cm] (gi) at (6.2,0.4)   {Xem tín chỉ đang giữ};
+  \node[uc, minimum width=5.2cm] (bt) at (6.2,-0.65) {Xem bảng bù trừ theo năm};
+  \node[uc, minimum width=5.2cm] (cn) at (6.2,-1.7)  {Xem chứng nhận hủy của tôi};
+  \node[uc] (sua) at (12.4,1.45) {Sửa số liệu\\đã khai báo};
+  \node[uc] (xcn) at (12.4,-1.7) {UC11. Xem\\chứng nhận hủy};
+  \draw[ucquanhe] (sua) -- node[ucnhan, above] {$\ll$extend$\gg$} (kb);
+  \draw[ucquanhe] (xcn) -- node[ucnhan, above] {$\ll$extend$\gg$} (cn);
+  % Tác nhân
+  \pic at (0.9,-0.25) {tacnhan}; \node[align=center] at (0.9,-0.95) {Doanh nghiệp\\mua};
+  \foreach \u in {kb,gi,bt,cn} \draw (1.2,0.05) -- (\u.west);
+\end{tikzpicture}
+\caption[Biểu đồ use case phân rã ``Theo dõi dashboard phát thải'']{Biểu đồ use case phân rã ``Theo dõi dashboard phát thải'' \hinhtao[Claude]{25/11/2026}}
+\label{fig:uc-dashboard}
+\end{figure}}
+
+% ---------- Use case phân rã "Tra cứu tín chỉ, chứng nhận hủy" (UC11) ----------
+% Nguồn: backend/src/routes/registry.js, projects.js (GET), documents.js (GET ?download),
+% frontend/app/page.js, projects/[id], lookup, certificates/[id].
+\newcommand{\HinhUCTraCuu}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+  \draw[thick] (2.6,-3.3) rectangle (14.4,3.3);
+  \node[font=\footnotesize\bfseries] at (8.5,2.97) {Tra cứu tín chỉ, chứng nhận hủy};
+  \node[uc, minimum width=5.4cm] (ds) at (6.3,2.05)  {Xem danh sách dự án,\\số liệu tổng hợp};
+  \node[uc, minimum width=5.4cm] (ct) at (6.3,1.0)   {Xem chi tiết dự án};
+  \node[uc, minimum width=5.4cm] (tc) at (6.3,-0.05) {Tra cứu theo số sê-ri};
+  \node[uc, minimum width=5.4cm] (cn) at (6.3,-1.25) {Xem chứng nhận hủy};
+  \node[uc, minimum width=5.4cm] (hs) at (6.3,-2.35) {Tải hồ sơ, đối chiếu mã băm};
+  \node[uc] (cad) at (12.5,2.0)  {UC04. Xuất dữ liệu\\theo CAD Trust};
+  \node[uc] (eth) at (12.5,-0.15) {Xem giao dịch\\trên Etherscan};
+  \draw[ucquanhe] (cn.north) -- node[ucnhan, right] {$\ll$extend$\gg$} (tc.south);
+  \draw[ucquanhe] (cad.south west) -- node[ucnhan, sloped, above] {$\ll$extend$\gg$} (ct.east);
+  \draw[ucquanhe] (eth.north west) -- node[ucnhan, sloped, above] {$\ll$extend$\gg$} (ct.south east);
+  \draw[ucquanhe] (eth.south west) -- node[ucnhan, sloped, below] {$\ll$extend$\gg$} (cn.north east);
+  % Tác nhân
+  \pic at (0.9,-0.25) {tacnhan}; \node[align=center] at (0.9,-0.95) {Người xem\\công khai};
+  \foreach \u in {ds,ct,tc,cn,hs} \draw (1.2,0.05) -- (\u.west);
+\end{tikzpicture}
+\caption[Biểu đồ use case phân rã ``Tra cứu tín chỉ, chứng nhận hủy'']{Biểu đồ use case phân rã ``Tra cứu tín chỉ, chứng nhận hủy'' \hinhtao[Claude]{25/11/2026}}
+\label{fig:uc-tracuu}
+\end{figure}}
+
+% ---------- Use case phân rã "Quản lý tài khoản, phân quyền" (UC03) ----------
+% Nguồn: backend/src/routes/users.js, projects.js (PATCH project_status), frontend/app/admin.
+% Theo thiết kế (07/11/2026): cấp vai trò phát hành ISSUER_ROLE cho ví cơ quan quản lý.
+% [CẦN SỬA MÃ] frontend/app/admin hiện cấp, thu hồi VERIFIER_ROLE khi đổi vai trò sang/khỏi VERIFIER.
+\newcommand{\HinhUCQuanTri}{%
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+  \draw[thick] (2.6,-2.65) rectangle (14.4,2.65);
+  \node[font=\footnotesize\bfseries] at (8.5,2.32) {Quản lý tài khoản, phân quyền};
+  \node[uc, minimum width=4.8cm] (ds)  at (6.0,1.45)  {Xem danh sách tài khoản};
+  \node[uc, minimum width=4.8cm] (dv)  at (6.0,0.4)   {Đổi vai trò off-chain};
+  \node[uc, minimum width=4.8cm] (tt)  at (6.0,-0.65) {Đổi trạng thái dự án};
+  \node[uc, minimum width=4.8cm] (pa)  at (6.0,-1.7)  {Tạm dừng, tiếp tục hợp đồng};
+  \node[uc] (cap) at (12.2,0.4)  {Cấp, thu hồi vai trò\\phát hành on-chain};
+  \node[uc] (ky)  at (12.2,-1.7) {Ký giao dịch\\bằng MetaMask};
+  \draw[ucquanhe] (cap) -- node[ucnhan, above] {$\ll$extend$\gg$} (dv);
+  \draw[ucquanhe] (cap) -- node[ucnhan, right] {$\ll$include$\gg$} (ky);
+  \draw[ucquanhe] (pa) -- node[ucnhan, above] {$\ll$include$\gg$} (ky);
+  % Tác nhân
+  \pic at (0.9,-0.25) {tacnhan}; \node[align=center] at (0.9,-0.95) {Cơ quan\\quản lý};
+  \foreach \u in {ds,dv,tt,pa} \draw (1.2,0.05) -- (\u.west);
+\end{tikzpicture}
+\caption[Biểu đồ use case phân rã ``Quản lý tài khoản, phân quyền'']{Biểu đồ use case phân rã ``Quản lý tài khoản, phân quyền'' \hinhtao[Claude]{25/11/2026}}
+\label{fig:uc-quantri}
 \end{figure}}

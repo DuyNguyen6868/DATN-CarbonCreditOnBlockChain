@@ -1,0 +1,84 @@
+% ============================================================
+% HÌNH VÀ BẢNG CHƯƠNG 4 — gọi bằng macro trong Chap4.tex
+%   \BangCongNghe   : công nghệ và phiên bản sử dụng      (tab:congnghe)
+%   \HinhTrienKhai  : sơ đồ triển khai hệ thống            (fig:trienkhai)
+%   \HinhCauTrucMa  : cấu trúc thư mục mã nguồn            (fig:cautrucma)
+% Phiên bản lấy từ package.json / hardhat.config.js tại thời điểm 21/10/2026.
+% ============================================================
+
+\newcommand{\BangCongNghe}{%
+\begin{table}[htbp]
+\centering
+\caption{Công nghệ và phiên bản sử dụng}
+\label{tab:congnghe}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{|p{3.2cm}|p{4.4cm}|X|}
+\hline
+\textbf{Thành phần} & \textbf{Công nghệ (phiên bản)} & \textbf{Vai trò}\\ \hline
+Hợp đồng thông minh & Solidity 0.8.24, OpenZeppelin Contracts 5.1.0 & ERC-721, ERC-20, AccessControl, Pausable, ReentrancyGuard\\ \hline
+Môi trường phát triển & Hardhat 2.29, hardhat-toolbox 5 (ethers 6, Mocha/Chai, solidity-coverage, gas reporter) & Biên dịch, kiểm thử, đo độ phủ và gas, triển khai\\ \hline
+Mạng blockchain & Hardhat Network (cục bộ), Ethereum Sepolia & Kiểm thử và triển khai thử nghiệm\\ \hline
+Backend & Node.js 22, Express 4.21, jsonwebtoken 9, multer & API REST, xác thực bằng chữ ký ví, tải hồ sơ\\ \hline
+Cơ sở dữ liệu & PostgreSQL 16 (pg 8.13); pg-mem khi kiểm thử & Lưu dữ liệu off-chain theo mô hình CAD Trust\\ \hline
+Đồng bộ sự kiện & ethers 6.13 (JsonRpcProvider, queryFilter) & Đọc sự kiện on-chain vào CSDL\\ \hline
+Frontend & Next.js 14.2 (App Router), React 18.3, ethers 6.13 & Giao diện web, kết nối MetaMask\\ \hline
+Ví & MetaMask & Ký đăng nhập và ký giao dịch\\ \hline
+\end{tabularx}
+\end{table}}
+
+\newcommand{\HinhTrienKhai}{%
+\begin{figure}[htbp]
+\centering
+\begin{adjustbox}{max width=\textwidth}
+\begin{tikzpicture}[>=Stealth, font=\footnotesize,
+    hop/.style={draw, rounded corners=3pt, align=center, fill=white, minimum height=1.1cm, text width=3.2cm},
+    nhan/.style={font=\scriptsize, align=center}]
+  \node[hop] (br)  at (0,0)    {\textbf{Trình duyệt}\\ giao diện Next.js\\ + MetaMask};
+  \node[hop] (fe)  at (0,-3.2) {\textbf{Máy chủ frontend}\\ Next.js (Vercel)};
+  \node[hop] (be)  at (5.2,0)  {\textbf{Máy chủ backend}\\ Express, port 4000\\ + bộ đồng bộ sự kiện};
+  \node[hop] (db)  at (10.4,0) {\textbf{PostgreSQL}};
+  \node[hop] (fs)  at (10.4,-3.2) {\textbf{Kho tệp}\\ uploads/ (hoặc IPFS)};
+  \node[hop] (rpc) at (5.2,-3.2) {\textbf{Nút RPC}\\ (Infura/Alchemy)};
+  \node[hop, fill=gray!10] (eth) at (5.2,-6.0) {\textbf{Ethereum Sepolia}\\ CarbonCreditNFT, CarbonPool};
+  \draw[->] (fe) -- node[nhan, left] {tải trang\\ (HTTPS)} (br);
+  \draw[<->] (br) -- node[nhan, above] {REST/JSON\\ + JWT} (be);
+  \draw[<->] (be) -- node[nhan, above] {SQL} (db);
+  \draw[->] (be) -- node[nhan, right] {lưu tệp} (fs);
+  \draw[->] (be) -- node[nhan, right] {đọc sự kiện} (rpc);
+  \draw[->] (br.south east) to[bend left=10] node[nhan, pos=0.35, right] {MetaMask ký\\ và gửi giao dịch} (rpc.north west);
+  \draw[<->] (rpc) -- (eth);
+\end{tikzpicture}
+\end{adjustbox}
+\caption{Sơ đồ triển khai hệ thống}
+\label{fig:trienkhai}
+\end{figure}}
+
+\newcommand{\HinhCauTrucMa}{%
+\begin{figure}[htbp]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.05}
+\begin{tabular}{@{}l l@{}}
+\texttt{DATN-CarbonCreditOnBlockChain/} & \\
+\texttt{\quad contracts/} & \textit{Hardhat}\\
+\texttt{\quad\quad contracts/CarbonCreditNFT.sol} & lô tín chỉ ERC-721: mint, retire\\
+\texttt{\quad\quad contracts/CarbonPool.sol} & pool ERC-20: deposit, redeem, retire\\
+\texttt{\quad\quad test/CarbonCredit.test.js} & 26 test case TC-01 đến TC-26\\
+\texttt{\quad\quad scripts/deploy.js} & triển khai, cấp quyền\\
+\texttt{\quad\quad scripts/demo.js} & kịch bản demo, đo gas\\
+\texttt{\quad\quad scripts/e2e-indexer.js} & kiểm thử on-chain $\rightarrow$ CSDL\\
+\texttt{\quad\quad scripts/smoke-api.js} & kiểm thử toàn hệ thống đang chạy\\
+\texttt{\quad backend/} & \textit{Node.js + Express}\\
+\texttt{\quad\quad db/schema.sql} & lược đồ CSDL (CAD Trust + ứng dụng)\\
+\texttt{\quad\quad src/routes/*.js} & các nhóm endpoint API\\
+\texttt{\quad\quad src/indexer.js} & đồng bộ sự kiện on-chain\\
+\texttt{\quad\quad test/api.test.js} & 16 test case API-01 đến API-16\\
+\texttt{\quad frontend/} & \textit{Next.js}\\
+\texttt{\quad\quad app/} & các trang giao diện\\
+\texttt{\quad\quad components/WalletProvider.js} & đăng nhập bằng ví\\
+\texttt{\quad\quad lib/chain.js, lib/api.js} & gọi hợp đồng và API\\
+\end{tabular}
+\caption{Cấu trúc thư mục mã nguồn}
+\label{fig:cautrucma}
+\end{figure}}

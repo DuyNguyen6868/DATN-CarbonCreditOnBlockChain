@@ -1,0 +1,279 @@
+\documentclass[a4paper,oneside]{report}
+\usepackage[fontsize=13pt]{scrextend}      % Cỡ chữ 13 pt (như \changefontsizes{13pt} của mẫu SoICT)
+% Toàn bộ định dạng nằm trong hust-datn.sty: lề, font, giãn dòng, đầu trang, tiêu đề, chú thích
+% hình/bảng, bảng, mục lục, trích dẫn IEEE. Từ 07/11/2026 định dạng theo mẫu LaTeX ĐATN SoICT
+% (thư mục Do_An_Latex_SoiCT); trang bìa giữ theo định dạng riêng của sinh viên.
+% Bản trước khi chuyển sang mẫu SoICT: backup/2026-11-07_truoc-mau-soict/.
+\usepackage{hust-datn}
+\makeindex
+
+% Thông tin dùng chung
+\newcommand{\tendetai}{Xây dựng hệ thống quản lý tín chỉ các-bon trên blockchain}
+\newcommand{\thoigiannop}{1/2027}   % Tháng/năm nộp quyển, in ở cuối trang bìa
+
+\usepackage[unicode,hidelinks,bookmarksnumbered]{hyperref}   % luôn nạp sau cùng
+% Cho phép ngắt dòng URL dài trong danh mục tài liệu tham khảo tại dấu gạch nối, dấu chấm
+\expandafter\def\expandafter\UrlBreaks\expandafter{\UrlBreaks\do\-\do\.\do\/}
+
+\begin{document}
+\bstctlcite{BSTcontrol}   % in đầy đủ tên tác giả lặp lại trong TLTK (không dùng "——"), xem References.bib
+
+% ================= 1. BÌA TRƯỚC (giữ nguyên định dạng của sinh viên) =================
+\newgeometry{top=2cm,bottom=2cm,left=2.5cm,right=2cm}
+\begin{titlepage}
+    \setstretch{1}
+    \setlength{\parskip}{0pt}
+    \centering
+
+    {\fontsize{14}{17}\selectfont\bfseries
+        ĐẠI HỌC BÁCH KHOA HÀ NỘI\\
+        KHOA TOÁN – TIN\par}
+
+    \vspace{6.2cm}
+
+    {\fontsize{18}{22}\selectfont\bfseries ĐỒ ÁN TỐT NGHIỆP\par}
+
+    \vspace{22pt}
+
+    % Tên đề tài phải khớp đúng với tên đã đăng ký trong phiếu giao nhiệm vụ
+    {\fontsize{14}{17}\selectfont\bfseries \tendetai\par}
+
+    \vspace{18pt}
+
+    {\fontsize{14}{20}\selectfont
+        \textbf{NGUYỄN CẢNH DUY}\\
+        Email: Duy.NC227174@sis.hust.edu.vn\\
+        Mã sinh viên: 20227174\\
+        \textbf{Chuyên ngành Hệ thống thông tin quản lý}\par}
+
+    \vspace{2.2cm}
+
+    {\fontsize{13}{15.6}\selectfont
+    \noindent\hspace*{0.6cm}%
+    \makebox[5.3cm][l]{\textbf{Giảng viên hướng dẫn:}}%
+    \makebox[5.8cm][l]{PGS.TS Lê Chí Ngọc}%
+    \raisebox{-4pt}[0pt][0pt]{%
+        \parbox[t]{3.5cm}{%
+            \rule{3.5cm}{0.5pt}\\[-3pt]
+            \hspace*{0.1cm}{\fontsize{10}{12}\selectfont Chữ ký của GVHD}}}%
+    \par}
+
+    \vfill
+
+    {\fontsize{13}{15.6}\selectfont\bfseries HÀ NỘI, \thoigiannop\par}
+\end{titlepage}
+\restoregeometry
+
+% ================= PHẦN ĐẦU: đánh số La Mã, chỉ có số trang ở chân trang =================
+\pagenumbering{roman}
+\pagestyle{plain}
+
+% ================= 2. ĐỀ TÀI TỐT NGHIỆP / NHẬN XÉT CỦA GIẢNG VIÊN HƯỚNG DẪN =================
+% Mẫu SoICT (0_1_De_tai_TN.tex): trang "ĐỀ TÀI TỐT NGHIỆP" có chữ ký GVHD, biểu mẫu theo quy định
+% của Khoa. Hướng dẫn của Khoa Toán – Tin (02/04/2025, mục IV.B): "Nhận xét của Giảng viên hướng dẫn
+% (phải có chữ ký của Giảng viên hướng dẫn)". Khi có bản scan, đặt file NhanXetGVHD.pdf cùng thư mục.
+% [VIẾT SAU] Trang nhận xét GVHD: chèn bản scan khi có — bỏ dấu % ở các dòng dưới để khôi phục.
+% \chentrangscan{NhanXetGVHD.pdf}{Nhận xét của giảng viên hướng dẫn}
+%     {Chèn bản scan nhận xét có chữ ký của giảng viên hướng dẫn (file NhanXetGVHD.pdf).}
+
+% ================= 3. PHIẾU BÁO CÁO TIẾN ĐỘ ĐỒ ÁN =================
+% Phiếu in từ hệ thống số hóa của Khoa (fami.hust.edu.vn/sohoa), đóng vào quyển.
+% [VIẾT SAU] Phiếu báo cáo tiến độ: chèn bản scan khi có — bỏ dấu % ở các dòng dưới để khôi phục.
+% \chentrangscan{PhieuTienDo.pdf}{Phiếu báo cáo tiến độ đồ án}
+%     {Chèn phiếu báo cáo tiến độ in từ hệ thống số hóa (file PhieuTienDo.pdf).}
+
+% ================= 4. LỜI CẢM ƠN + TÓM TẮT (CÙNG 1 TRANG, SINH VIÊN KÝ) =================
+% Theo hướng dẫn của Khoa: "Lời cảm ơn" và "Tóm tắt đồ án" trình bày trong 1 trang, sinh viên ký
+% và ghi rõ họ tên. Nội dung tóm tắt theo mẫu SoICT (0_3_Tom_tat_noi_dung.tex).
+% [VIẾT SAU] Lời cảm ơn và tóm tắt đồ án chưa viết — bỏ dấu % ở các dòng dưới để khôi phục.
+% \clearpage
+% \begin{center}\vspace*{18pt}\textbf{LỜI CẢM ƠN}\end{center}
+% % Ngắn gọn, khoảng 100–150 từ, tránh từ sáo rỗng.
+% [Lời cảm ơn]
+%
+% \begin{center}\vspace{12pt}\textbf{TÓM TẮT NỘI DUNG ĐỒ ÁN}\end{center}
+% % Tối đa khoảng 300 chữ, viết thành đoạn văn, không gạch đầu dòng. Theo thứ tự: (i) vấn đề cần
+% % giải quyết và hạn chế của các hướng tiếp cận hiện có; (ii) hướng tiếp cận của đồ án và lý do;
+% % (iii) tổng quan giải pháp, công cụ sử dụng; (iv) đóng góp chính, kết quả đạt được, tính thực tế,
+% % hướng phát triển; kiến thức và kỹ năng đạt được.
+% [Tóm tắt nội dung đồ án]
+%
+% \khoichuky{Sinh viên thực hiện}
+%
+% % ABSTRACT: không bắt buộc (mẫu SoICT). Nếu viết thì phải đủ nội dung như bản tiếng Việt.
+% % \clearpage
+% % \begin{center}\vspace*{18pt}\textbf{ABSTRACT}\end{center}
+% % [Abstract]
+
+% ================= 5. MỤC LỤC VÀ CÁC DANH MỤC =================
+\tableofcontents
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC HÌNH VẼ}
+\listoffigures
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC BẢNG BIỂU}
+\listoftables
+
+% Danh mục ký hiệu: bắt buộc theo hướng dẫn của Khoa (mẫu SoICT gọi là "Danh mục từ viết tắt").
+% Xếp theo thứ tự chữ cái, mỗi chữ viết tắt chỉ giải thích một lần. Không đưa các mã tự đặt trong
+% bài (VĐ-1..5, NC-01..10) vì chúng đã được giải thích ngay trong Chương 1.
+\chapter*{Danh mục ký hiệu}
+\label{chap:viettat}
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC KÝ HIỆU}
+\markboth{DANH MỤC KÝ HIỆU}{}
+% [RÚT GỌN 07/11/2026] AFOLU, CCC, DPG, EVM, FCPF, ICVCM, LoA, OMGE, VNX không còn dùng trong bản rút gọn
+% của Chương 1 — bỏ dấu % khi chương nào dùng lại.
+\begin{longtable}{@{}p{2.4cm}p{5.4cm}p{6.3cm}@{}}
+\toprule
+\textbf{Viết tắt} & \textbf{Tên tiếng Anh} & \textbf{Tên tiếng Việt} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+A6.4ER & Article 6.4 Emission Reduction           & Đơn vị giảm phát thải theo Điều 6.4 Thỏa thuận Paris \\
+AEF    & Agreed Electronic Format                  & Định dạng điện tử thỏa thuận \\
+% AFOLU  & Agriculture, Forestry and Other Land Use  & Nông nghiệp, lâm nghiệp và sử dụng đất khác \\
+API    & Application Programming Interface         & Giao diện lập trình ứng dụng \\
+% CCC    & Climate Change Center (Korea)             & Trung tâm biến đổi khí hậu Hàn Quốc \\
+% CBAM   & Carbon Border Adjustment Mechanism        & Cơ chế điều chỉnh biên giới các-bon \\
+CDM    & Clean Development Mechanism               & Cơ chế phát triển sạch \\
+% CDOP   & Carbon Data Open Protocol                 & Giao thức mở dữ liệu các-bon \\
+% [VIẾT SAU] CBAM, CSDL, dApp, DeFi, IPFS, PoS, PoW chỉ dùng ở các chương đang để trong chú thích — bỏ dấu % khi khôi phục.
+% CSDL   & Database                                  & Cơ sở dữ liệu \\
+DAG    & Directed Acyclic Graph                    & Đồ thị có hướng không chu trình \\
+% dApp   & Decentralized Application                 & Ứng dụng phi tập trung \\
+% DeFi   & Decentralized Finance                     & Tài chính phi tập trung \\
+% DPG    & Digital Public Good                       & Hàng hóa công kỹ thuật số \\
+ERC    & Ethereum Request for Comments             & Chuẩn kỹ thuật của Ethereum \\
+ERPA   & Emission Reductions Payment Agreement     & Thỏa thuận chi trả giảm phát thải \\
+% EVM    & Ethereum Virtual Machine                  & Máy ảo Ethereum \\
+% FCPF   & Forest Carbon Partnership Facility        & Quỹ đối tác các-bon lâm nghiệp \\
+GHG    & Greenhouse Gas                            & Khí nhà kính \\
+HNX    & Hanoi Stock Exchange                      & Sở Giao dịch Chứng khoán Hà Nội \\
+% ICVCM  & Integrity Council for the Voluntary Carbon Market & Hội đồng liêm chính thị trường các-bon tự nguyện \\
+IoT    & Internet of Things                        & Internet vạn vật \\
+ISO    & International Organization for Standardization & Tổ chức tiêu chuẩn hóa quốc tế \\
+% IPFS   & InterPlanetary File System                & Hệ thống lưu trữ tệp phi tập trung \\
+ITMO   & Internationally Transferred Mitigation Outcome & Kết quả giảm nhẹ được chuyển giao quốc tế \\
+% LoA    & Letter of Authorization                   & Thư ủy quyền \\
+MRV    & Measurement, Reporting and Verification   & Đo đạc, báo cáo, thẩm định \\
+NDC    & Nationally Determined Contribution        & Đóng góp do quốc gia tự quyết định \\
+NFT    & Non-Fungible Token                        & Token không thể thay thế \\
+% OMGE   & Overall Mitigation in Global Emissions    & Giảm nhẹ tổng thể phát thải toàn cầu \\
+PACM   & Paris Agreement Crediting Mechanism       & Cơ chế tín chỉ theo Điều 6.4 Thỏa thuận Paris \\
+PDD    & Project Design Document                   & Tài liệu thiết kế dự án \\
+% PoS    & Proof of Stake                            & Bằng chứng cổ phần \\
+% PoW    & Proof of Work                             & Bằng chứng công việc \\
+REC    & Renewable Energy Certificate              & Chứng chỉ năng lượng tái tạo \\
+tCO\textsubscript{2}e & Tonne of CO\textsubscript{2} equivalent & Tấn CO\textsubscript{2} tương đương \\
+UNDP   & United Nations Development Programme      & Chương trình phát triển Liên hợp quốc \\
+VCS    & Verified Carbon Standard                  & Tiêu chuẩn các-bon được xác minh của Verra \\
+VCU    & Verified Carbon Unit                      & Đơn vị các-bon được xác minh \\
+% VNX    & Vietnam Exchange                          & Sở Giao dịch Chứng khoán Việt Nam \\
+VSDC   & Vietnam Securities Depository and Clearing Corporation & Tổng công ty Lưu ký và Bù trừ Chứng khoán Việt Nam \\
+VVB    & Validation and Verification Body          & Bên thẩm định độc lập \\
+\end{longtable}
+
+% Danh mục thuật ngữ (mẫu SoICT, 0_6_Thuat_ngu.tex): chỉ giải thích các thuật ngữ khó hiểu, ít gặp
+% ngoài chuyên ngành. Thuật ngữ phổ biến (blockchain, token, API, dashboard, testnet, use case...)
+% không đưa vào. Thêm dòng khi chương sau dùng thuật ngữ mới khó hiểu.
+\chapter*{Danh mục thuật ngữ}
+\phantomsection
+\addcontentsline{toc}{chapter}{DANH MỤC THUẬT NGỮ}
+\markboth{DANH MỤC THUẬT NGỮ}{}
+\begin{longtable}{@{}p{4.2cm}p{9.9cm}@{}}
+\toprule
+\textbf{Thuật ngữ} & \textbf{Ý nghĩa} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Additionality   & Tính bổ sung: lượng giảm phát thải sẽ không xảy ra nếu không có dự án \\
+Audit trail     & Dấu vết kiểm tra: chuỗi bản ghi cho phép truy lại ai đã làm gì, khi nào \\
+Baseline        & Đường phát thải cơ sở: lượng phát thải giả định nếu không có dự án \\
+Burn            & Đốt token, tức loại token khỏi lưu thông vĩnh viễn \\
+Corresponding adjustment & Điều chỉnh tương ứng: quốc gia chuyển giao trừ lượng giảm phát thải đã bán ra khỏi kết quả thực hiện NDC của mình \\
+Credit block    & Khối tín chỉ, gồm một dãy số sê-ri liên tiếp \\
+Double counting & Tính toán kép: một lượng giảm phát thải được tính nhiều lần, gồm phát hành kép, sử dụng kép và tuyên bố kép \\
+Mint            & Phát hành, tức tạo mới token trên blockchain \\
+Pool            & Smart contract nhận NFT của nhiều lô và trả lại token có thể thay thế \\
+Pooled buffer account & Tài khoản dự phòng chung của Verra, giữ lại một phần tín chỉ để bù cho rủi ro đảo ngược \\
+Reentrancy      & Lỗ hổng cho phép gọi lại hàm của smart contract trước khi lần gọi trước kết thúc \\
+Retirement      & Hủy tín chỉ: dùng tín chỉ để bù trừ phát thải và loại tín chỉ khỏi lưu thông \\
+Reversal        & Đảo ngược: lượng các-bon đã lưu giữ (ví dụ trong rừng) bị phát thải trở lại \\
+Serverless      & Kiến trúc chạy mã theo từng hàm trên nền tảng đám mây, không cần tự quản lý máy chủ \\
+Vintage         & Năm xảy ra lượng giảm phát thải ghi trên tín chỉ \\
+\end{longtable}
+
+% ================= NỘI DUNG CHÍNH =================
+% Theo mẫu SoICT, chương 1 "Giới thiệu đề tài" và chương 2 "Khảo sát và phân tích yêu cầu" được
+% gộp thành Chương 1 của báo cáo này. Các chương sau tương ứng với chương 3–6 của mẫu.
+% Mỗi chương có đoạn tổng quan ở đầu và đoạn kết chương ở cuối (định dạng Normal, không tiêu đề).
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{noidung}
+
+% Chương 1 = mẫu SoICT chương 1 + chương 2.
+\input{Chap1}
+
+% Chương 2 = mẫu SoICT chương 3 "Công nghệ sử dụng".
+% [VIẾT SAU] Bản nộp hiện tại chỉ tới Chương 1 — bỏ dấu % ở dòng dưới để khôi phục.
+% \input{Chap2}
+
+% Chương 3 = mẫu SoICT chương 4 "Thiết kế, triển khai và đánh giá hệ thống".
+% [VIẾT SAU] Bản nộp hiện tại chỉ tới Chương 1 — bỏ dấu % ở dòng dưới để khôi phục.
+% \input{Chap3}
+
+% Chương 4 = mẫu SoICT chương 5 "Các giải pháp và đóng góp nổi bật" (tối thiểu 5 trang;
+% nếu ngắn hơn thì gộp vào chương kết luận).
+% [VIẾT SAU] Bản nộp hiện tại chỉ tới Chương 1 — bỏ dấu % ở dòng dưới để khôi phục.
+% \input{Chap4}
+
+% Chương 5 = mẫu SoICT chương 6 "Kết luận và hướng phát triển".
+% [VIẾT SAU] Bản nộp hiện tại chỉ tới Chương 1 — bỏ dấu % ở dòng dưới để khôi phục.
+% \input{Chap5}
+
+% ================= TÀI LIỆU THAM KHẢO (kiểu IEEE) =================
+% Mẫu SoICT: chỉ tài liệu được trích dẫn mới xuất hiện; không dùng bài giảng, Wikipedia, trang web
+% thông thường. IEEEtran-hust.bst = IEEEtran.bst có thêm trường urldate (xem Note_Refer.md).
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{TÀI LIỆU THAM KHẢO}
+\bibliographystyle{IEEEtran-hust}
+\bibliography{References}
+
+% ================= PHỤ LỤC =================
+% Mẫu SoICT: trang bìa "PHỤ LỤC", sau đó các phụ lục đánh A, B, C ("A. TÊN PHỤ LỤC");
+% ví dụ đặc tả các use case phụ (Phu_luc_B.tex). Phụ lục không dày hơn phần chính.
+% Với mã nguồn, chỉ đưa các đoạn mã quan trọng, đường dẫn GitHub và địa chỉ contract trên Etherscan.
+% [VIẾT SAU] Phụ lục chưa có nội dung — bỏ dấu % ở các dòng dưới để khôi phục.
+% \clearpage
+% \chapter*{Phụ lục}
+% \addcontentsline{toc}{chapter}{PHỤ LỤC}
+% \appendix
+% \titleformat{\chapter}[block]{\centering\normalsize\bfseries}{\thechapter.}{0.5em}{\MakeUppercase}
+% \renewcommand{\chaptermark}[1]{\markboth{PHỤ LỤC \thechapter.\ #1}{}}
+% \addtocontents{toc}{\protect\renewcommand{\protect\cftchappresnum}{}}
+% \addtocontents{toc}{\protect\setlength{\protect\cftchapnumwidth}{1cm}}
+%
+% \chapter{Đặc tả các use case khác}
+% % Đặc tả các use case không đủ chỗ trong Chương 1.
+%
+% \chapter{Mã nguồn chương trình}
+% % Ví dụ chèn mã: \lstinputlisting[language=Solidity,caption={...}]{contracts/contracts/CarbonCreditNFT.sol}
+
+% ================= CHỈ MỤC =================
+% Hướng dẫn của Khoa có mục "Chỉ mục"; mẫu SoICT không có. Giữ ở cuối quyển.
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{CHỈ MỤC}
+\begingroup\raggedright
+\printindex
+\endgroup
+
+\end{document}

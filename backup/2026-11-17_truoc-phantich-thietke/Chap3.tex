@@ -1,0 +1,193 @@
+% ============================================================
+% CHƯƠNG 3 — THIẾT KẾ, TRIỂN KHAI VÀ ĐÁNH GIÁ HỆ THỐNG  (mẫu SoICT chương 4)
+% Sắp xếp lại ngày 07/11/2026 theo mẫu Do_An_Latex_SoiCT: gộp Chương 3 cũ (Phân tích và thiết kế),
+% Chương 4 cũ (Xây dựng hệ thống) và Chương 5 cũ (Kết quả thực nghiệm). Bản trước:
+% backup/2026-11-07_truoc-mau-soict/Chap3.tex, Chap4.tex, Chap5.tex.
+% Phần phân tích yêu cầu (tác nhân, use case, yêu cầu chức năng, phi chức năng) đã chuyển lên Chương 1
+% (mục Khảo sát hiện trạng, Tổng quan chức năng, Đặc tả chức năng, Yêu cầu phi chức năng).
+%
+% Bố cục theo mẫu SoICT: Thiết kế kiến trúc (lựa chọn kiến trúc, thiết kế tổng quan = biểu đồ gói,
+% thiết kế chi tiết gói) -> Thiết kế chi tiết (giao diện, lớp + biểu đồ trình tự, CSDL) -> Xây dựng ứng dụng
+% (thư viện và công cụ có phiên bản, kết quả đạt được có thống kê mã nguồn, minh họa chức năng chính)
+% -> Kiểm thử (2–3 chức năng quan trọng, kỹ thuật kiểm thử, tổng kết) -> Triển khai.
+% Theo mẫu, nội dung là đóng góp chính chỉ tóm lược ở đây và tham chiếu sang Chương 4
+% ("Chi tiết được trình bày ở mục~\ref{...}"), không trình bày lặp lại.
+% Văn phong: xem ghi chú đầu Chap1.tex (hạn chế xưng "em"; mục con dùng \subsection*, không \ref tới mục con). [BẢN NHÁP] Sinh viên đọc lại và sửa theo văn phong của mình.
+% ============================================================
+
+\chapter{THIẾT KẾ, TRIỂN KHAI VÀ ĐÁNH GIÁ HỆ THỐNG}
+\chaptermark{THIẾT KẾ, TRIỂN KHAI VÀ ĐÁNH GIÁ}
+\label{chap:thietke}
+\label{chap:xaydung}
+\label{chap:ketqua}
+\input{figures_chap3}
+\input{figures_chap4}
+\input{figures_chap5}
+
+% Tổng quan (Normal, không tiêu đề): từ yêu cầu ở Chương 1 và công nghệ ở Chương 2, chương này
+% trình bày kiến trúc, thiết kế chi tiết, việc cài đặt, kết quả kiểm thử và triển khai trên Sepolia.
+% [VIẾT SAU] \canviet{Đoạn tổng quan chương}
+
+% ------------------------------------------------------------
+\section{Thiết kế kiến trúc}
+\label{sec:tk-kientruc}
+
+\subsection*{Lựa chọn kiến trúc phần mềm}
+\label{sec:kientruc}
+% [BẢN NHÁP] Viết lại từ mục "Đề xuất kiến trúc tổng thể" của bản cũ (bỏ gạch đầu dòng và chữ đậm).
+% Mẫu SoICT: 1–3 trang; nêu kiến trúc chọn, giải thích sơ bộ, rồi áp vào hệ thống cụ thể.
+% Đã thống nhất (07/11/2026): VVB chỉ phê duyệt, cơ quan quản lý phát hành (mint). Mã nguồn
+% contracts/contracts/CarbonCreditNFT.sol vẫn để mintBatch dưới VERIFIER_ROLE — cần thêm ISSUER_ROLE
+% cho cơ quan quản lý và chạy lại kiểm thử (bảng figures_chap5.tex đang theo mã cũ).
+
+Từ kết quả khảo sát và các yêu cầu ở Chương~\ref{chap:khaosat}, đồ án chọn kiến trúc lai (hybrid architecture)\index{Kien truc lai@Kiến trúc lai (Hybrid Architecture)} kết hợp hai phần on-chain và off-chain, tổ chức theo kiến trúc phân lớp (layered architecture)\index{Kien truc phan lop@Kiến trúc phân lớp (Layered Architecture)} gồm bốn lớp (\autoref{fig:kientruc}). Phần off-chain giữ những dữ liệu có dung lượng lớn hoặc thay đổi thường xuyên như hồ sơ dự án, metadata và tài khoản người dùng, nhờ đó hệ thống giảm được chi phí lưu trữ và truy vấn nhanh hơn. Phần on-chain chỉ thực hiện ba thao tác mà bên thứ ba cần kiểm tra công khai là phát hành, chuyển nhượng và hủy tín chỉ. Mỗi lớp chỉ gọi tới lớp ngay bên dưới, nên có thể thay đổi một lớp, chẳng hạn chuyển nơi lưu tệp từ ổ đĩa cục bộ sang IPFS, mà không phải sửa smart contract đã triển khai.
+
+Lớp thứ nhất là lớp nguồn dữ liệu và MRV (data source and MRV layer), cung cấp dữ liệu đầu vào cho việc cấp tín chỉ gồm hồ sơ thiết kế dự án (PDD), báo cáo giám sát và báo cáo thẩm định. Trong phạm vi đồ án, chủ dự án nhập thông tin và tải hồ sơ lên qua giao diện web, VVB tải lên báo cáo thẩm định, còn số liệu giám sát là dữ liệu mô phỏng. Đồ án không cài đặt việc thu thập dữ liệu tự động bằng cảm biến IoT theo mô hình của Vaccargiu và cộng sự~\cite{vaccargiu2026blockchain}, nhưng kiến trúc để sẵn điểm tích hợp để thiết bị gửi dữ liệu tổng hợp vào lớp thứ hai qua API RESTful.
+
+Lớp thứ hai là lớp dịch vụ và lưu trữ off-chain (off-chain service and storage layer). Backend Node.js và Express cung cấp API RESTful\index{REST API}, xác thực người dùng và kiểm tra hồ sơ trước khi chuyển cho VVB. Cơ sở dữ liệu PostgreSQL\index{PostgreSQL} dựa trên các thực thể của mô hình CAD Trust V2.0 (Bảng~\ref{tab:cadtrust}) là Project, Stakeholders, Validations, Verifications, Issuances và Units~\cite{cadtrust2025datamodel}, còn tài khoản đăng nhập và phân quyền của ứng dụng nằm ở các bảng riêng. Hệ thống chỉ lưu đường dẫn và mã băm của tệp hồ sơ trong cơ sở dữ liệu. Một tiến trình đồng bộ sự kiện (event listener) đọc các sự kiện mà smart contract phát ra để cập nhật cơ sở dữ liệu; như vậy quyền sở hữu và trạng thái hủy lấy dữ liệu on-chain làm gốc, còn cơ sở dữ liệu off-chain chỉ là bản sao phục vụ truy vấn, giống vai trò của PostgreSQL trong hệ thống của UNDP~\cite{undp2024nationalregistry}.
+
+Lớp thứ ba là lớp smart contract (on-chain smart contract layer), gồm hai smart contract viết bằng Solidity, dùng thư viện OpenZeppelin và triển khai trên testnet Sepolia. Sau khi VVB phê duyệt kết quả thẩm định, cơ quan quản lý ký giao dịch phát hành từ ví của mình, và hợp đồng NFT kiểm tra vai trò phát hành của bên gọi rồi tạo một token ERC-721\index{ERC-721} cho mỗi lô tín chỉ, lưu số lượng tCO$_2$e, dãy số sê-ri, mã băm hồ sơ và URI metadata, đồng thời từ chối dãy sê-ri trùng hoặc hồ sơ đã dùng. Hợp đồng không tự đánh giá nội dung hồ sơ, nên độ chính xác của số liệu vẫn dựa vào kết quả thẩm định của VVB. Hợp đồng pool nhận NFT, khóa NFT lại và trả cho người nạp lượng token ERC-20\index{ERC-20} tương ứng (1 token = 1 tCO$_2$e) để giao dịch từng phần; người giữ token có thể đổi token lấy lại một lô (redeem). Khi người dùng hủy tín chỉ, hàm hủy đốt token và ghi số lượng, dãy sê-ri, người thụ hưởng, nên phần tín chỉ này không thể chuyển nhượng hay hủy lại trong hệ thống. Chương~\ref{chap:giaiphap} trình bày chi tiết cơ chế này và giới hạn của nó.
+
+Lớp thứ tư là lớp giao diện và API (presentation and API layer). Ứng dụng web Next.js dùng ethers.js kết nối ví MetaMask để người dùng tự ký các giao dịch phát hành, nạp pool, chuyển nhượng và hủy, nên khóa riêng không rời khỏi ví. Dashboard hiển thị tín chỉ đang nắm giữ, tín chỉ đã hủy và lịch sử giao dịch, đồng thời so sánh lượng tín chỉ doanh nghiệp đã hủy với lượng phát thải mà doanh nghiệp khai báo; người xem công khai tra cứu được tín chỉ theo số sê-ri kèm liên kết tới giao dịch trên Etherscan. API liên thông xuất dữ liệu dự án và tín chỉ theo cấu trúc CAD Trust V2.0 để trao đổi với hệ thống bên ngoài~\cite{cadtrust2025datamodel}, còn việc xuất báo cáo AEF như hệ thống của UNDP~\cite{undp2024nationalregistry} là hướng mở rộng.
+
+\HinhKienTruc
+
+\subsection*{Thiết kế tổng quan}
+\label{subsec:tk-tongquan}
+% Mẫu SoICT: vẽ biểu đồ gói UML (package diagram) phân tầng rõ ràng, nêu phụ thuộc giữa các gói
+% (gói tầng dưới không phụ thuộc gói tầng trên, không phụ thuộc bỏ qua tầng), giải thích nhiệm vụ từng gói.
+% Gợi ý gói: frontend (pages, components, lib/contracts), backend (routes, services, db, indexer, auth),
+% contracts (CarbonCreditNFT, CarbonPool, OpenZeppelin). Có thể dựa trên \autoref{fig:cautrucma}.
+% [VIẾT SAU] \canviet{Biểu đồ gói và giải thích}
+
+\subsection*{Thiết kế chi tiết gói}
+\label{subsec:tk-chitietgoi}
+% Mẫu SoICT: biểu đồ cho từng gói hoặc nhóm gói, chỉ tên lớp, đủ các quan hệ (phụ thuộc, kết hợp,
+% kết tập, hợp thành, kế thừa, thực thi). Ví dụ: CarbonCreditNFT kế thừa ERC721, AccessControl, Pausable;
+% CarbonPool kế thừa ERC20, ReentrancyGuard, thực thi IERC721Receiver và phụ thuộc CarbonCreditNFT.
+% [VIẾT SAU] \canviet{Thiết kế chi tiết gói}
+
+% ------------------------------------------------------------
+\section{Thiết kế chi tiết}
+\label{sec:tk-chitiet}
+
+\subsection*{Thiết kế giao diện}
+\label{subsec:tk-giaodien}
+% Mẫu SoICT: 2–3 trang; màn hình mục tiêu (độ phân giải, kích thước), quy ước thiết kế (nút, thông báo
+% phản hồi, màu), mockup cho các chức năng quan trọng nhất. Không nhầm mockup với giao diện sản phẩm cuối.
+% [VIẾT SAU] \canviet{Thiết kế giao diện}
+
+\subsection*{Thiết kế lớp}
+\label{subsec:tk-lop}
+\label{sec:tk-hopdong}
+\label{sec:tk-tuantu}
+% Mẫu SoICT: 3–4 trang; thuộc tính và phương thức của 2–4 lớp chính, kèm 2–3 biểu đồ trình tự.
+% Giải thích \autoref{fig:lophopdong}: vì sao tách 2 hợp đồng (NFT giữ dữ liệu lô và chứng nhận, pool chỉ giữ
+% token); các vai trò; các sự kiện dùng để đồng bộ; dùng _burn của OpenZeppelin, hủy một phần thì trừ vào lô,
+% hủy từ pool thì pool gọi retireFor. Vòng đời tín chỉ: giải thích \autoref{fig:trangthai}, mỗi chuyển trạng thái
+% ứng với hàm nào. Biểu đồ trình tự: \autoref{fig:tuantu-mint} (yêu cầu cấp -> VVB duyệt -> cơ quan quản lý phát hành -> đồng bộ),
+% \autoref{fig:tuantu-retire} (nạp pool -> bán từng phần -> hủy từ pool).
+% Cơ chế chống tính toán kép chỉ tóm lược và trỏ sang mục \ref{sec:gp-tinhtoankep}.
+% [VIẾT SAU] \canviet{Thiết kế lớp và biểu đồ trình tự}
+%
+% \HinhLopHopDong
+%
+% \HinhTrangThai
+%
+% \HinhTuanTuMint
+%
+% \HinhTuanTuRetire
+
+\subsection*{Thiết kế cơ sở dữ liệu}
+\label{subsec:tk-csdl}
+\label{sec:tk-csdl}
+\label{sec:onoffchain}
+% Mẫu SoICT: 2–4 trang; vẽ và giải thích ERD, rồi thiết kế CSDL cho PostgreSQL.
+% Giải thích \autoref{fig:erd}: nhóm bảng theo CAD Trust (nền xám) và nhóm bảng ứng dụng; Issuances 1–n Units;
+% khi hủy một phần, khối Units tách ở phía off-chain, NFT on-chain vẫn nguyên lô.
+% Phân tách on-chain/off-chain: giải thích \autoref{fig:onoffchain}, bảng Dữ liệu | Nơi lưu | Lý do; cơ chế giữ
+% nhất quán (mã băm hồ sơ trong NFT, đồng bộ sự kiện).
+% [VIẾT SAU] \canviet{Thiết kế cơ sở dữ liệu}
+%
+% \HinhOnOffChain
+%
+% \HinhERD
+
+% ------------------------------------------------------------
+\section{Xây dựng ứng dụng}
+\label{sec:xaydung}
+
+\subsection*{Thư viện và công cụ sử dụng}
+\label{sec:moitruong}
+% Mẫu SoICT: bảng công cụ có phiên bản (và URL). Giải thích \autoref{tab:congnghe}; lý do chọn công cụ đã nêu
+% ở Chương 2 nên chỉ nhắc lại ngắn. Cấu trúc mã nguồn theo \autoref{fig:cautrucma}.
+% [VIẾT SAU] \canviet{Thư viện và công cụ sử dụng}
+
+\BangCongNghe
+
+\HinhCauTrucMa
+
+\subsection*{Kết quả đạt được}
+\label{subsec:ketquadatduoc}
+\label{sec:caidat-hopdong}
+\label{sec:caidat-backend}
+% Mẫu SoICT: mô tả các sản phẩm đóng gói, thành phần, vai trò; bảng thống kê số dòng mã, số tệp, số hợp đồng,
+% số endpoint, dung lượng.
+% Nội dung cài đặt từ Chương 4 cũ (chỉ tóm lược, chi tiết đóng góp ở Chương 4):
+%  - CarbonCreditNFT: struct CreditBatch (projectId, vintage, serialFrom, quantity, retired, documentHash,
+%    verifier, issuedAt); mintBatch: seriesKey = keccak256(projectId, vintage), serialFrom >= nextAvailableSerial,
+%    documentUsed[documentHash]; retire hủy từ đầu dãy sê-ri còn lại; retireFor cho pool (RETIREMENT_AGENT_ROLE);
+%    Pausable ghi đè _update.
+%  - CarbonPool: decimals = 0; nạp qua onERC721Received; redeem đốt remainingOf(tokenId); retire đốt token rồi
+%    gọi retireFor; ReentrancyGuard.
+%  - Phân quyền: DEFAULT_ADMIN_ROLE và vai trò phát hành ISSUER_ROLE (cơ quan quản lý, mỗi tỉnh một tài khoản),
+%    VERIFIER_ROLE (VVB, chỉ phê duyệt off-chain), RETIREMENT_AGENT_ROLE (pool). [CẦN SỬA MÃ] thêm ISSUER_ROLE.
+%  - Backend: db/schema.sql từ ERD; xác thực nonce -> personal_sign -> ethers.verifyMessage -> JWT 8 giờ;
+%    API theo \autoref{tab:api} (backend không giữ khóa riêng); indexer quét queryFilter, khóa (tx_hash, log_index),
+%    chưa xử lý reorg.
+% [VIẾT SAU] \canviet{Kết quả đạt được}
+
+\BangAPI
+
+\subsection*{Minh họa các chức năng chính}
+\label{subsec:minhhoa}
+\label{sec:caidat-frontend}
+% Mỗi màn hình 1 ảnh chụp + giải thích ngắn: danh sách dự án, chi tiết dự án, tra cứu sê-ri, chứng nhận hủy,
+% dự án của tôi, thẩm định (VVB), ví tín chỉ, dashboard, quản trị. Chụp khi chạy thật (README "Chạy thử cục bộ").
+% [VIẾT SAU] \canviet{Minh họa các chức năng chính}
+
+% ------------------------------------------------------------
+\section{Kiểm thử}
+\label{sec:kiemthu}
+\label{sec:pp-kiemthu}
+\label{sec:kq-chucnang}
+% Mẫu SoICT: 2–3 trang; thiết kế ca kiểm thử cho 2–3 chức năng quan trọng nhất (phát hành, hủy từ pool, tra cứu),
+% nêu kỹ thuật kiểm thử; tổng kết số ca và kết quả; giải thích ca không đạt. Ca kiểm thử khác đưa vào Phụ lục.
+% Ba mức: kiểm thử đơn vị hợp đồng trên Hardhat Network (Mocha/Chai, loadFixture); kiểm thử API với pg-mem và
+% supertest; kiểm thử tích hợp e2e-indexer và smoke-api. Ghi cấu hình máy, phiên bản Node, Hardhat.
+% Nhận xét độ phủ: nhánh của CarbonPool 75% vì ... (xem coverage/index.html).
+% Chi phí gas: quy đổi ETH/USD theo giá gas tại thời điểm đo (ghi nguồn, ngày); vì sao mintBatch, retire tốn gas.
+% Kịch bản chống tính toán kép (\BangTinhToanKep) đặt ở Chương 4, mục \ref{sec:gp-tinhtoankep}.
+% [VIẾT SAU] \canviet{Kiểm thử}
+
+\BangTestHopDong
+
+\BangTestAPI
+
+\BangDoPhu
+
+\BangGas
+
+% ------------------------------------------------------------
+\section{Triển khai}
+\label{sec:trienkhai}
+\label{sec:kq-sepolia}
+% Giải thích \autoref{fig:trienkhai}: Sepolia + RPC, backend + PostgreSQL, frontend; địa chỉ hợp đồng,
+% link Etherscan (đã verify), vài giao dịch mẫu (mint, retire), ảnh chụp.
+% [VIẾT SAU] \canviet{Triển khai}
+
+\HinhTrienKhai
+
+% ------------------------------------------------------------
+% Kết chương (Normal, không tiêu đề): tóm tắt thiết kế, kết quả cài đặt và kiểm thử; dẫn sang Chương 4.
+% [VIẾT SAU] \canviet{Kết chương 3}

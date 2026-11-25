@@ -1,0 +1,109 @@
+% ============================================================
+% CHƯƠNG 4 — XÂY DỰNG HỆ THỐNG (Giai đoạn 3–4 của phiếu)
+% Khung chương: đề mục + gợi ý trong chú thích + hình/bảng đã vẽ sẵn (figures_chap4.tex).
+% \canviet{...} = chỗ bạn tự viết. Mã nguồn tương ứng nằm trong contracts/, backend/, frontend/.
+% ============================================================
+
+\chapter{XÂY DỰNG HỆ THỐNG}
+\label{chap:xaydung}
+\input{figures_chap4}
+
+% Đoạn mở đầu: chương này cài đặt thiết kế ở Chương 3 theo ba phần (hợp đồng, backend, frontend)
+% rồi triển khai lên testnet.
+% [VIẾT SAU] \canviet{Đoạn mở đầu chương}
+
+% ------------------------------------------------------------
+\section{Môi trường và công nghệ}
+\label{sec:moitruong}
+% Giải thích \autoref{tab:congnghe}; lý do chọn Hardhat (test bằng JS, coverage, gas reporter),
+% OpenZeppelin 5 (thư viện đã kiểm toán). Cấu trúc monorepo theo \autoref{fig:cautrucma}.
+% [VIẾT SAU] \canviet{Môi trường và công nghệ}
+
+\BangCongNghe
+
+\HinhCauTrucMa
+
+% ------------------------------------------------------------
+\section{Cài đặt hợp đồng thông minh}
+\label{sec:caidat-hopdong}
+
+\subsection{Hợp đồng CarbonCreditNFT}
+\label{subsec:caidat-nft}
+% Ý chính (đối chiếu contracts/contracts/CarbonCreditNFT.sol):
+%  - mỗi NFT = một lô (Unit): struct CreditBatch (projectId, vintage, serialFrom, quantity, retired,
+%    documentHash, verifier, issuedAt);
+%  - mintBatch: onlyRole(VERIFIER_ROLE); hai kiểm tra chống phát hành kép:
+%    (1) seriesKey = keccak256(projectId, vintage), serialFrom >= nextAvailableSerial[key];
+%    (2) documentUsed[documentHash] chưa dùng;
+%  - retire: hủy một phần hoặc toàn bộ, luôn hủy từ đầu dãy sê-ri còn lại -> chứng nhận có dãy sê-ri
+%    chính xác; hủy hết thì _burn NFT; dữ liệu lô vẫn tra cứu được qua getBatch;
+%  - retireFor: dành cho pool (RETIREMENT_AGENT_ROLE) hủy thay người đã đốt token;
+%  - Pausable: cơ quan quản lý tạm dừng toàn bộ mint/chuyển/hủy (ghi đè _update).
+% Nên trích đoạn mã mintBatch và _retire (lstlisting ngắn) và giải thích từng kiểm tra.
+% [VIẾT SAU] \canviet{Cài đặt CarbonCreditNFT}
+
+\subsection{Hợp đồng CarbonPool}
+\label{subsec:caidat-pool}
+% Ý chính (CarbonPool.sol): decimals = 0 (1 PCC = 1 tCO2e); mọi đường nạp NFT đều qua
+% onERC721Received (chỉ nhận NFT từ hợp đồng tín chỉ); redeem đốt token = remainingOf(tokenId);
+% retire đốt token rồi gọi retireFor; bất biến totalSupply = tổng remainingOf các lô trong pool;
+% ReentrancyGuard cho deposit/redeem/retire. So sánh với Toucan (BCT/TCO2): ở đây pool gắn trực
+% tiếp với lô cụ thể khi hủy nên chứng nhận vẫn có dãy sê-ri.
+% [VIẾT SAU] \canviet{Cài đặt CarbonPool}
+
+\subsection{Phân quyền và triển khai}
+\label{subsec:phanquyen}
+% Bảng vai trò: DEFAULT_ADMIN_ROLE (cơ quan quản lý, ví deploy), VERIFIER_ROLE (VVB),
+% RETIREMENT_AGENT_ROLE (hợp đồng pool). Các bước trong scripts/deploy.js. Địa chỉ hợp đồng
+% trên Sepolia + link Etherscan (điền sau khi deploy thật).
+% [VIẾT SAU] \canviet{Phân quyền và triển khai hợp đồng}
+
+% ------------------------------------------------------------
+\section{Cài đặt backend}
+\label{sec:caidat-backend}
+
+\subsection{Cơ sở dữ liệu}
+\label{subsec:caidat-csdl}
+% Từ ERD ở \autoref{fig:erd} sang db/schema.sql: nhóm bảng CAD Trust và nhóm bảng ứng dụng;
+% cách tách khối Units khi hủy một phần (Held -> Held + Retired).
+% [VIẾT SAU] \canviet{Cài đặt cơ sở dữ liệu}
+
+\subsection{Xác thực bằng chữ ký ví}
+\label{subsec:xacthuc}
+% Luồng nonce -> ký thông điệp (personal_sign) -> ethers.verifyMessage -> JWT 8 giờ;
+% nonce dùng một lần (chống phát lại); vai trò VERIFIER/ADMIN không tự đăng ký được.
+% [VIẾT SAU] \canviet{Xác thực bằng chữ ký ví}
+
+\subsection{API REST}
+\label{subsec:caidat-api}
+% Giải thích \autoref{tab:api} theo nhóm: xác thực, dự án, hồ sơ, yêu cầu cấp, tra cứu, dashboard,
+% liên thông CAD Trust. Nhấn mạnh: backend không giữ khóa riêng, chỉ trả tham số mint cho VVB ký.
+% [VIẾT SAU] \canviet{API REST}
+
+\BangAPI
+
+\subsection{Bộ đồng bộ sự kiện}
+\label{subsec:indexer}
+% src/indexer.js: quét theo đoạn khối (queryFilter), sắp xếp theo (block, logIndex), mỗi sự kiện
+% ghi trong một giao dịch CSDL, khóa (tx_hash, log_index) để không ghi trùng; on-chain là gốc,
+% có thể dựng lại CSDL từ khối deploy. Hạn chế: chưa xử lý reorg (Sepolia cần đợi vài khối xác nhận).
+% [VIẾT SAU] \canviet{Bộ đồng bộ sự kiện}
+
+% ------------------------------------------------------------
+\section{Cài đặt giao diện}
+\label{sec:caidat-frontend}
+% Mỗi màn hình 1 ảnh chụp + 2–3 câu: trang chủ/danh sách dự án, chi tiết dự án, tra cứu sê-ri,
+% chứng nhận hủy, dự án của tôi (chủ dự án), thẩm định (VVB), ví tín chỉ, dashboard, quản trị.
+% CHỤP ẢNH khi chạy thật (xem README mục "Chạy thử cục bộ").
+% [VIẾT SAU] \canviet{Các màn hình chính kèm ảnh chụp}
+
+% ------------------------------------------------------------
+\section{Triển khai hệ thống}
+\label{sec:trienkhai}
+% Giải thích \autoref{fig:trienkhai}: Sepolia + RPC, backend + PostgreSQL, frontend.
+% [VIẾT SAU] \canviet{Triển khai hệ thống}
+
+\HinhTrienKhai
+
+\section{Kết luận chương}
+% [VIẾT SAU] \canviet{Kết luận chương 4}

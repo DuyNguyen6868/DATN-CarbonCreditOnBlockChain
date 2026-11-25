@@ -1,0 +1,235 @@
+% ============================================================
+% hust-datn.sty — Định dạng đồ án tốt nghiệp theo mẫu của Đại học Bách khoa Hà Nội
+%
+% Căn cứ: "Mẫu ĐATN_2019_version 1_1.docx", trang "Mẫu Đồ án / Khóa luận tốt nghiệp"
+% của Ban Đào tạo (https://ctt.hust.edu.vn/DisplayWeb/DisplayBaiViet?baiviet=35523),
+% áp dụng từ kỳ 2019.1. Hướng dẫn thực hiện ĐA/TT của Khoa Toán – Tin (02/04/2025, mục IV.A)
+% dẫn tới đúng trang này. Ngày 07/11/2026 trang vẫn chỉ đăng phiên bản 1.1 (file trong
+% thư mục "QD DA TT" trùng khớp từng byte với file trên trang).
+%
+% Thông số lấy từ styles.xml và document.xml của mẫu:
+%   Khổ giấy      A4; lề trên 2 cm, dưới 2 cm, trái 3,5 cm, phải 2,5 cm (in một mặt)
+%   Chữ Normal    Times New Roman 13 pt, căn đều hai bên, giãn dòng Multiple 1.1,
+%                 cách đoạn trước 3 pt, không thụt đầu dòng
+%                 -> file này dùng giãn dòng 1,5 và thụt đầu dòng 1 cm (xem mục ĐOẠN VĂN)
+%   Chương        "CHƯƠNG 1. TÊN CHƯƠNG": in hoa, đậm, căn giữa, trước 6 pt, sau 12 pt,
+%                 mỗi chương bắt đầu từ trang mới
+%   Tiêu đề       tối đa 3 cấp (1.1 / 1.1.1 / 1.1.1.1), đậm, trước 6 pt;
+%                 cấp sâu hơn dùng a), b), c) hoặc gạch đầu dòng
+%   Danh sách     thụt trái 1,27 cm (List Paragraph)
+%   Chú thích     nghiêng, 12 pt, màu xám 404040, căn giữa, giãn dòng đơn, sau 10 pt;
+%                 "Hình 1.1 Tên hình" đặt dưới hình, "Bảng 1.1 Tên bảng" đặt trên bảng
+%   Hình, bảng    căn giữa, nên rộng không quá 75% phần chữ (trừ trường hợp đặc biệt)
+%   Bảng          kẻ lưới đầy đủ (Table Grid), chữ 12 pt, hàng tiêu đề đậm và căn giữa,
+%                 nên nằm trọn trong một trang
+%   Phương trình  đánh số "PT 1.1" ở lề phải
+%   Tài liệu TK   kiểu IEEE, chỉ liệt kê tài liệu được trích dẫn
+%   Số trang      chân trang, căn phải; phần đầu đánh số La Mã, nội dung đánh số Ả Rập
+% ============================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{hust-datn}[2026/11/07 Mau DATN DHBK Ha Noi (ban 2019 v1.1)]
+
+\RequirePackage[utf8]{vietnam}
+\RequirePackage{mathptmx}                 % Times (tương đương Times New Roman)
+\RequirePackage{amsmath}
+\RequirePackage{graphicx}
+\RequirePackage[table]{xcolor}
+\RequirePackage{geometry}
+\RequirePackage{setspace}
+\RequirePackage{titlesec}
+\RequirePackage[titles]{tocloft}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\RequirePackage{fancyhdr}
+\RequirePackage{array}
+\RequirePackage{tabularx}
+\RequirePackage{longtable}
+\RequirePackage{booktabs}
+\RequirePackage{multirow}
+\RequirePackage{float}
+\RequirePackage[section]{placeins}        % \FloatBarrier: hình/bảng không trôi sang mục sau
+\RequirePackage{enumitem}
+\RequirePackage{etoolbox}
+\RequirePackage{pdfpages}
+\RequirePackage{listings}
+\RequirePackage{makeidx}
+\RequirePackage{tikz}
+\RequirePackage{adjustbox}
+\RequirePackage{cite}                     % [1], [3]–[5]: sắp xếp và gộp số trích dẫn kiểu IEEE
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,fit,backgrounds,calc}
+
+% ================= LỀ TRANG =================
+\geometry{a4paper, top=2cm, bottom=2cm, left=3.5cm, right=2.5cm, footskip=0.9cm}
+
+% ================= ĐOẠN VĂN =================
+% [Góp ý 07/11/2026] Mẫu Word (giãn 1.1, không thụt đầu dòng) cho trang quá dày, khó đọc.
+% Đổi theo cách trình bày của các ĐATN LaTeX của trường (đo trên ĐATN Nguyễn Phúc Hưng 2025:
+% khoảng cách dòng 24 pt, thụt đầu dòng khoảng 0,8–1 cm, không cách thêm giữa các đoạn):
+%   - giãn dòng 1,5: dòng cơ sở 15,6 pt x 1,5 ~ 23,4 pt;
+%   - thụt đầu dòng 1 cm cho mọi đoạn, kể cả đoạn đầu ngay sau tiêu đề (gói indentfirst);
+%   - không thêm khoảng trống giữa các đoạn (đã có thụt đầu dòng để nhận biết đoạn mới).
+\RequirePackage{indentfirst}
+\setstretch{1.5}
+\setlength{\parskip}{0pt plus 1pt}
+\setlength{\parindent}{1cm}
+% Khoảng cách giữa các từ: microtype co giãn nhẹ độ rộng chữ (expansion) và đẩy dấu câu ra lề
+% (protrusion), nên khi căn đều hai bên khoảng trắng giữa các từ đều hơn, ít dòng bị "thưa".
+\RequirePackage[protrusion=true, expansion=true, final]{microtype}
+\setlength{\emergencystretch}{1.5em}
+\clubpenalty=10000
+\widowpenalty=10000                       % không để dòng mồ côi đầu/cuối trang
+\setlist{leftmargin=1cm, topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt}
+\setlist[enumerate,2]{leftmargin=0.8cm}
+
+% ================= HÌNH VÀ BẢNG =================
+% Cho phép nhiều hình/bảng trên một trang văn bản, tránh trang chỉ có một hình và nhiều khoảng trắng.
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.12}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\setlength{\textfloatsep}{12pt plus 4pt minus 2pt}
+\setlength{\floatsep}{10pt plus 3pt minus 2pt}
+\setlength{\intextsep}{10pt plus 3pt minus 2pt}
+
+% Bảng theo mẫu: chữ 12 pt, giãn dòng đơn, kẻ lưới đầy đủ.
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{5pt}
+\AtBeginEnvironment{table}{\fontsize{12}{14}\selectfont\setstretch{1}}
+\AtBeginEnvironment{longtable}{\fontsize{12}{14}\selectfont\setstretch{1}}
+% Cột căn trái (không căn đều, tránh khoảng trắng lớn trong ô hẹp):
+%   L{3cm}: cột rộng cố định;  Y: cột co giãn của tabularx;  C{2cm}: cột căn giữa.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+% Ô tiêu đề bảng: đậm, căn giữa. Dùng: \HD{Tên cột} & \HD{Tên cột} \\
+\newcommand{\HD}[1]{\centering\textbf{#1}\arraybackslash}
+
+% ================= SỐ TRANG =================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[R]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[R]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% ================= TIÊU ĐỀ CÁC CẤP =================
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{1}   % Mục lục tới \section; mục con dùng \subsection* (không đánh số)
+
+\titleformat{\chapter}[block]{\centering\normalsize\bfseries}{CHƯƠNG \thechapter.}{0.5em}{\MakeUppercase}
+\titleformat{name=\chapter,numberless}[block]{\centering\normalsize\bfseries}{}{0pt}{\MakeUppercase}
+\titlespacing*{\chapter}{0pt}{6pt}{12pt}
+
+\titleformat{\section}[hang]{\normalsize\bfseries}{\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{12pt plus 2pt}{4pt}
+
+\titleformat{\subsection}[hang]{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{8pt plus 2pt}{2pt}
+
+\titleformat{\subsubsection}[hang]{\normalsize\itshape}{\thesubsubsection.}{1em}{}
+\titlespacing*{\subsubsection}{0pt}{6pt plus 2pt}{0pt}
+
+% ================= MỤC LỤC & DANH MỤC =================
+\renewcommand{\cftchapfont}{\bfseries}
+\renewcommand{\cftchappagefont}{\bfseries}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftchappresnum}{CHƯƠNG }
+\renewcommand{\cftchapaftersnum}{.}
+\setlength{\cftchapnumwidth}{2.7cm}
+\setlength{\cftbeforechapskip}{6pt}
+\setlength{\cftsecindent}{0pt}
+\setlength{\cftsecnumwidth}{1cm}
+\setlength{\cftbeforesecskip}{4pt}
+\setlength{\cftsubsecindent}{1cm}
+\setlength{\cftsubsecnumwidth}{1.3cm}
+\setlength{\cftbeforesubsecskip}{4pt}
+\renewcommand{\cftfigpresnum}{Hình }
+\setlength{\cftfigindent}{0pt}
+\setlength{\cftfignumwidth}{2cm}
+\setlength{\cftbeforefigskip}{4pt}
+\renewcommand{\cfttabpresnum}{Bảng }
+\setlength{\cfttabindent}{0pt}
+\setlength{\cfttabnumwidth}{2cm}
+\setlength{\cftbeforetabskip}{4pt}
+
+% ================= CHÚ THÍCH HÌNH / BẢNG =================
+\DeclareCaptionFont{capsize}{\fontsize{12}{14}\selectfont}
+\DeclareCaptionFont{capcolor}{\color[HTML]{404040}}
+\captionsetup{
+    font={capsize,it,capcolor,singlespacing},
+    labelfont={capsize,it,capcolor},
+    labelsep=space,
+    justification=centering,
+    singlelinecheck=false,
+    skip=6pt
+}
+\captionsetup[figure]{position=bottom, belowskip=4pt}
+\captionsetup[table]{position=top}
+\captionsetup[sub]{font={capsize,it,capcolor}}
+
+% ================= PHƯƠNG TRÌNH: "PT 1.1" =================
+\numberwithin{equation}{chapter}
+\renewcommand{\tagform@}[1]{\maketag@@@{\ignorespaces PT #1\unskip\@@italiccorr}}
+
+% ================= TÀI LIỆU THAM KHẢO =================
+% Giãn dòng đơn trong từng mục, cách nhau 4 pt; số thứ tự [1] thẳng hàng với lề trái.
+\AtBeginEnvironment{thebibliography}{\setstretch{1}\fontsize{12}{14}\selectfont}
+\patchcmd{\thebibliography}{\sloppy}{\sloppy\setlength{\itemsep}{4pt}\setlength{\parsep}{0pt}}{}{}
+
+% ================= MÃ NGUỒN =================
+\lstdefinelanguage{Solidity}{
+    morekeywords={pragma,solidity,contract,interface,library,is,function,modifier,event,emit,
+        struct,enum,mapping,public,private,internal,external,view,pure,payable,returns,return,
+        memory,storage,calldata,constructor,override,virtual,require,revert,if,else,for,while,
+        new,delete,import,using,address,bool,string,bytes,bytes32,uint,uint8,uint256,int,int256},
+    sensitive=true, morecomment=[l]{//}, morecomment=[s]{/*}{*/}, morestring=[b]",
+}
+\lstset{
+    basicstyle=\ttfamily\footnotesize\singlespacing, keywordstyle=\bfseries,
+    commentstyle=\itshape\color{gray}, numbers=left, numberstyle=\tiny, frame=single,
+    breaklines=true, columns=fullflexible, keepspaces=true, showstringspaces=false, tabsize=4
+}
+\AtBeginDocument{\renewcommand{\lstlistingname}{Đoạn mã}}
+
+% ================= TÊN CÁC MỤC TIẾNG VIỆT =================
+\AtBeginDocument{%
+    \renewcommand{\contentsname}{Mục lục}%
+    \renewcommand{\listfigurename}{Danh mục hình vẽ}%
+    \renewcommand{\listtablename}{Danh mục bảng biểu}%
+    \renewcommand{\bibname}{Tài liệu tham khảo}%
+    \renewcommand{\figurename}{Hình}%
+    \renewcommand{\tablename}{Bảng}%
+    \renewcommand{\appendixname}{Phụ lục}%
+    \renewcommand{\indexname}{Chỉ mục}%
+    \renewcommand{\figureautorefname}{Hình}%
+    \renewcommand{\tableautorefname}{Bảng}%
+    \renewcommand{\equationautorefname}{PT}%
+    \renewcommand{\chapterautorefname}{Chương}%
+    \renewcommand{\sectionautorefname}{mục}%
+    \renewcommand{\subsectionautorefname}{mục}%
+    \renewcommand{\appendixautorefname}{Phụ lục}%
+}
+
+% ================= TIỆN ÍCH =================
+% Khối chữ ký: "Hà Nội, ngày … tháng … năm …"
+\newcommand{\khoichuky}[1]{%
+    \par\vspace{12pt}\hfill
+    \begin{minipage}{7cm}
+        \centering\singlespacing
+        \textit{Hà Nội, ngày …. tháng …. năm ….}\\
+        \textbf{#1}\\
+        \textit{Ký và ghi rõ họ tên}
+    \end{minipage}\par
+}
+
+% Chèn trang scan (PDF) nếu đã có file, nếu chưa có thì in trang tiêu đề giữ chỗ.
+\newcommand{\chentrangscan}[3]{%
+    \IfFileExists{#1}{\includepdf[pages=-]{#1}}{\chapter*{#2}\textit{#3}\clearpage}%
+}
+
+% Đánh dấu chỗ còn phải tự viết (chữ đỏ). Trước khi nộp, tìm "\canviet" để chắc chắn không còn.
+\newcommand{\canviet}[1]{\textcolor{red}{[\textit{#1}]}}
+
+\endinput
